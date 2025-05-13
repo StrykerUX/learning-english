@@ -26,6 +26,10 @@ function reloadGameState() {
     // Create new gameState instance with updated localStorage data
     gameState = new GameState();
     
+    // FORZAR todos los niveles desbloqueados para MVP
+    gameState.highestUnlocked = 8;
+    gameState.save();
+    
     // Update UI with fresh data
     updateUI();
     setupLevelNodes();
@@ -46,7 +50,10 @@ class GameState {
         this.completedLevels = JSON.parse(localStorage.getItem('completedLevels')) || {};
         this.levelStars = JSON.parse(localStorage.getItem('levelStars')) || {};
         this.levelBestScores = JSON.parse(localStorage.getItem('levelBestScores')) || {};
-        this.highestUnlocked = parseInt(localStorage.getItem('highestUnlocked')) || 1;
+        
+        // FORZAR todos los niveles desbloqueados para MVP
+        this.highestUnlocked = 8;
+        localStorage.setItem('highestUnlocked', '8');
     }
 
     save() {
@@ -56,7 +63,8 @@ class GameState {
         localStorage.setItem('completedLevels', JSON.stringify(this.completedLevels));
         localStorage.setItem('levelStars', JSON.stringify(this.levelStars));
         localStorage.setItem('levelBestScores', JSON.stringify(this.levelBestScores));
-        localStorage.setItem('highestUnlocked', this.highestUnlocked.toString());
+        // SIEMPRE forzar todos los niveles desbloqueados
+        localStorage.setItem('highestUnlocked', '8');
     }
 
     completeLevel(level, score, stars) {
@@ -65,12 +73,13 @@ class GameState {
         this.levelBestScores[level] = Math.max(this.levelBestScores[level] || 0, score);
         this.totalPoints += score;
         this.totalStars = Object.values(this.levelStars).reduce((a, b) => a + b, 0);
-        this.highestUnlocked = Math.max(this.highestUnlocked, level + 1);
+        // NO cambiar highestUnlocked en MVP - siempre mantener en 8
+        this.highestUnlocked = 8;
         this.save();
     }
 
     isLevelUnlocked(level) {
-        // En el MVP, todos los niveles están desbloqueados
+        // En el MVP, todos los niveles están desbloqueados SIEMPRE
         return true;
     }
 
@@ -168,6 +177,23 @@ let gameState = new GameState();
 let isInitialized = false;
 let currentSelectedLevel = null;
 
+// OVERRIDE GLOBAL: Forzar todos los niveles desbloqueados
+window.isLevelUnlocked = function(level) {
+    return true;
+};
+
+// OVERRIDE showNotification para bloquear mensajes de "nivel bloqueado"
+const originalShowNotification = window.showNotification;
+window.showNotification = function(message, type) {
+    if (message.includes('bloqueado') || message.includes('blocked')) {
+        console.log('Blocked notification intercepted:', message);
+        return; // No mostrar notificación de nivel bloqueado
+    }
+    if (originalShowNotification) {
+        originalShowNotification(message, type);
+    }
+};
+
 // ===== DOM ELEMENTS =====
 const welcomeModal = document.getElementById('welcomeModal');
 const playerNameInput = document.getElementById('playerName');
@@ -186,8 +212,14 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarfield();
     createAsteroids();
     
-    // FORZAR TODOS LOS NIVELES DESBLOQUEADOS para MVP
+    // FORZAR TODOS LOS NIVELES DESBLOQUEADOS para MVP - MÚLTIPLES VECES
     localStorage.setItem('highestUnlocked', '8');
+    localStorage.setItem('unlocked_levels', JSON.stringify([1,2,3,4,5,6,7,8]));
+    
+    // También forzar en el objeto global
+    if (window.gameState) {
+        window.gameState.highestUnlocked = 8;
+    }
     
     if (gameState.playerName) {
         welcomeModal.style.display = 'none';
@@ -385,6 +417,10 @@ function handleLevelClick(level) {
 
 // ===== LEVEL PANEL =====
 function openLevelPanel(level) {
+    // FORZAR desbloqueado antes de abrir panel
+    localStorage.setItem('highestUnlocked', '8');
+    gameState.highestUnlocked = 8;
+    
     const config = LEVELS_CONFIG[level];
     const isCompleted = gameState.isLevelCompleted(level);
     const stars = gameState.getLevelStars(level);
@@ -433,6 +469,10 @@ function closeLevelPanel() {
 
 function openTheory() {
     if (currentSelectedLevel) {
+        // FORZAR desbloqueado antes de ir a teoría
+        localStorage.setItem('highestUnlocked', '8');
+        gameState.highestUnlocked = 8;
+        
         const config = LEVELS_CONFIG[currentSelectedLevel];
         window.location.href = `theory/${config.theoryFile}`;
     }
@@ -440,6 +480,10 @@ function openTheory() {
 
 function playLevel(level = currentSelectedLevel) {
     if (level) {
+        // FORZAR desbloqueado antes de jugar
+        localStorage.setItem('highestUnlocked', '8');
+        gameState.highestUnlocked = 8;
+        
         const config = LEVELS_CONFIG[level];
         window.location.href = `games/${config.gameFile}`;
     }
@@ -620,3 +664,12 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     console.log('- debugGame.completeLevel(level, score, stars) - Complete a level');
     console.log('- debugGame.showStorage() - Show localStorage contents');
 }
+
+// ===== FORZAR NIVELES DESBLOQUEADOS CONSTANTEMENTE =====
+// Ejecutar cada 500ms para asegurar que siempre estén desbloqueados
+setInterval(() => {
+    if (gameState) {
+        gameState.highestUnlocked = 8;
+        localStorage.setItem('highestUnlocked', '8');
+    }
+}, 500);
