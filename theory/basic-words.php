@@ -297,5 +297,7 @@
             window.location.href = '../games/vocabulary-basic.php';
         }
     </script>
+    
+    <?php include '../includes/testing-mode-include.php'; ?>
 </body>
 </html>

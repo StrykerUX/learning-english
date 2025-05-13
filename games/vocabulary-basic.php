@@ -774,5 +774,7 @@ session_start();
             initGame();
         });
     </script>
+    
+    <?php include '../includes/testing-mode-include.php'; ?>
 </body>
 </html>
