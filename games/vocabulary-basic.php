@@ -7,212 +7,562 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Palabras Básicas - English Trainer</title>
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
     <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Pastel colors for accessibility */
+            --primary-bg: #0a0a0a;
+            --secondary-bg: #1a1a2e;
+            --accent-purple: #9c88ff;
+            --accent-blue: #6eb5ff;
+            --accent-pink: #ff9a9e;
+            --accent-green: #a8e6cf;
+            --text-primary: #ffffff;
+            --text-secondary: #e0e6ed;
+            --text-muted: #9ca3af;
+            --success: #64f58d;
+            --warning: #ffad5a;
+            --error: #ff6b6b;
+            --card-bg: rgba(26, 26, 46, 0.8);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --border-color: rgba(156, 136, 255, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Space background with stars */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(156, 136, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(110, 181, 255, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 80%, rgba(255, 154, 158, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 20%, white, transparent),
+                radial-gradient(2px 2px at 40% 70%, white, transparent),
+                radial-gradient(1px 1px at 60% 10%, white, transparent),
+                radial-gradient(1px 1px at 90% 40%, white, transparent),
+                radial-gradient(2px 2px at 10% 90%, white, transparent),
+                radial-gradient(1px 1px at 80% 90%, white, transparent);
+            background-repeat: no-repeat;
+            background-size: 200px 200px, 300px 300px, 250px 250px, 150px 150px, 400px 400px, 180px 180px;
+            opacity: 0.3;
+            animation: twinkle 10s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Main container */
         .game-container {
-            max-width: 800px;
-            margin: 2rem auto;
+            position: relative;
+            z-index: 10;
+            max-width: 1000px;
+            margin: 0 auto;
             padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #0ff;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
+            min-height: 100vh;
         }
-        
+
+        /* Header */
         .game-header {
-            text-align: center;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 1.5rem;
             margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
-        
-        .score-display {
+
+        .header-content {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
             gap: 1rem;
         }
-        
-        .score-item {
-            background: #1a1a1a;
-            padding: 1rem;
-            border-radius: 10px;
-            border: 2px solid #333;
-            text-align: center;
-            flex: 1;
+
+        .back-button {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
         }
-        
-        .word-display {
+
+        .back-button:hover {
+            background: var(--accent-purple);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .header-title {
             text-align: center;
+            flex-grow: 1;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Progress section */
+        .progress-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
             margin-bottom: 2rem;
         }
-        
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-green), var(--accent-blue));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        /* Word display area */
+        .word-display {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .english-word {
             font-size: 3rem;
-            color: #0ff;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(156, 136, 255, 0.3);
         }
-        
+
         .pronunciation {
-            font-size: 1.2rem;
-            color: #888;
-            font-style: italic;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.25rem;
+            color: var(--accent-blue);
             margin-bottom: 1rem;
         }
-        
+
+        /* Options grid */
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
-        
+
         .option-button {
-            padding: 1rem;
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            color: #fff;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            color: var(--text-primary);
             font-size: 1.1rem;
+            font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .option-button:hover::before {
+            left: 100%;
+        }
+
         .option-button:hover {
-            border-color: #0ff;
-            background: rgba(0, 255, 255, 0.1);
+            border-color: var(--accent-purple);
+            background: rgba(156, 136, 255, 0.1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(156, 136, 255, 0.2);
         }
-        
+
+        .option-button:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
         .option-button.correct {
-            background: #22c55e;
-            border-color: #16a34a;
+            background: linear-gradient(135deg, var(--success), var(--accent-green));
+            border-color: var(--success);
+            color: white;
+            font-weight: 600;
         }
-        
+
         .option-button.incorrect {
-            background: #dc2626;
-            border-color: #991b1b;
+            background: linear-gradient(135deg, var(--error), var(--accent-pink));
+            border-color: var(--error);
+            color: white;
+            animation: shake 0.5s;
         }
-        
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Controls */
         .game-controls {
             display: flex;
             justify-content: center;
             gap: 1rem;
         }
-        
+
         .control-button {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #0ff;
-            background: transparent;
-            color: #0ff;
-            border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
-        
+
         .control-button:hover {
-            background: #0ff;
-            color: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(156, 136, 255, 0.3);
         }
-        
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #1a1a1a;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 2rem;
-            border: 2px solid #333;
+
+        .control-button:active {
+            transform: translateY(-1px);
         }
-        
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0ff, #0aa);
-            transition: width 0.3s ease;
-        }
-        
+
+        /* Results panel */
         .results-panel {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(0, 0, 0, 0.95);
-            border: 3px solid #0ff;
-            border-radius: 15px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: none;
+            z-index: 100;
+        }
+
+        .results-panel.visible {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .results-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
             padding: 2rem;
             text-align: center;
-            z-index: 1000;
-            transition: transform 0.3s ease;
+            max-width: 500px;
+            width: 90%;
+            transform: scale(0.9);
+            animation: popIn 0.3s ease forwards;
         }
-        
-        .results-panel.visible {
-            transform: translate(-50%, -50%) scale(1);
+
+        @keyframes popIn {
+            to { transform: scale(1); }
         }
-        
+
+        .results-content h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
         .stars-display {
-            font-size: 3rem;
+            font-size: 2rem;
             margin: 1rem 0;
+        }
+
+        .star {
+            color: var(--warning);
+            margin: 0 0.25rem;
+            animation: starTwinkle 0.5s ease;
+        }
+
+        @keyframes starTwinkle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .results-stats {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .english-word {
+                font-size: 2rem;
+            }
+
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Accessibility improvements */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        :focus-visible {
+            outline: 2px solid var(--accent-purple);
+            outline-offset: 2px;
+        }
+
+        /* High contrast mode support */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-bg: #000000;
+                --secondary-bg: #1a1a1a;
+                --text-primary: #ffffff;
+                --border-color: rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="universe">
-        <div class="stars-bg"></div>
-        
-        <div class="game-container">
-            <button class="back-button control-button" onclick="goHome()">
-                <i class="fas fa-arrow-left"></i> Volver
-            </button>
-            
-            <div class="game-header">
-                <h1>Palabras Básicas</h1>
-                <p>Aprende las 20 palabras más esenciales del inglés</p>
-            </div>
-            
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-            
-            <div class="score-display">
-                <div class="score-item">
-                    <div class="score-label">Puntos</div>
-                    <div class="score-value" id="current-score">0</div>
+    <div class="space-bg"></div>
+    <div class="stars"></div>
+    
+    <div class="game-container">
+        <div class="game-header">
+            <div class="header-content">
+                <a href="../index.php" class="back-button">
+                    <i class="fas fa-arrow-left" aria-hidden="true"></i>
+                    <span>Volver</span>
+                </a>
+                <div class="header-title">
+                    <h1>Palabras Básicas</h1>
+                    <p>Aprende las 20 palabras más esenciales del inglés</p>
                 </div>
-                <div class="score-item">
-                    <div class="score-label">Palabra</div>
-                    <div class="score-value" id="current-word">1</div>
-                </div>
-                <div class="score-item">
-                    <div class="score-label">Correctas</div>
-                    <div class="score-value" id="correct-answers">0</div>
-                </div>
-            </div>
-            
-            <div class="word-display">
-                <div class="english-word" id="english-word"></div>
-                <div class="pronunciation" id="pronunciation"></div>
-            </div>
-            
-            <div class="options-grid" id="options-grid">
-                <!-- Options will be generated here -->
-            </div>
-            
-            <div class="game-controls">
-                <button class="control-button" id="next-button" onclick="nextWord()" style="display: none;">
-                    Siguiente <i class="fas fa-arrow-right"></i>
-                </button>
             </div>
         </div>
         
-        <div class="results-panel" id="results-panel">
-            <h2>¡Juego Completado!</h2>
+        <div class="progress-section">
+            <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <span class="sr-only">Progreso: <span id="progress-text">0</span> de 20 palabras</span>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="current-score">0</div>
+                    <div class="stat-label">Puntos</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="current-word">1</div>
+                    <div class="stat-label">Palabra</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="correct-answers">0</div>
+                    <div class="stat-label">Correctas</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="word-display">
+            <div class="english-word" id="english-word" role="heading" aria-level="2"></div>
+            <div class="pronunciation" id="pronunciation"></div>
+        </div>
+        
+        <div class="options-grid" id="options-grid" role="group" aria-label="Opciones de respuesta">
+            <!-- Options will be generated here -->
+        </div>
+        
+        <div class="game-controls">
+            <button class="control-button" id="next-button" onclick="nextWord()" style="display: none;">
+                <span>Siguiente</span>
+                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="results-panel" id="results-panel" role="dialog" aria-modal="true" aria-labelledby="results-title">
+        <div class="results-content">
+            <h2 id="results-title">¡Juego Completado!</h2>
             <div class="stars-display" id="stars-display"></div>
-            <p>Puntuación Final: <span id="final-score"></span></p>
-            <p>Palabras Correctas: <span id="final-correct"></span>/20</p>
-            <div class="game-controls">
+            <div class="results-stats">
+                <p><strong>Puntuación Final:</strong> <span id="final-score">0</span></p>
+                <p><strong>Palabras Correctas:</strong> <span id="final-correct">0</span>/20</p>
+            </div>
+            <div class="results-actions">
                 <button class="control-button" onclick="restartGame()">
-                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                    <i class="fas fa-redo" aria-hidden="true"></i>
+                    <span>Jugar de Nuevo</span>
                 </button>
                 <button class="control-button" onclick="goHome()">
-                    <i class="fas fa-home"></i> Menú Principal
+                    <i class="fas fa-home" aria-hidden="true"></i>
+                    <span>Menú Principal</span>
                 </button>
             </div>
         </div>
@@ -220,7 +570,7 @@ session_start();
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Game data
+        // Game data (unchanged)
         const vocabulary = [
             { english: 'Hello', spanish: 'Hola', pronunciation: '/həˈloʊ/' },
             { english: 'Goodbye', spanish: 'Adiós', pronunciation: '/ɡʊdˈbaɪ/' },
@@ -249,7 +599,6 @@ session_start();
         let score = 0;
         let correctAnswers = 0;
         let gameCompleted = false;
-        let currentOptions = [];
 
         // Initialize game
         function initGame() {
@@ -288,18 +637,24 @@ session_start();
                 .slice(0, 3);
             
             // Combine and shuffle
-            currentOptions = [...incorrectAnswers, correctAnswer].sort(() => Math.random() - 0.5);
+            const currentOptions = [...incorrectAnswers, correctAnswer].sort(() => Math.random() - 0.5);
             
             // Create option buttons
             const optionsGrid = $('#options-grid');
             optionsGrid.empty();
             
             currentOptions.forEach((option, index) => {
-                const button = $(`<button class="option-button" data-answer="${option}">
+                const button = $(`<button class="option-button" data-answer="${option}" aria-describedby="word-${currentWord}">
                     ${option}
                 </button>`);
                 
                 button.click(() => selectAnswer(option));
+                button.on('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectAnswer(option);
+                    }
+                });
                 optionsGrid.append(button);
             });
         }
@@ -328,9 +683,16 @@ session_start();
                 score += 10;
             }
             
+            // Announce result for screen readers
+            if (isCorrect) {
+                $('body').append('<div aria-live="polite" class="sr-only">Respuesta correcta</div>');
+            } else {
+                $('body').append('<div aria-live="polite" class="sr-only">Respuesta incorrecta. La respuesta correcta es ' + correctAnswer + '</div>');
+            }
+            
             // Show next button
             setTimeout(() => {
-                $('#next-button').show();
+                $('#next-button').show().focus();
             }, 1000);
         }
 
@@ -347,8 +709,10 @@ session_start();
             $('#current-word').text(currentWord + 1);
             $('#correct-answers').text(correctAnswers);
             
-            const progress = ((currentWord + 1) / vocabulary.length) * 100;
+            const progress = ((currentWord) / vocabulary.length) * 100;
             $('#progress-fill').css('width', progress + '%');
+            $('#progress-fill').closest('[role="progressbar"]').attr('aria-valuenow', progress);
+            $('#progress-text').text(currentWord);
         }
 
         // End game
@@ -365,18 +729,20 @@ session_start();
             $('#final-score').text(score);
             $('#final-correct').text(correctAnswers);
             
+            // Create stars display
             let starsHtml = '';
             for (let i = 0; i < 3; i++) {
                 if (i < stars) {
-                    starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
+                    starsHtml += '<i class="fas fa-star star" aria-hidden="true"></i>';
                 } else {
-                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
+                    starsHtml += '<i class="far fa-star" style="color: #444;" aria-hidden="true"></i>';
                 }
             }
             $('#stars-display').html(starsHtml);
             
             // Show results panel
             $('#results-panel').addClass('visible');
+            $('#results-panel button:first').focus();
             
             // Notify parent window about completion
             if (window.opener && window.opener.onGameComplete) {
@@ -398,6 +764,13 @@ session_start();
         // Initialize game on load
         $(document).ready(() => {
             initGame();
+        });
+
+        // Keyboard navigation
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $('#results-panel').hasClass('visible')) {
+                $('#results-panel').removeClass('visible');
+            }
         });
     </script>
 </body>
