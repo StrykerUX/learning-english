@@ -396,9 +396,9 @@ session_start();
             let hintsToShow = [];
             
             // Progressive hint system
-            if (wrongGuesses.length >= 1) {
-                hintsToShow.push(currentHints[0]);
-            }
+            // Always show first hint from the start (0-2 errors)
+            hintsToShow.push(currentHints[0]);
+            
             if (wrongGuesses.length >= 3) {
                 hintsToShow.push(currentHints[1]);
             }
@@ -407,16 +407,12 @@ session_start();
             }
             
             // Update hints display
-            if (hintsToShow.length > 0) {
-                hintsContainer.innerHTML = hintsToShow.map((hint, index) => 
-                    `<div class="hint-item">
-                        <span class="hint-number">💡 Pista ${index + 1}:</span>
-                        <span class="hint-text">${hint}</span>
-                    </div>`
-                ).join('');
-            } else {
-                hintsContainer.innerHTML = '<div class="hint-item"><span class="hint-text">¡Adivina las letras! Las pistas aparecerán después de algunos errores.</span></div>';
-            }
+            hintsContainer.innerHTML = hintsToShow.map((hint, index) => 
+                `<div class="hint-item">
+                    <span class="hint-number">💡 Pista ${index + 1}:</span>
+                    <span class="hint-text">${hint}</span>
+                </div>`
+            ).join('');
         }
 
         // Reveal word when game over
