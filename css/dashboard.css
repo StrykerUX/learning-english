@@ -340,10 +340,10 @@ body {
 
 /* ===== GAME MAP ===== */
 .game-map {
-    padding-top: 120px; /* Aumentado para dar más espacio en la parte superior */
+    padding-top: 180px; /* Aumentado significativamente para dar más espacio */
     min-height: 100vh;
     position: relative;
-    padding-bottom: 40px; /* Espacio extra en la parte inferior */
+    padding-bottom: 100px; /* Aumentado para dar más espacio inferior */
 }
 
 .space-path {
@@ -478,7 +478,7 @@ body {
 
 .level-node.special .node-circle,
 .level-node.special .special-platform {
-    background: var(--orange-pastel); /* Cambiado a naranja pastel para que no destaque tanto */
+    background: transparent; /* Quitamos el fondo naranja */
     border-color: var(--orange-bright);
     box-shadow: var(--shadow-soft); /* Removido el resplandor especial */
 }
@@ -739,7 +739,7 @@ body {
 /* ===== THEORY REMINDER ===== */
 .theory-reminder {
     position: fixed;
-    bottom: 20px;
+    bottom: 60px; /* Subido para dar espacio al footer */
     left: 50%;
     transform: translateX(-50%);
     background: var(--blue-pastel);
@@ -760,6 +760,37 @@ body {
 @keyframes reminderPulse {
     0%, 100% { opacity: 0.9; }
     50% { opacity: 1; }
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(26, 26, 46, 0.95);
+    backdrop-filter: blur(20px);
+    padding: var(--space-sm);
+    text-align: center;
+    z-index: 40;
+    border-top: 1px solid rgba(196, 132, 252, 0.2);
+}
+
+.footer-link {
+    color: var(--purple-bright);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.footer-link:hover {
+    color: var(--pink-bright);
+    transform: translateY(-2px);
+    text-shadow: 0 0 10px rgba(196, 132, 252, 0.5);
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -812,10 +843,19 @@ body {
     
     /* Responsive for theory reminder */
     .theory-reminder {
-        bottom: 10px;
+        bottom: 50px; /* Ajustado para móvil con footer */
         padding: var(--space-xs) var(--space-sm);
         font-size: 0.8rem;
         max-width: 90%;
+    }
+    
+    /* Footer responsive */
+    .footer {
+        padding: var(--space-xs);
+    }
+    
+    .footer-link {
+        font-size: 0.75rem;
     }
 }
 
@@ -853,12 +893,25 @@ body {
     
     .theory-reminder {
         position: fixed;
-        bottom: 0;
+        bottom: 40px; /* Más espacio del footer */
         left: 0;
         right: 0;
         transform: none;
         border-radius: 0;
         border-radius: var(--radius-soft) var(--radius-soft) 0 0;
+        font-size: 0.7rem;
+    }
+    
+    .footer {
+        position: fixed;
+        bottom: 0;
+        padding: 8px;
+    }
+    
+    .footer-link {
+        font-size: 0.7rem;
+        flex-direction: column;
+        gap: 2px;
     }
 }
 

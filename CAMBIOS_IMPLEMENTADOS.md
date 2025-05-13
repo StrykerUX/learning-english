@@ -4,15 +4,18 @@
 
 He implementado todos los cambios solicitados para mejorar la interfaz de English Space:
 
-### 1. ✅ Padding Superior
-- **Problema**: El nivel "Basic Words" estaba cortado y no se podía hacer scroll más arriba
-- **Solución**: Aumenté el `padding-top` del `.game-map` de 80px a 120px y agregué `padding-bottom: 40px` para mayor espacio
+### 1. ✅ Padding Superior e Inferior ACTUALIZADO
+- **Problema**: El nivel "Basic Words" aún estaba cortado y el recordatorio molestaba en la parte inferior
+- **Solución**: 
+  - Aumentado el `padding-top` del `.game-map` de 120px a **180px**
+  - Aumentado el `padding-bottom` de 40px a **100px**
+  - Ajustado el recordatorio para que esté a 60px del fondo (sobre el footer)
 
 ### 2. ✅ Eliminar Recuadro Verde
 - **Problema**: Había un recuadro verde molesto en la parte superior, especialmente visible en móvil
 - **Solución**: 
-  - Agregué reglas CSS para eliminar cualquier border o outline no deseado
-  - Mantuve solo los bordes específicos necesarios para el diseño
+  - Agregadas reglas CSS para eliminar cualquier border o outline no deseado
+  - Mantenidos solo los bordes específicos necesarios para el diseño
   - Si persiste el problema, puede ser causado por algún CSS de browser o extension
 
 ### 3. ✅ Misiones Completadas
@@ -26,32 +29,43 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
 ### 4. ✅ Recordatorio de Teoría
 - **Característica Nueva**: Mensaje recordando al usuario ver la teoría antes de jugar
 - **Diseño**: 
-  - Ubicado en la parte inferior de la pantalla
+  - Ubicado en la parte inferior de la pantalla (sobre el footer)
   - Se puede cerrar haciendo click
   - Se vuelve semi-transparente después de 10 segundos
   - Responsive para móviles
 
-### 5. ✅ Estilos del Nivel 8 (Preposiciones)
-- **Problema**: El nivel 8 se veía demasiado destacado
+### 5. ✅ Estilos del Nivel 8 (Prepositions) ACTUALIZADO
+- **Problema**: El nivel 8 se veía demasiado destacado y tenía fondo naranja
 - **Solución**:
-  - Cambié el color de púrpura a naranja pastel
-  - Removí el resplandor especial
-  - Removí la animación especial (ahora tiene la misma que los otros niveles)
+  - **NUEVO**: Eliminado completamente el fondo naranja (ahora es transparente)
+  - Removido el resplandor especial
+  - Removida la animación especial (ahora tiene la misma que los otros niveles)
   - Mantiene el flujo visual progresivo
+
+### 6. ✅ Footer NUEVO
+- **Característica Nueva**: Footer con enlace a Imstryker
+- **Diseño**:
+  - "Powered by Imstryker" con enlace a https://imstryker.com
+  - Abre en nueva pestaña
+  - Efecto hover con animación
+  - Completamente responsive
+  - Posicionado fijo en la parte inferior
 
 ## Archivos Modificados
 
 1. **`css/dashboard.css`**:
-   - Aumentado padding del game-map
+   - **NUEVO**: Padding aumentado considerablemente (top: 180px, bottom: 100px)
+   - **NUEVO**: Fondo del nivel 8 cambiado a transparente
+   - **NUEVO**: Estilos del footer agregados
    - Reglas para eliminar bordes no deseados
-   - Nuevos estilos para misiones completadas
-   - Nuevos estilos para recordatorio de teoría
-   - Estilos modificados para nivel 8
-   - Mejoras en responsive design
+   - Estilos para misiones completadas
+   - Estilos para recordatorio de teoría
+   - Mejoras en responsive design para móviles
 
 2. **`index.html`**:
    - Agregada sección de misiones completadas
    - Agregado recordatorio de teoría
+   - **NUEVO**: Footer con enlace a Imstryker
 
 3. **`js/dashboard.js`**:
    - Nueva función `updateCompletedMissions()`
@@ -62,11 +76,13 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
 
 1. **Abre el dashboard** en tu navegador
 2. **Verifica**:
-   - El nivel "Basic Words" ya no está cortado
+   - El nivel "Basic Words" ahora se ve completamente sin cortarse
    - No hay recuadro verde visible (si persiste, intenta en modo incógnito)
-   - Aparece el recordatorio de teoría en la parte inferior
+   - Aparece el recordatorio de teoría en la parte inferior (sobre el footer)
    - Completa algunos niveles para ver las misiones completadas en el centro
-   - El nivel 8 tiene un aspecto más coherente con los otros niveles
+   - El nivel 8 no tiene fondo naranja y se ve coherente con los otros niveles
+   - **NUEVO**: Se ve el footer "Powered by Imstryker" que enlaza a la web
+   - El espaciado superior e inferior es más amplio
 
 ## Notas Técnicas
 
@@ -74,6 +90,7 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
 - Se mantiene la funcionalidad de localStorage
 - El diseño es responsive para móviles
 - Se agregaron animaciones sutiles para mejor UX
+- El footer es fijo y no interfiere con la navegación
 
 ## Próximos Pasos
 
