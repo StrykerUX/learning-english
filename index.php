@@ -302,22 +302,7 @@
         </main>
     </div>
 
-    <!-- Modal for game access -->
-    <div id="game-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modal-title">¿Listo para empezar?</h3>
-                <button class="modal-close" id="modal-close">×</button>
-            </div>
-            <div class="modal-body">
-                <p id="modal-description">Estás a punto de empezar el juego.</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" id="modal-cancel">Cancelar</button>
-                <button class="btn primary" id="modal-confirm">Empezar Juego</button>
-            </div>
-        </div>
-    </div>
+
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/main.js"></script>

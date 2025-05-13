@@ -138,6 +138,22 @@ body {
     overflow: hidden;
 }
 
+/* Interactivity indicators */
+.game-card:not(.locked) {
+    cursor: pointer;
+}
+
+.game-card:not(.locked):hover {
+    transform: translateY(-5px);
+    box-shadow: 6px 6px 0px var(--shadow-dark);
+    background: #f8f9fa;
+}
+
+.game-card:not(.locked):active {
+    transform: translateY(-2px);
+    box-shadow: 3px 3px 0px var(--shadow-dark);
+}
+
 .game-card::before {
     content: '';
     position: absolute;
@@ -159,10 +175,7 @@ body {
     transform: translateX(0);
 }
 
-.game-card:hover:not(.locked) {
-    transform: translateY(-5px);
-    box-shadow: 6px 6px 0px var(--shadow-dark);
-}
+
 
 .game-card.locked {
     opacity: 0.6;
