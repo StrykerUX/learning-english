@@ -457,7 +457,7 @@ session_start();
 
         // Go to home
         function goHome() {
-            window.location.href = '../index.php';
+            window.location.href = '../index.html';
         }
 
         // Initialize game on load

@@ -540,7 +540,7 @@ session_start();
     <div class="game-container">
         <div class="game-header">
             <div class="header-content">
-                <a href="../index.php" class="back-button">
+                <a href="../index.html" class="back-button">
                     <i class="fas fa-arrow-left" aria-hidden="true"></i>
                     <span>Volver</span>
                 </a>
@@ -1077,7 +1077,7 @@ session_start();
 
         // Go to home
         function goHome() {
-            window.location.href = '../index.php';
+            window.location.href = '../index.html';
         }
 
         // Initialize game on load
