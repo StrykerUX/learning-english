@@ -1,82 +1,67 @@
-// ===== TESTING MODE FOR USER "STRYKER" =====
-// This module adds a floating testing button when the username is "Stryker"
-// It allows skipping lessons and marking them as completed with 100% score
+// ===== SIMPLE TESTING MODE FOR USER "STRYKER" =====
+// This module adds a simple floating button when the username is "Stryker"
+// It completes the Basic Words level with 2 stars (70% score)
 
-class TestingMode {
+class SimpleTestingMode {
     constructor() {
         this.enabled = false;
         this.button = null;
-        this.panel = null;
-        this.overlay = null;
-        this.selectedLevels = new Set();
-        this.init();
+        this.checkAndInit();
     }
 
-    init() {
-        // Wait for page to load
+    checkAndInit() {
+        // Wait for page to load and localStorage to be available
+        const checkUser = () => {
+            const playerName = localStorage.getItem('playerName') || '';
+            if (playerName.toLowerCase() === 'stryker') {
+                this.enabled = true;
+                this.createButton();
+                console.log('🔧 Simple Testing mode enabled for user: Stryker');
+            }
+        };
+
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.checkUser());
+            document.addEventListener('DOMContentLoaded', checkUser);
         } else {
-            this.checkUser();
+            checkUser();
         }
     }
 
-    checkUser() {
-        // Check if current user is "Stryker"
-        const playerName = localStorage.getItem('playerName') || '';
-        if (playerName.toLowerCase() === 'stryker') {
-            this.enabled = true;
-            this.createUI();
-            console.log('🔧 Testing mode enabled for user: Stryker');
-        }
-    }
-
-    createUI() {
-        // Create floating button
-        this.createFloatingButton();
-        
-        // Create control panel
-        this.createControlPanel();
-        
-        // Add keyboard shortcut (Ctrl+T)
-        this.addKeyboardShortcut();
-    }
-
-    createFloatingButton() {
+    createButton() {
         this.button = document.createElement('div');
-        this.button.className = 'testing-floating-button';
+        this.button.className = 'simple-testing-button';
         this.button.innerHTML = `
-            <i class="fas fa-flask"></i>
-            <span class="testing-tooltip">Testing Mode</span>
+            <i class="fas fa-magic"></i>
+            <span class="testing-tooltip">Complete Basic Words</span>
         `;
         
         // Add styles
         const style = document.createElement('style');
         style.textContent = `
-            .testing-floating-button {
+            .simple-testing-button {
                 position: fixed;
                 bottom: 30px;
                 right: 30px;
                 width: 60px;
                 height: 60px;
-                background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+                background: linear-gradient(135deg, #10b981, #047857);
                 border-radius: 50%;
-                box-shadow: 0 4px 20px rgba(255, 107, 107, 0.4);
+                box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
                 z-index: 9999;
                 transition: all 0.3s ease;
-                animation: testingPulse 2s infinite ease-in-out;
+                animation: simplePulse 2s infinite ease-in-out;
             }
             
-            .testing-floating-button:hover {
+            .simple-testing-button:hover {
                 transform: scale(1.1);
-                box-shadow: 0 6px 25px rgba(255, 107, 107, 0.6);
+                box-shadow: 0 6px 25px rgba(16, 185, 129, 0.6);
             }
             
-            .testing-floating-button i {
+            .simple-testing-button i {
                 color: white;
                 font-size: 24px;
             }
@@ -109,12 +94,12 @@ class TestingMode {
                 border-top: 5px solid #333;
             }
             
-            .testing-floating-button:hover .testing-tooltip {
+            .simple-testing-button:hover .testing-tooltip {
                 opacity: 1;
                 visibility: visible;
             }
             
-            @keyframes testingPulse {
+            @keyframes simplePulse {
                 0% { transform: scale(1); }
                 50% { transform: scale(1.05); }
                 100% { transform: scale(1); }
@@ -125,604 +110,96 @@ class TestingMode {
         document.body.appendChild(this.button);
         
         // Add click handler
-        this.button.addEventListener('click', () => this.togglePanel());
+        this.button.addEventListener('click', () => this.completeBasicWords());
     }
 
-    createControlPanel() {
-        this.panel = document.createElement('div');
-        this.panel.className = 'testing-control-panel';
-        this.panel.innerHTML = `
-            <div class="testing-panel-header">
-                <h3><i class="fas fa-flask"></i> Testing Mode</h3>
-                <button class="testing-close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="testing-panel-content">
-                <div class="testing-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <p>Use this panel to quickly test lesson completion without doing the actual exercises.</p>
-                </div>
-                
-                <div class="testing-controls">
-                    <h4>Select Levels to Complete</h4>
-                    <div class="testing-selection-controls">
-                        <button class="testing-btn testing-btn-secondary" id="selectAllBtn">
-                            <i class="fas fa-check-square"></i>
-                            Select All
-                        </button>
-                        <button class="testing-btn testing-btn-secondary" id="deselectAllBtn">
-                            <i class="fas fa-square"></i>
-                            Deselect All
-                        </button>
-                    </div>
-                    <div class="testing-level-grid" id="testingLevelGrid">
-                        <!-- Levels will be generated here -->
-                    </div>
-                    
-                    <h4>Actions</h4>
-                    <div class="testing-bulk-actions">
-                        <button class="testing-btn testing-btn-success" id="completeSelectedBtn">
-                            <i class="fas fa-check"></i>
-                            Complete Selected
-                        </button>
-                        <button class="testing-btn testing-btn-primary" id="completeAllBtn">
-                            <i class="fas fa-check-double"></i>
-                            Complete All Levels
-                        </button>
-                        <button class="testing-btn testing-btn-warning" id="resetAllBtn">
-                            <i class="fas fa-undo"></i>
-                            Reset All Progress
-                        </button>
-                    </div>
-                    
-                    <h4>Quick Stats</h4>
-                    <div class="testing-stats">
-                        <div class="testing-stat-item">
-                            <span>Total Stars:</span>
-                            <span id="testingStatsStars">0</span>
-                        </div>
-                        <div class="testing-stat-item">
-                            <span>Total Points:</span>
-                            <span id="testingStatsPoints">0</span>
-                        </div>
-                        <div class="testing-stat-item">
-                            <span>Completed Levels:</span>
-                            <span id="testingStatsCompleted">0/8</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-        
-        // Add panel styles
-        const panelStyle = document.createElement('style');
-        panelStyle.textContent = `
-            .testing-control-panel {
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 600px;
-                max-width: 90vw;
-                max-height: 80vh;
-                background: #2d3748;
-                border-radius: 15px;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-                z-index: 10000;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-                overflow: hidden;
+    completeBasicWords() {
+        // Check if already completed
+        const completedLevels = JSON.parse(localStorage.getItem('completedLevels') || '{}');
+        if (completedLevels['1']) {
+            if (confirm('El nivel Basic Words ya está completado. ¿Quieres completarlo de nuevo?')) {
+                this.markAsCompleted();
             }
-            
-            .testing-control-panel.show {
-                opacity: 1;
-                visibility: visible;
-            }
-            
-            .testing-panel-header {
-                background: #1a202c;
-                padding: 15px 20px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-            
-            .testing-panel-header h3 {
-                color: #ff6b6b;
-                margin: 0;
-                font-size: 18px;
-            }
-            
-            .testing-close-btn {
-                background: none;
-                border: none;
-                color: #a0aec0;
-                font-size: 18px;
-                cursor: pointer;
-                padding: 5px;
-                border-radius: 5px;
-                transition: all 0.2s ease;
-            }
-            
-            .testing-close-btn:hover {
-                background: #4a5568;
-                color: white;
-            }
-            
-            .testing-panel-content {
-                padding: 20px;
-                color: #e2e8f0;
-                max-height: calc(80vh - 70px);
-                overflow-y: auto;
-            }
-            
-            .testing-warning {
-                background: #fed7d7;
-                color: #c53030;
-                padding: 12px;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-            
-            .testing-controls h4 {
-                color: #81c784;
-                margin: 20px 0 10px 0;
-                font-size: 16px;
-            }
-            
-            .testing-selection-controls {
-                display: flex;
-                gap: 10px;
-                margin-bottom: 15px;
-            }
-            
-            .testing-level-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 10px;
-                margin-bottom: 20px;
-            }
-            
-            .testing-level-item {
-                background: #4a5568;
-                padding: 15px;
-                border-radius: 8px;
-                border: 2px solid transparent;
-                transition: all 0.2s ease;
-            }
-            
-            .testing-level-item.selected {
-                border-color: #68d391;
-                background: #2d5a41;
-            }
-            
-            .testing-level-checkbox {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-                margin-bottom: 10px;
-                cursor: pointer;
-            }
-            
-            .testing-level-checkbox input[type="checkbox"] {
-                width: 18px;
-                height: 18px;
-                cursor: pointer;
-            }
-            
-            .testing-level-checkbox label {
-                color: #fff;
-                font-size: 14px;
-                font-weight: 600;
-                cursor: pointer;
-            }
-            
-            .testing-level-status {
-                margin-bottom: 10px;
-                font-size: 12px;
-            }
-            
-            .testing-level-status.completed {
-                color: #68d391;
-            }
-            
-            .testing-level-status.incomplete {
-                color: #fc8181;
-            }
-            
-            .testing-bulk-actions {
-                display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            
-            .testing-btn {
-                padding: 10px 16px;
-                border: none;
-                border-radius: 6px;
-                cursor: pointer;
-                font-size: 14px;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .testing-btn-success {
-                background: #68d391;
-                color: #22543d;
-            }
-            
-            .testing-btn-success:hover {
-                background: #48bb78;
-            }
-            
-            .testing-btn-warning {
-                background: #fbd38d;
-                color: #744210;
-            }
-            
-            .testing-btn-warning:hover {
-                background: #f6ad55;
-            }
-            
-            .testing-btn-primary {
-                background: #63b3ed;
-                color: #2b6cb7;
-            }
-            
-            .testing-btn-primary:hover {
-                background: #4299e1;
-            }
-            
-            .testing-btn-secondary {
-                background: #a0aec0;
-                color: #2d3748;
-            }
-            
-            .testing-btn-secondary:hover {
-                background: #718096;
-            }
-            
-            .testing-stats {
-                background: #4a5568;
-                padding: 15px;
-                border-radius: 8px;
-            }
-            
-            .testing-stat-item {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 8px;
-            }
-            
-            .testing-stat-item:last-child {
-                margin-bottom: 0;
-            }
-            
-            /* Overlay */
-            .testing-overlay {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                z-index: 9999;
-                opacity: 0;
-                visibility: hidden;
-                transition: all 0.3s ease;
-            }
-            
-            .testing-overlay.show {
-                opacity: 1;
-                visibility: visible;
-            }
-        `;
-        
-        document.head.appendChild(panelStyle);
-        document.body.appendChild(this.panel);
-        
-        // Create overlay
-        this.overlay = document.createElement('div');
-        this.overlay.className = 'testing-overlay';
-        this.overlay.addEventListener('click', () => this.togglePanel());
-        document.body.appendChild(this.overlay);
-        
-        // Add event listeners
-        this.setupEventListeners();
-        
-        // Generate level grid
-        this.generateLevelGrid();
-        this.updateStats();
-    }
-
-    setupEventListeners() {
-        // Close button
-        const closeBtn = this.panel.querySelector('.testing-close-btn');
-        closeBtn.addEventListener('click', () => this.togglePanel());
-        
-        // Select All button
-        const selectAllBtn = this.panel.querySelector('#selectAllBtn');
-        selectAllBtn.addEventListener('click', () => this.selectAllLevels());
-        
-        // Deselect All button
-        const deselectAllBtn = this.panel.querySelector('#deselectAllBtn');
-        deselectAllBtn.addEventListener('click', () => this.deselectAllLevels());
-        
-        // Complete Selected button
-        const completeSelectedBtn = this.panel.querySelector('#completeSelectedBtn');
-        completeSelectedBtn.addEventListener('click', () => this.completeSelectedLevels());
-        
-        // Complete All button
-        const completeAllBtn = this.panel.querySelector('#completeAllBtn');
-        completeAllBtn.addEventListener('click', () => this.completeAllLevels());
-        
-        // Reset All button
-        const resetAllBtn = this.panel.querySelector('#resetAllBtn');
-        resetAllBtn.addEventListener('click', () => this.resetAllProgress());
-    }
-
-    generateLevelGrid() {
-        const grid = document.getElementById('testingLevelGrid');
-        if (!grid) return;
-        
-        grid.innerHTML = '';
-        this.selectedLevels.clear();
-        
-        // Get gameState from global scope
-        const gameState = window.gameState;
-        const LEVELS_CONFIG = window.LEVELS_CONFIG;
-        
-        if (!gameState || !LEVELS_CONFIG) {
-            console.warn('GameState or LEVELS_CONFIG not available');
-            return;
-        }
-        
-        for (let level = 1; level <= 8; level++) {
-            const config = LEVELS_CONFIG[level];
-            const isCompleted = gameState.isLevelCompleted(level);
-            const stars = gameState.getLevelStars(level);
-            
-            const levelItem = document.createElement('div');
-            levelItem.className = 'testing-level-item';
-            levelItem.innerHTML = `
-                <div class="testing-level-checkbox">
-                    <input type="checkbox" id="level-${level}" value="${level}">
-                    <label for="level-${level}">${config.nameEs}</label>
-                </div>
-                <div class="testing-level-status ${isCompleted ? 'completed' : 'incomplete'}">
-                    ${isCompleted ? `✅ Completado (${stars} estrellas)` : '❌ No completado'}
-                </div>
-            `;
-            
-            // Add checkbox event listener
-            const checkbox = levelItem.querySelector('input[type="checkbox"]');
-            checkbox.addEventListener('change', (e) => {
-                if (e.target.checked) {
-                    this.selectedLevels.add(level);
-                    levelItem.classList.add('selected');
-                } else {
-                    this.selectedLevels.delete(level);
-                    levelItem.classList.remove('selected');
-                }
-                this.updateButtonStates();
-            });
-            
-            grid.appendChild(levelItem);
-        }
-        
-        this.updateButtonStates();
-    }
-
-    selectAllLevels() {
-        this.selectedLevels.clear();
-        const checkboxes = this.panel.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = true;
-            const level = parseInt(checkbox.value);
-            this.selectedLevels.add(level);
-            checkbox.closest('.testing-level-item').classList.add('selected');
-        });
-        this.updateButtonStates();
-    }
-
-    deselectAllLevels() {
-        this.selectedLevels.clear();
-        const checkboxes = this.panel.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = false;
-            checkbox.closest('.testing-level-item').classList.remove('selected');
-        });
-        this.updateButtonStates();
-    }
-
-    updateButtonStates() {
-        const completeSelectedBtn = this.panel.querySelector('#completeSelectedBtn');
-        completeSelectedBtn.disabled = this.selectedLevels.size === 0;
-        
-        if (this.selectedLevels.size === 0) {
-            completeSelectedBtn.style.opacity = '0.5';
-            completeSelectedBtn.style.cursor = 'not-allowed';
         } else {
-            completeSelectedBtn.style.opacity = '1';
-            completeSelectedBtn.style.cursor = 'pointer';
-        }
-    }
-
-    updateStats() {
-        const gameState = window.gameState;
-        if (!gameState) return;
-        
-        document.getElementById('testingStatsStars').textContent = gameState.totalStars;
-        document.getElementById('testingStatsPoints').textContent = gameState.totalPoints;
-        
-        const completedCount = Object.keys(gameState.completedLevels).length;
-        document.getElementById('testingStatsCompleted').textContent = `${completedCount}/8`;
-    }
-
-    togglePanel() {
-        if (this.panel.classList.contains('show')) {
-            this.panel.classList.remove('show');
-            this.overlay.classList.remove('show');
-        } else {
-            this.panel.classList.add('show');
-            this.overlay.classList.add('show');
-            this.updateStats();
-            this.generateLevelGrid();
-        }
-    }
-
-    completeLevel(level) {
-        if (!confirm(`¿Completar el Nivel ${level} con 100% de aciertos?`)) {
-            return;
-        }
-        
-        const gameState = window.gameState;
-        gameState.completeLevel(level, 100, 3); // 100 points, 3 stars
-        
-        // Update UI if functions are available
-        if (typeof window.updateUI === 'function') {
-            window.updateUI();
-        }
-        if (typeof window.setupLevelNodes === 'function') {
-            window.setupLevelNodes();
-        }
-        if (typeof window.positionPlayerShip === 'function') {
-            window.positionPlayerShip();
-        }
-        
-        this.updateStats();
-        this.generateLevelGrid();
-        
-        // Show notification if available
-        if (typeof window.showNotification === 'function') {
-            window.showNotification(`Nivel ${level} completado exitosamente!`, 'success');
-        }
-    }
-
-    completeSelectedLevels() {
-        if (this.selectedLevels.size === 0) {
-            alert('No has seleccionado ningún nivel.');
-            return;
-        }
-        
-        const levelList = Array.from(this.selectedLevels).join(', ');
-        if (!confirm(`¿Completar los niveles ${levelList} con 100% de aciertos?`)) {
-            return;
-        }
-        
-        const gameState = window.gameState;
-        
-        this.selectedLevels.forEach(level => {
-            gameState.completeLevel(level, 100, 3);
-        });
-        
-        // Update UI
-        if (typeof window.updateUI === 'function') {
-            window.updateUI();
-        }
-        if (typeof window.setupLevelNodes === 'function') {
-            window.setupLevelNodes();
-        }
-        if (typeof window.positionPlayerShip === 'function') {
-            window.positionPlayerShip();
-        }
-        
-        this.updateStats();
-        this.generateLevelGrid();
-        
-        if (typeof window.showNotification === 'function') {
-            window.showNotification(`${this.selectedLevels.size} niveles completados exitosamente!`, 'success');
-        }
-    }
-
-    completeAllLevels() {
-        if (!confirm('¿Completar TODOS los niveles con 100% de aciertos? Esta acción no se puede deshacer.')) {
-            return;
-        }
-        
-        const gameState = window.gameState;
-        
-        for (let level = 1; level <= 8; level++) {
-            gameState.completeLevel(level, 100, 3);
-        }
-        
-        // Update UI
-        if (typeof window.updateUI === 'function') {
-            window.updateUI();
-        }
-        if (typeof window.setupLevelNodes === 'function') {
-            window.setupLevelNodes();
-        }
-        if (typeof window.positionPlayerShip === 'function') {
-            window.positionPlayerShip();
-        }
-        
-        this.updateStats();
-        this.generateLevelGrid();
-        
-        if (typeof window.showNotification === 'function') {
-            window.showNotification('¡Todos los niveles completados exitosamente!', 'success');
-        }
-    }
-
-    resetAllProgress() {
-        if (!confirm('¿Estás seguro de que quieres resetear TODO el progreso? Esta acción no se puede deshacer.')) {
-            return;
-        }
-        
-        // Clear all level-related localStorage
-        localStorage.removeItem('completedLevels');
-        localStorage.removeItem('levelStars');
-        localStorage.removeItem('levelBestScores');
-        localStorage.removeItem('totalStars');
-        localStorage.removeItem('totalPoints');
-        localStorage.setItem('highestUnlocked', '1');
-        
-        // Reload the page to reinitialize
-        if (typeof window.showNotification === 'function') {
-            window.showNotification('Progreso reseteado. Recargando página...', 'warning');
-        }
-        
-        setTimeout(() => {
-            location.reload();
-        }, 1500);
-    }
-
-    addKeyboardShortcut() {
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+T to toggle testing panel
-            if (e.ctrlKey && e.key === 't') {
-                e.preventDefault();
-                this.togglePanel();
+            if (confirm('¿Completar el nivel Basic Words con 2 estrellas (70% de aciertos)?')) {
+                this.markAsCompleted();
             }
-        });
+        }
+    }
+
+    markAsCompleted() {
+        try {
+            // Get current data
+            let completedLevels = JSON.parse(localStorage.getItem('completedLevels') || '{}');
+            let levelStars = JSON.parse(localStorage.getItem('levelStars') || '{}');
+            let levelBestScores = JSON.parse(localStorage.getItem('levelBestScores') || '{}');
+            let totalPoints = parseInt(localStorage.getItem('totalPoints') || '0');
+            let totalStars = parseInt(localStorage.getItem('totalStars') || '0');
+            let highestUnlocked = parseInt(localStorage.getItem('highestUnlocked') || '1');
+
+            // Mark level 1 as completed with 2 stars
+            const wasCompleted = completedLevels['1'];
+            const oldStars = levelStars['1'] || 0;
+            const oldScore = levelBestScores['1'] || 0;
+
+            completedLevels['1'] = true;
+            levelStars['1'] = 2; // 2 stars for 70% score
+            levelBestScores['1'] = 70; // 70% score
+
+            // Update totals only if not already counted
+            if (!wasCompleted) {
+                totalPoints += 70;
+                totalStars += 2;
+                highestUnlocked = Math.max(highestUnlocked, 2); // Unlock level 2
+            } else {
+                // If already completed, adjust totals
+                totalPoints = totalPoints - oldScore + 70;
+                totalStars = totalStars - oldStars + 2;
+            }
+
+            // Recalculate total stars from all levels
+            totalStars = Object.values(levelStars).reduce((sum, stars) => sum + (parseInt(stars) || 0), 0);
+
+            // Save to localStorage
+            localStorage.setItem('completedLevels', JSON.stringify(completedLevels));
+            localStorage.setItem('levelStars', JSON.stringify(levelStars));
+            localStorage.setItem('levelBestScores', JSON.stringify(levelBestScores));
+            localStorage.setItem('totalPoints', totalPoints.toString());
+            localStorage.setItem('totalStars', totalStars.toString());
+            localStorage.setItem('highestUnlocked', highestUnlocked.toString());
+
+            // Show confirmation
+            alert('✅ Basic Words completado con 2 estrellas! Recarga la página para ver los cambios.');
+
+            // If we're on the main page, try to update the UI
+            if (typeof window.gameState !== 'undefined') {
+                setTimeout(() => {
+                    location.reload();
+                }, 500);
+            }
+
+        } catch (error) {
+            console.error('Error completing level:', error);
+            alert('❌ Error al completar el nivel. Inténtalo de nuevo.');
+        }
     }
 }
 
-// Global variable to store the testing mode instance
-window.testingMode = null;
+// Global variable
+window.simpleTestingMode = null;
 
-// Initialize testing mode when DOM is ready
-function initTestingMode() {
-    if (window.testingMode) return; // Already initialized
-    
-    window.testingMode = new TestingMode();
+// Initialize when ready
+function initSimpleTestingMode() {
+    if (window.simpleTestingMode) return;
+    window.simpleTestingMode = new SimpleTestingMode();
 }
 
-// Multiple initialization attempts to ensure it loads
+// Multiple init attempts
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initTestingMode);
+    document.addEventListener('DOMContentLoaded', initSimpleTestingMode);
 } else {
-    initTestingMode();
+    initSimpleTestingMode();
 }
 
-// Fallback initialization
-setTimeout(initTestingMode, 500);
-setTimeout(initTestingMode, 1000);
+// Fallback
+setTimeout(initSimpleTestingMode, 500);

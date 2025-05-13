@@ -1,27 +1,35 @@
 <?php
-// Incluir el script de testing mode en todas las páginas
+// Incluir el script de testing mode simplificado
 ?>
 <script>
-// Verificar la ruta correcta dependiendo de dónde estamos
-const currentPath = window.location.pathname;
-let scriptPath = '../js/testing-mode.js';
-
-// Si estamos en el directorio raíz, ajustar la ruta
-if (currentPath === '/' || currentPath.includes('index.html')) {
-    scriptPath = 'js/testing-mode.js';
-}
-
-// Verificar si el testing mode ya está cargado
-if (typeof TestingMode === 'undefined') {
-    // Create a script element to load testing-mode.js
+// Simple include for testing mode
+(function() {
+    // Check if already loaded
+    if (document.getElementById('testing-mode-script')) {
+        return;
+    }
+    
+    // Create script element
     const script = document.createElement('script');
-    script.src = scriptPath;
+    script.id = 'testing-mode-script';
+    
+    // Determine correct path
+    const currentPath = window.location.pathname;
+    if (currentPath === '/' || currentPath.includes('index.html')) {
+        script.src = 'js/testing-mode.js';
+    } else {
+        script.src = '../js/testing-mode.js';
+    }
+    
     script.onload = function() {
-        console.log('Testing mode script loaded successfully');
+        console.log('Simple testing mode loaded');
     };
+    
     script.onerror = function() {
-        console.error('Failed to load testing mode script');
+        console.error('Failed to load testing mode');
     };
+    
+    // Append to head
     document.head.appendChild(script);
-}
+})();
 </script>
