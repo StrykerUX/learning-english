@@ -227,6 +227,46 @@
             </div>
         </main>
         
+        <!-- Level Info Panel -->
+        <div class="level-panel" id="levelPanel">
+            <div class="panel-header">
+                <h3 id="panelTitle">Level Name</h3>
+                <button class="panel-close" onclick="closeLevelPanel()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="panel-content">
+                <div class="level-icon" id="panelIcon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <p id="panelDescription">Level description goes here...</p>
+                <div class="panel-stats">
+                    <div class="stat">
+                        <span class="stat-label">Best Score</span>
+                        <span class="stat-value" id="panelBestScore">0</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Stars</span>
+                        <div class="stars-display" id="panelStars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-actions">
+                    <button class="btn-theory" id="btnTheory" onclick="openTheory()">
+                        <i class="fas fa-book"></i>
+                        <span>Theory</span>
+                    </button>
+                    <button class="btn-play" id="btnPlay" onclick="playLevel()">
+                        <i class="fas fa-play"></i>
+                        <span>Play</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
         <!-- Notification -->
         <div class="notification" id="notification">
             <div class="notification-content">
