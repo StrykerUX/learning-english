@@ -3,201 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Trainer - Learning Adventure</title>
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Font Awesome for icons -->
+    <title>English Space Explorer - Learning Adventure</title>
+    <link rel="stylesheet" href="css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Righteous:wght@400&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="adventure-world">
-        <!-- Header -->
-        <header class="adventure-header">
-            <div class="header-content">
-                <div class="app-logo">
-                    <i class="fas fa-graduation-cap"></i>
-                    <h1>English Adventure</h1>
+    <!-- Starfield Background -->
+    <div class="starfield" id="starfield"></div>
+    
+    <!-- Floating Asteroids -->
+    <div class="asteroids" id="asteroids"></div>
+    
+    <!-- Welcome Modal -->
+    <div class="welcome-modal" id="welcomeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <i class="fas fa-rocket"></i>
+                <h2>¡Bienvenido al Espacio del Inglés!</h2>
+            </div>
+            <div class="modal-body">
+                <p>Antes de comenzar tu aventura espacial, ¿cómo te gustaría que te llamen, explorador?</p>
+                <div class="input-container">
+                    <input type="text" id="playerName" placeholder="Tu nombre de explorador..." maxlength="15">
+                    <button class="btn-start" onclick="startJourney()">
+                        <span>Comenzar Aventura</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
-                <div class="stats-container">
-                    <div class="stat-bubble stars">
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="space-container">
+        <!-- Header Stats -->
+        <header class="space-header">
+            <div class="header-left">
+                <div class="logo">
+                    <i class="fas fa-rocket"></i>
+                    <h1>English Space</h1>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="stat-panel">
+                    <div class="stat-item stars">
                         <i class="fas fa-star"></i>
-                        <span id="total-stars">0</span>
+                        <span id="totalStars">0</span>
                     </div>
-                    <div class="stat-bubble coins">
-                        <i class="fas fa-coins"></i>
-                        <span id="total-points">130</span>
+                    <div class="stat-item points">
+                        <i class="fas fa-gem"></i>
+                        <span id="totalPoints">0</span>
                     </div>
-                    <div class="stat-bubble achievements">
-                        <i class="fas fa-trophy"></i>
-                        <span id="total-achievements">0</span>/<span>8</span>
+                    <div class="stat-item player">
+                        <i class="fas fa-user-astronaut"></i>
+                        <span id="playerNameDisplay">Explorador</span>
                     </div>
                 </div>
             </div>
         </header>
-
-        <!-- World Background -->
-        <div class="world-bg">
-            <div class="clouds cloud-1"></div>
-            <div class="clouds cloud-2"></div>
-            <div class="clouds cloud-3"></div>
-        </div>
-
-        <!-- Game World Map -->
-        <main class="world-map">
-            <!-- Adventure Path -->
-            <svg class="adventure-path" width="100%" height="600" viewBox="0 0 1200 600">
-                <path d="M 100 500 Q 300 400 500 450 Q 700 500 900 400 Q 1000 350 1100 300" 
-                      stroke="#8B5CF6" 
-                      stroke-width="8" 
+        
+        <!-- Game Map -->
+        <main class="game-map">
+            <svg class="space-path" viewBox="0 0 1200 1400" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="pathGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#e879f9;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#c084fc;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                
+                <!-- Space Path -->
+                <path d="M 600 1350 L 600 1200 L 300 1000 L 900 800 L 200 600 L 800 400 L 400 200 L 600 50" 
+                      stroke="url(#pathGradient)" 
+                      stroke-width="6" 
                       fill="none" 
-                      stroke-linecap="round"
-                      stroke-dasharray="20,10"
-                      opacity="0.5"/>
+                      stroke-dasharray="10,5"
+                      class="animated-path"
+                      filter="url(#glow)"/>
             </svg>
             
             <!-- Level Nodes -->
             <div class="level-nodes">
-                <!-- Level 1: Words -->
-                <div class="level-node unlocked" data-level="1" style="left: 5%; top: 70%;">
-                    <div class="node-circle">
-                        <i class="fas fa-book-open"></i>
-                        <span class="node-number">1</span>
-                    </div>
-                    <div class="node-label">Words</div>
-                    <div class="node-stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Level 2: Memory -->
-                <div class="level-node locked" data-level="2" style="left: 25%; top: 60%;">
-                    <div class="node-circle">
-                        <i class="fas fa-puzzle-piece"></i>
-                        <span class="node-number">2</span>
-                    </div>
-                    <div class="node-label">Memory</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
+                <!-- Level 1: Basic Words -->
+                <div class="level-node unlocked" data-level="1" style="left: 50%; top: 92%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-book-open"></i>
+                            <span class="level-number">1</span>
+                        </div>
+                        <div class="node-label">Words</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Level 3: Spelling -->
-                <div class="level-node locked" data-level="3" style="left: 40%; top: 65%;">
-                    <div class="node-circle">
-                        <i class="fas fa-spell-check"></i>
-                        <span class="node-number">3</span>
-                    </div>
-                    <div class="node-label">Spelling</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Level 4: Present -->
-                <div class="level-node locked" data-level="4" style="left: 58%; top: 60%;">
-                    <div class="node-circle">
-                        <i class="fas fa-clock"></i>
-                        <span class="node-number">4</span>
-                    </div>
-                    <div class="node-label">Present</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
+                
+                <!-- Level 2: Memory Game -->
+                <div class="level-node locked" data-level="2" style="left: 25%; top: 78%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-puzzle-piece"></i>
+                            <span class="level-number">2</span>
+                        </div>
+                        <div class="node-label">Memory</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Level 5: Continuous -->
-                <div class="level-node locked" data-level="5" style="left: 70%; top: 70%;">
-                    <div class="node-circle">
-                        <i class="fas fa-running"></i>
-                        <span class="node-number">5</span>
-                    </div>
-                    <div class="node-label">Continuous</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Level 6: Past -->
-                <div class="level-node locked" data-level="6" style="left: 82%; top: 60%;">
-                    <div class="node-circle">
-                        <i class="fas fa-history"></i>
-                        <span class="node-number">6</span>
-                    </div>
-                    <div class="node-label">Past</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
+                
+                <!-- Level 3: Hangman -->
+                <div class="level-node locked" data-level="3" style="left: 75%; top: 64%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-spell-check"></i>
+                            <span class="level-number">3</span>
+                        </div>
+                        <div class="node-label">Spelling</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Level 7: Future -->
-                <div class="level-node locked" data-level="7" style="left: 90%; top: 50%;">
-                    <div class="node-circle">
-                        <i class="fas fa-rocket"></i>
-                        <span class="node-number">7</span>
-                    </div>
-                    <div class="node-label">Future</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                    </div>
-                </div>
-
-                <!-- Level 8: Positions -->
-                <div class="level-node locked special-level" data-level="8" style="left: 95%; top: 35%;">
-                    <div class="node-circle">
-                        <i class="fas fa-location-arrow"></i>
-                        <span class="node-number">8</span>
-                    </div>
-                    <div class="node-label">Positions</div>
-                    <div class="node-stars">
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
-                        <i class="far fa-star"></i>
+                
+                <!-- Level 4: Present Simple -->
+                <div class="level-node locked" data-level="4" style="left: 17%; top: 50%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-clock"></i>
+                            <span class="level-number">4</span>
+                        </div>
+                        <div class="node-label">Present</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
                     </div>
                 </div>
-
-                <!-- Player Character -->
-                <div class="player-character" style="left: 12%; top: 67%;">
-                    <i class="fas fa-user-graduate"></i>
+                
+                <!-- Level 5: Present Continuous -->
+                <div class="level-node locked" data-level="5" style="left: 67%; top: 36%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-running"></i>
+                            <span class="level-number">5</span>
+                        </div>
+                        <div class="node-label">Continuous</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Level 6: Past Simple -->
+                <div class="level-node locked" data-level="6" style="left: 33%; top: 22%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-history"></i>
+                            <span class="level-number">6</span>
+                        </div>
+                        <div class="node-label">Past</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Level 7: Future Simple -->
+                <div class="level-node locked" data-level="7" style="left: 75%; top: 8%;">
+                    <div class="node-platform">
+                        <div class="node-circle">
+                            <i class="fas fa-rocket"></i>
+                            <span class="level-number">7</span>
+                        </div>
+                        <div class="node-label">Future</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Level 8: Prepositions (Special) -->
+                <div class="level-node locked special" data-level="8" style="left: 50%; top: 4%;">
+                    <div class="node-platform special-platform">
+                        <div class="node-circle special-circle">
+                            <i class="fas fa-location-arrow"></i>
+                            <span class="level-number">8</span>
+                        </div>
+                        <div class="node-label">Positions</div>
+                        <div class="node-stars">
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                            <i class="far fa-star"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Player Spaceship -->
+                <div class="player-spaceship" id="playerShip">
+                    <i class="fas fa-rocket"></i>
                 </div>
             </div>
         </main>
-
-        <!-- Level Panel (initially hidden) -->
-        <div class="level-panel" id="level-panel">
+        
+        <!-- Level Info Panel -->
+        <div class="level-panel" id="levelPanel">
             <div class="panel-header">
-                <button class="close-btn">
+                <h3 id="panelTitle">Level Name</h3>
+                <button class="panel-close" onclick="closeLevelPanel()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             <div class="panel-content">
-                <div class="level-icon-big">
+                <div class="level-icon" id="panelIcon">
                     <i class="fas fa-book-open"></i>
                 </div>
-                <h2>Level Name</h2>
-                <p>Level description goes here</p>
-                <div class="level-stats">
-                    <div class="stat-item">
-                        <span>Best Score</span>
-                        <span>0</span>
+                <p id="panelDescription">Level description goes here...</p>
+                <div class="panel-stats">
+                    <div class="stat">
+                        <span class="stat-label">Best Score</span>
+                        <span class="stat-value" id="panelBestScore">0</span>
                     </div>
-                    <div class="stat-item">
-                        <span>Stars</span>
-                        <div class="stars-display">
+                    <div class="stat">
+                        <span class="stat-label">Stars</span>
+                        <div class="stars-display" id="panelStars">
                             <i class="far fa-star"></i>
                             <i class="far fa-star"></i>
                             <i class="far fa-star"></i>
@@ -205,20 +255,27 @@
                     </div>
                 </div>
                 <div class="panel-actions">
-                    <button class="action-btn theory-btn">
+                    <button class="btn-theory" id="btnTheory" onclick="openTheory()">
                         <i class="fas fa-book"></i>
-                        Theory
+                        <span>Theory</span>
                     </button>
-                    <button class="action-btn play-btn">
+                    <button class="btn-play" id="btnPlay" onclick="playLevel()">
                         <i class="fas fa-play"></i>
-                        Play
+                        <span>Play</span>
                     </button>
                 </div>
             </div>
         </div>
+        
+        <!-- Notification -->
+        <div class="notification" id="notification">
+            <div class="notification-content">
+                <i class="notification-icon"></i>
+                <span class="notification-text"></span>
+            </div>
+        </div>
     </div>
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/main.js"></script>
+    
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
