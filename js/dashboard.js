@@ -178,6 +178,9 @@ const levelPanel = document.getElementById('levelPanel');
 const notification = document.getElementById('notification');
 const playerShip = document.getElementById('playerShip');
 
+// Forzar que todos los niveles estén desbloqueados al iniciar
+gameState.highestUnlocked = 8;
+
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', () => {
     createStarfield();
@@ -265,6 +268,11 @@ function initializeDashboard() {
     if (isInitialized) return;
     
     console.log('Initializing dashboard...');
+    
+    // Forzar que todos los niveles estén desbloqueados para MVP
+    gameState.highestUnlocked = 8;
+    gameState.save();
+    
     console.log('Current gameState:', {
         completedLevels: gameState.completedLevels,
         totalStars: gameState.totalStars,
@@ -307,29 +315,14 @@ function setupLevelNodes() {
             `;
         }
         
-        // Update tooltip content based on completion status
-        updateTooltipContent(node, level);
-        
-        // Add tooltip click handler
-        const playBtn = node.querySelector('.tooltip-play-btn');
-        if (playBtn) {
-            playBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                playLevel(level);
-            });
-        }
-        
-        // Add click handler to node circle
-        const nodeCircle = node.querySelector('.node-circle');
-        if (nodeCircle) {
-            nodeCircle.addEventListener('click', () => handleLevelClick(level));
-        }
+        // Add click handler to node
+        node.addEventListener('click', () => openLevelPanel(level));
         
         // Add keyboard navigation
         node.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                handleLevelClick(level);
+                openLevelPanel(level);
             }
         });
         
@@ -367,10 +360,69 @@ function updateNodeState(node, level) {
 
 // ===== LEVEL CLICK HANDLER =====
 function handleLevelClick(level) {
-    // En MVP todos los niveles están desbloqueados
-    // Va directo a la teoría del nivel
+    // No necesario ya que usamos openLevelPanel
+}
+
+// ===== LEVEL PANEL =====
+function openLevelPanel(level) {
     const config = LEVELS_CONFIG[level];
-    window.location.href = `theory/${config.theoryFile}`;
+    const isCompleted = gameState.isLevelCompleted(level);
+    const stars = gameState.getLevelStars(level);
+    const bestScore = gameState.getLevelBestScore(level);
+    
+    currentSelectedLevel = level;
+    
+    // Update panel content
+    document.getElementById('panelTitle').innerHTML = `
+        <div>${config.name}</div>
+        <div style="font-size: 0.8em; opacity: 0.7;">${config.nameEs}</div>
+    `;
+    
+    document.getElementById('panelIcon').innerHTML = `<i class="${config.icon}"></i>`;
+    
+    document.getElementById('panelDescription').innerHTML = `
+        <p>${config.description}</p>
+        <p style="font-style: italic; opacity: 0.8;">${config.descriptionEs}</p>
+    `;
+    
+    document.getElementById('panelBestScore').textContent = bestScore;
+    
+    // Update stars display
+    const starsDisplay = document.getElementById('panelStars');
+    starsDisplay.innerHTML = '';
+    for (let i = 0; i < 3; i++) {
+        const star = document.createElement('i');
+        star.className = i < stars ? 'fas fa-star' : 'far fa-star';
+        starsDisplay.appendChild(star);
+    }
+    
+    // Update button text
+    document.getElementById('btnPlay').innerHTML = `
+        <i class="fas fa-play"></i>
+        <span>${isCompleted ? 'Volver a jugar / Play Again' : 'Play / Jugar'}</span>
+    `;
+    
+    // Show panel
+    levelPanel.classList.add('show');
+}
+
+function closeLevelPanel() {
+    levelPanel.classList.remove('show');
+    currentSelectedLevel = null;
+}
+
+function openTheory() {
+    if (currentSelectedLevel) {
+        const config = LEVELS_CONFIG[currentSelectedLevel];
+        window.location.href = `theory/${config.theoryFile}`;
+    }
+}
+
+function playLevel(level = currentSelectedLevel) {
+    if (level) {
+        const config = LEVELS_CONFIG[level];
+        window.location.href = `games/${config.gameFile}`;
+    }
 }
 
 // ===== NEXT LEVEL ANIMATION =====
@@ -398,25 +450,7 @@ function addNextLevelAnimation() {
     }
 }
 
-// ===== TOOLTIP CONTENT UPDATE =====
-function updateTooltipContent(node, level) {
-    const isCompleted = gameState.isLevelCompleted(level);
-    const playBtn = node.querySelector('.tooltip-play-btn');
-    
-    if (playBtn) {
-        if (isCompleted) {
-            playBtn.textContent = 'Volver a jugar / Play Again';
-        } else {
-            playBtn.textContent = 'Play / Jugar';
-        }
-    }
-}
-
-// ===== PLAY LEVEL FUNCTION =====
-function playLevel(level) {
-    const config = LEVELS_CONFIG[level];
-    window.location.href = `games/${config.gameFile}`;
-}
+// Remover funciones de tooltips que ya no se usan
 
 // ===== PLAYER SHIP POSITIONING =====
 function positionPlayerShip() {
