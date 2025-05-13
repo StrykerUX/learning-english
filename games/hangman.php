@@ -120,6 +120,9 @@ session_start();
             <button class="control-button" onclick="restartGame()">
                 <i class="fas fa-redo"></i> Jugar de Nuevo
             </button>
+            <button class="control-button" onclick="goToMenu()" style="background: var(--purple-bright); color: white;">
+                <i class="fas fa-home"></i> Volver al Menú
+            </button>
             <button class="control-button" onclick="continueToNextLevel(3)">
                 <i class="fas fa-arrow-right"></i> Siguiente Nivel
             </button>

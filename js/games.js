@@ -236,7 +236,35 @@ function calculateStars(score, maxScore) {
 
 // ===== LEVEL COMPLETION HANDLER =====
 function handleLevelCompletion(levelId, score, stars) {
-    // Save progress to local storage
+    // Save progress to localStorage directly (compatible with dashboard.js)
+    const gameState = {
+        playerName: localStorage.getItem('playerName') || '',
+        totalPoints: parseInt(localStorage.getItem('totalPoints')) || 0,
+        totalStars: parseInt(localStorage.getItem('totalStars')) || 0,
+        completedLevels: JSON.parse(localStorage.getItem('completedLevels')) || {},
+        levelStars: JSON.parse(localStorage.getItem('levelStars')) || {},
+        levelBestScores: JSON.parse(localStorage.getItem('levelBestScores')) || {},
+        highestUnlocked: parseInt(localStorage.getItem('highestUnlocked')) || 1
+    };
+    
+    // Update game state
+    gameState.completedLevels[levelId] = true;
+    gameState.levelStars[levelId] = Math.max(gameState.levelStars[levelId] || 0, stars);
+    gameState.levelBestScores[levelId] = Math.max(gameState.levelBestScores[levelId] || 0, score);
+    gameState.totalPoints += score;
+    gameState.totalStars = Object.values(gameState.levelStars).reduce((a, b) => a + b, 0);
+    gameState.highestUnlocked = Math.max(gameState.highestUnlocked, levelId + 1);
+    
+    // Save back to localStorage
+    localStorage.setItem('playerName', gameState.playerName);
+    localStorage.setItem('totalPoints', gameState.totalPoints.toString());
+    localStorage.setItem('totalStars', gameState.totalStars.toString());
+    localStorage.setItem('completedLevels', JSON.stringify(gameState.completedLevels));
+    localStorage.setItem('levelStars', JSON.stringify(gameState.levelStars));
+    localStorage.setItem('levelBestScores', JSON.stringify(gameState.levelBestScores));
+    localStorage.setItem('highestUnlocked', gameState.highestUnlocked.toString());
+    
+    // Save old format as well for compatibility
     const gameStats = JSON.parse(localStorage.getItem('gameStats') || '{}');
     
     if (!gameStats[levelId] || gameStats[levelId].score < score) {
@@ -250,9 +278,22 @@ function handleLevelCompletion(levelId, score, stars) {
         localStorage.setItem('gameStats', JSON.stringify(gameStats));
     }
     
-    // Notify parent window if it exists
-    if (window.opener && window.opener.onGameComplete) {
-        window.opener.onGameComplete(levelId, score, stars);
+    // Try to notify parent window (for iframe contexts)
+    try {
+        if (window.parent && window.parent !== window && window.parent.onGameComplete) {
+            window.parent.onGameComplete(levelId, score, stars);
+        }
+    } catch (e) {
+        console.log('Could not notify parent window:', e);
+    }
+    
+    // Try to notify opener window (for popup contexts)
+    try {
+        if (window.opener && window.opener.onGameComplete) {
+            window.opener.onGameComplete(levelId, score, stars);
+        }
+    } catch (e) {
+        console.log('Could not notify opener window:', e);
     }
 }
 
@@ -265,20 +306,37 @@ function goToTheory(theortyPage) {
     window.location.href = `../theory/${theortyPage}`;
 }
 
+function goToMenu() {
+    showNotification('Regresando al menú principal...', 'info');
+    setTimeout(() => {
+        window.location.href = '../index.html';
+    }, 1000);
+}
+
 function continueToNextLevel(currentLevel) {
+    // Check if all levels are completed
+    if (currentLevel >= 8) {
+        window.location.href = '../congratulations.html';
+        return;
+    }
+    
+    // Go to the next level's theory page
+    const nextLevel = currentLevel + 1;
     const levelMap = {
-        1: '../theory/basic-words.php',
         2: '../theory/memory-tips.php',
-        3: '../theory/present-simple.php',
-        4: '../theory/present-continuous.php',
-        5: '../theory/past-simple.php',
-        6: '../theory/future-simple.php',
-        7: '../theory/prepositions.php',
-        8: '../theory/spelling-tips.php'
+        3: '../theory/spelling-tips.php', 
+        4: '../theory/present-simple.php',
+        5: '../theory/present-continuous.php',
+        6: '../theory/past-simple.php',
+        7: '../theory/future-simple.php',
+        8: '../theory/prepositions.php'
     };
     
-    if (levelMap[currentLevel]) {
-        window.location.href = levelMap[currentLevel];
+    if (levelMap[nextLevel]) {
+        showNotification(`Avanzando al nivel ${nextLevel}...`, 'success');
+        setTimeout(() => {
+            window.location.href = levelMap[nextLevel];
+        }, 1000);
     } else {
         window.location.href = '../congratulations.html';
     }
@@ -459,6 +517,7 @@ if (typeof module !== 'undefined' && module.exports) {
         calculateStars,
         handleLevelCompletion,
         goHome,
+        goToMenu,
         continueToNextLevel,
         getScreenSize,
         adaptGridCols,
