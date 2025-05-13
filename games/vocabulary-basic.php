@@ -8,7 +8,8 @@ session_start();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Palabras Básicas - English Trainer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+    <!-- Cambio de fuente por una más atractiva: Nunito con respaldo a Inter -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
     <style>
         /* Reset and base styles */
         * {
@@ -37,7 +38,8 @@ session_start();
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            /* Cambio de fuente principal a Nunito */
+            font-family: 'Nunito', 'Poppins', sans-serif;
             background: var(--primary-bg);
             color: var(--text-primary);
             min-height: 100vh;
@@ -231,25 +233,66 @@ session_start();
             padding: 2rem;
             margin-bottom: 2rem;
             text-align: center;
-            min-height: 200px;
+            min-height: 280px;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
         .english-word {
+            /* Mejorar la tipografía de la palabra en inglés */
+            font-family: 'Poppins', 'Nunito', sans-serif;
             font-size: 3rem;
-            font-weight: 700;
+            font-weight: 800;
             color: var(--text-primary);
             margin-bottom: 1rem;
             text-shadow: 0 2px 10px rgba(156, 136, 255, 0.3);
+            letter-spacing: -0.5px;
         }
 
+        /* Categoría de la palabra */
+        .word-category {
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.875rem;
+            color: var(--accent-green);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Nueva pronunciación mejorada para hispanohablantes */
         .pronunciation {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 1rem auto;
+            max-width: 500px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        .pronunciation-label {
+            font-size: 0.875rem;
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .pronunciation-phonetic {
             font-family: 'JetBrains Mono', monospace;
             font-size: 1.25rem;
-            color: var(--accent-blue);
-            margin-bottom: 1rem;
+            color: var(--accent-purple);
+            margin: 0.5rem 0;
+        }
+
+        .pronunciation-guide {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-style: italic;
         }
 
         /* Options grid */
@@ -503,7 +546,7 @@ session_start();
                 </a>
                 <div class="header-title">
                     <h1>Palabras Básicas</h1>
-                    <p>Aprende las 20 palabras más esenciales del inglés</p>
+                    <p>Aprende 40 palabras esenciales del inglés organizadas por categorías</p>
                 </div>
             </div>
         </div>
@@ -512,7 +555,7 @@ session_start();
             <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
                 <div class="progress-fill" id="progress-fill"></div>
             </div>
-            <span class="sr-only">Progreso: <span id="progress-text">0</span> de 20 palabras</span>
+            <span class="sr-only">Progreso: <span id="progress-text">0</span> de 40 palabras</span>
             
             <div class="stats-grid">
                 <div class="stat-card">
@@ -531,8 +574,13 @@ session_start();
         </div>
         
         <div class="word-display">
+            <div class="word-category" id="word-category"></div>
             <div class="english-word" id="english-word" role="heading" aria-level="2"></div>
-            <div class="pronunciation" id="pronunciation"></div>
+            <div class="pronunciation">
+                <div class="pronunciation-label">Pronunciación:</div>
+                <div class="pronunciation-phonetic" id="pronunciation-phonetic"></div>
+                <div class="pronunciation-guide" id="pronunciation-guide"></div>
+            </div>
         </div>
         
         <div class="options-grid" id="options-grid" role="group" aria-label="Opciones de respuesta">
@@ -553,7 +601,7 @@ session_start();
             <div class="stars-display" id="stars-display"></div>
             <div class="results-stats">
                 <p><strong>Puntuación Final:</strong> <span id="final-score">0</span></p>
-                <p><strong>Palabras Correctas:</strong> <span id="final-correct">0</span>/20</p>
+                <p><strong>Palabras Correctas:</strong> <span id="final-correct">0</span>/40</p>
             </div>
             <div class="results-actions">
                 <button class="control-button" onclick="restartGame()">
@@ -570,28 +618,297 @@ session_start();
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Game data (unchanged)
+        // Nuevo vocabulario organizado por categorías con 40 palabras
         const vocabulary = [
-            { english: 'Hello', spanish: 'Hola', pronunciation: '/həˈloʊ/' },
-            { english: 'Goodbye', spanish: 'Adiós', pronunciation: '/ɡʊdˈbaɪ/' },
-            { english: 'Please', spanish: 'Por favor', pronunciation: '/pliːz/' },
-            { english: 'Thank you', spanish: 'Gracias', pronunciation: '/θæŋk juː/' },
-            { english: 'Yes', spanish: 'Sí', pronunciation: '/jɛs/' },
-            { english: 'No', spanish: 'No', pronunciation: '/noʊ/' },
-            { english: 'Water', spanish: 'Agua', pronunciation: '/ˈwɔːtər/' },
-            { english: 'Food', spanish: 'Comida', pronunciation: '/fuːd/' },
-            { english: 'House', spanish: 'Casa', pronunciation: '/haʊs/' },
-            { english: 'Friend', spanish: 'Amigo', pronunciation: '/frɛnd/' },
-            { english: 'Family', spanish: 'Familia', pronunciation: '/ˈfæməli/' },
-            { english: 'Love', spanish: 'Amor', pronunciation: '/lʌv/' },
-            { english: 'Time', spanish: 'Tiempo', pronunciation: '/taɪm/' },
-            { english: 'Person', spanish: 'Persona', pronunciation: '/ˈpɜːrsən/' },
-            { english: 'New', spanish: 'Nuevo', pronunciation: '/nuː/' },
-            { english: 'Good', spanish: 'Bueno', pronunciation: '/ɡʊd/' },
-            { english: 'Big', spanish: 'Grande', pronunciation: '/bɪɡ/' },
-            { english: 'Small', spanish: 'Pequeño', pronunciation: '/smɔːl/' },
-            { english: 'Help', spanish: 'Ayuda', pronunciation: '/hɛlp/' },
-            { english: 'Work', spanish: 'Trabajo', pronunciation: '/wɜːrk/' }
+            // HOGAR Y FAMILIA (8 palabras)
+            { 
+                english: 'Kitchen', 
+                spanish: 'Cocina', 
+                phonetic: '/ˈkɪtʃən/', 
+                guide: 'KÍCH-en',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Bedroom', 
+                spanish: 'Dormitorio', 
+                phonetic: '/ˈbedrʊm/', 
+                guide: 'BED-rum',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Bathroom', 
+                spanish: 'Baño', 
+                phonetic: '/ˈbæθrʊm/', 
+                guide: 'BAZ-rum',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Mother', 
+                spanish: 'Madre', 
+                phonetic: '/ˈmʌðər/', 
+                guide: 'MÁ-der',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Father', 
+                spanish: 'Padre', 
+                phonetic: '/ˈfɑːðər/', 
+                guide: 'FÁ-der',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Brother', 
+                spanish: 'Hermano', 
+                phonetic: '/ˈbrʌðər/', 
+                guide: 'BRÁ-der',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Sister', 
+                spanish: 'Hermana', 
+                phonetic: '/ˈsɪstər/', 
+                guide: 'SÍS-ter',
+                category: 'Hogar y Familia'
+            },
+            { 
+                english: 'Window', 
+                spanish: 'Ventana', 
+                phonetic: '/ˈwɪndoʊ/', 
+                guide: 'UÍN-do',
+                category: 'Hogar y Familia'
+            },
+
+            // COMIDA Y COCINA (8 palabras)
+            { 
+                english: 'Breakfast', 
+                spanish: 'Desayuno', 
+                phonetic: '/ˈbrekfəst/', 
+                guide: 'BREK-fast',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Dinner', 
+                spanish: 'Cena', 
+                phonetic: '/ˈdɪnər/', 
+                guide: 'DÍ-ner',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Vegetables', 
+                spanish: 'Verduras', 
+                phonetic: '/ˈvedʒtəbəlz/', 
+                guide: 'VÉY-ye-ta-bols',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Fruit', 
+                spanish: 'Fruta', 
+                phonetic: '/fruːt/', 
+                guide: 'FRUT',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Chicken', 
+                spanish: 'Pollo', 
+                phonetic: '/ˈtʃɪkən/', 
+                guide: 'CHÍK-en',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Bread', 
+                spanish: 'Pan', 
+                phonetic: '/bred/', 
+                guide: 'BRED',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Coffee', 
+                spanish: 'Café', 
+                phonetic: '/ˈkɔːfi/', 
+                guide: 'KÓ-fi',
+                category: 'Comida y Cocina'
+            },
+            { 
+                english: 'Milk', 
+                spanish: 'Leche', 
+                phonetic: '/mɪlk/', 
+                guide: 'MILK',
+                category: 'Comida y Cocina'
+            },
+
+            // OFICINA Y TRABAJO (8 palabras)
+            { 
+                english: 'Office', 
+                spanish: 'Oficina', 
+                phonetic: '/ˈɔːfɪs/', 
+                guide: 'Ó-fis',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Computer', 
+                spanish: 'Computadora', 
+                phonetic: '/kəmˈpjuːtər/', 
+                guide: 'kom-PYU-ter',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Meeting', 
+                spanish: 'Reunión', 
+                phonetic: '/ˈmiːtɪŋ/', 
+                guide: 'MÍ-ting',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Project', 
+                spanish: 'Proyecto', 
+                phonetic: '/ˈprɑːdʒekt/', 
+                guide: 'PRÓ-yekt',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Manager', 
+                spanish: 'Gerente', 
+                phonetic: '/ˈmænɪdʒər/', 
+                guide: 'MÁ-ni-yer',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Document', 
+                spanish: 'Documento', 
+                phonetic: '/ˈdɑːkjəmənt/', 
+                guide: 'DÓK-yu-ment',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Schedule', 
+                spanish: 'Horario', 
+                phonetic: '/ˈskedʒuːl/', 
+                guide: 'SKÉ-yul',
+                category: 'Oficina y Trabajo'
+            },
+            { 
+                english: 'Email', 
+                spanish: 'Correo', 
+                phonetic: '/ˈiːmeɪl/', 
+                guide: 'Í-meil',
+                category: 'Oficina y Trabajo'
+            },
+
+            // ESCUELA Y EDUCACIÓN (8 palabras)
+            { 
+                english: 'Teacher', 
+                spanish: 'Profesor', 
+                phonetic: '/ˈtiːtʃər/', 
+                guide: 'TÍ-cher',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Student', 
+                spanish: 'Estudiante', 
+                phonetic: '/ˈstuːdənt/', 
+                guide: 'STU-dent',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Lesson', 
+                spanish: 'Lección', 
+                phonetic: '/ˈlesən/', 
+                guide: 'LÉ-son',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Homework', 
+                spanish: 'Tarea', 
+                phonetic: '/ˈhoʊmwɜːrk/', 
+                guide: 'JOM-wörk',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Classroom', 
+                spanish: 'Aula', 
+                phonetic: '/ˈklæsrʊm/', 
+                guide: 'KLAS-rum',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Notebook', 
+                spanish: 'Cuaderno', 
+                phonetic: '/ˈnoʊtbʊk/', 
+                guide: 'NOT-buk',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Library', 
+                spanish: 'Biblioteca', 
+                phonetic: '/ˈlaɪbreri/', 
+                guide: 'LÁI-bre-ri',
+                category: 'Escuela y Educación'
+            },
+            { 
+                english: 'Exam', 
+                spanish: 'Examen', 
+                phonetic: '/ɪɡˈzæm/', 
+                guide: 'ig-ZAM',
+                category: 'Escuela y Educación'
+            },
+
+            // CIUDAD Y CALLE (8 palabras)
+            { 
+                english: 'Street', 
+                spanish: 'Calle', 
+                phonetic: '/striːt/', 
+                guide: 'STRIT',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Building', 
+                spanish: 'Edificio', 
+                phonetic: '/ˈbɪldɪŋ/', 
+                guide: 'BÍL-ding',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Restaurant', 
+                spanish: 'Restaurante', 
+                phonetic: '/ˈrestərɑːnt/', 
+                guide: 'RÉS-to-rant',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Hospital', 
+                spanish: 'Hospital', 
+                phonetic: '/ˈhɑːspɪtl/', 
+                guide: 'JÓS-pi-tal',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Bank', 
+                spanish: 'Banco', 
+                phonetic: '/bæŋk/', 
+                guide: 'BANK',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Store', 
+                spanish: 'Tienda', 
+                phonetic: '/stɔːr/', 
+                guide: 'STOR',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Market', 
+                spanish: 'Mercado', 
+                phonetic: '/ˈmɑːrkɪt/', 
+                guide: 'MÁR-kit',
+                category: 'Ciudad y Calle'
+            },
+            { 
+                english: 'Traffic', 
+                spanish: 'Tráfico', 
+                phonetic: '/ˈtræfɪk/', 
+                guide: 'TRÁ-fik',
+                category: 'Ciudad y Calle'
+            }
         ];
 
         // Game state
@@ -618,8 +935,10 @@ session_start();
             }
 
             const word = vocabulary[currentWord];
+            $('#word-category').text(word.category);
             $('#english-word').text(word.english);
-            $('#pronunciation').text(word.pronunciation);
+            $('#pronunciation-phonetic').text(word.phonetic);
+            $('#pronunciation-guide').text(word.guide);
             
             generateOptions();
             updateDisplay();
