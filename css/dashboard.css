@@ -486,15 +486,15 @@ body {
 /* Node Tooltips */
 .node-tooltip {
     position: absolute;
-    top: 120%;
+    top: 130%;
     left: 50%;
-    transform: translateX(-50%) translateY(10px);
+    transform: translateX(-50%) translateY(20px);
     background: var(--purple-pastel);
     color: var(--bg-space);
     border-radius: var(--radius-soft);
     padding: var(--space-md);
-    min-width: 250px;
-    max-width: 300px;
+    min-width: 280px;
+    max-width: 320px;
     box-shadow: var(--shadow-soft);
     border: 3px solid var(--bg-space);
     opacity: 0;
@@ -502,14 +502,17 @@ body {
     transition: all 0.3s ease;
     z-index: 1000;
     pointer-events: none;
+    /* Prevents layout shifts */
+    position: absolute;
+    white-space: nowrap;
 }
 
 /* Tooltip above for levels at the bottom */
 .level-node[data-level="7"] .node-tooltip,
 .level-node[data-level="8"] .node-tooltip {
     top: auto;
-    bottom: 120%;
-    transform: translateX(-50%) translateY(-10px);
+    bottom: 130%;
+    transform: translateX(-50%) translateY(-20px);
 }
 
 .level-node[data-level="7"]:hover .node-tooltip,
@@ -517,15 +520,33 @@ body {
     transform: translateX(-50%) translateY(0);
 }
 
-.level-node:hover {
-    z-index: 1001;
+/* Prevent all tooltips from showing by default */
+.level-node .node-tooltip {
+    display: none;
 }
 
+/* Only show tooltip on hover */
 .level-node:hover .node-tooltip {
+    display: block;
     opacity: 1;
     visibility: visible;
     transform: translateX(-50%) translateY(0);
     pointer-events: auto;
+    white-space: normal;
+}
+
+.level-node:hover {
+    z-index: 1001;
+    transform: translate(-50%, -50%) scale(1.05);
+}
+
+.level-node:hover .node-tooltip {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    white-space: normal;
 }
 
 /* Specific positioning for edge cases */
@@ -535,7 +556,7 @@ body {
 
 .level-node[data-level="2"] .node-tooltip {
     left: 0;
-    transform: translateX(-10%) translateY(10px);
+    transform: translateX(-10%) translateY(20px);
 }
 
 .level-node[data-level="2"]:hover .node-tooltip {
@@ -545,11 +566,20 @@ body {
 .level-node[data-level="7"] .node-tooltip {
     left: auto;
     right: 0;
-    transform: translateX(10%) translateY(-10px);
+    transform: translateX(10%) translateY(-20px);
 }
 
 .level-node[data-level="7"]:hover .node-tooltip {
     transform: translateX(10%) translateY(0);
+}
+
+/* Ensure tooltips don't affect layout */
+.level-nodes {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    /* Prevent tooltips from affecting the layout */
+    overflow: visible;
 }
 
 .tooltip-content h4 {
