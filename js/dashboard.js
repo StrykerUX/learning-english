@@ -30,6 +30,7 @@ function reloadGameState() {
     updateUI();
     setupLevelNodes();
     positionPlayerShip();
+    updateCompletedMissions(); // Actualizar misiones completadas
     
     console.log('Game state reloaded:', {
         completedLevels: gameState.completedLevels,
@@ -276,6 +277,8 @@ function initializeDashboard() {
     updateUI();
     setupLevelNodes();
     positionPlayerShip();
+    updateCompletedMissions(); // Nueva función para mostrar misiones completadas
+    showTheoryReminder(); // Nueva función para mostrar recordatorio de teoría
     
     isInitialized = true;
     console.log('Dashboard initialized successfully');
@@ -522,6 +525,7 @@ window.onGameComplete = function(level, score, stars) {
     setupLevelNodes();
     addNextLevelAnimation();
     positionPlayerShip();
+    updateCompletedMissions(); // Actualizar misiones completadas
     
     showNotification(`¡Nivel ${level} completado! ${stars} estrella${stars !== 1 ? 's' : ''} obtenida${stars !== 1 ? 's' : ''}! ✨`, 'success');
 };
@@ -567,6 +571,68 @@ window.addEventListener('resize', () => {
     }
 });
 
+// ===== COMPLETED MISSIONS DISPLAY =====
+function updateCompletedMissions() {
+    const completedMissionsDiv = document.getElementById('completedMissions');
+    const missionsList = document.getElementById('missionsList');
+    
+    // Limpiar lista anterior
+    missionsList.innerHTML = '';
+    
+    // Obtener misiones completadas
+    const completedCount = Object.keys(gameState.completedLevels).filter(level => gameState.completedLevels[level]).length;
+    
+    if (completedCount === 0) {
+        // Ocultar si no hay misiones completadas
+        completedMissionsDiv.style.display = 'none';
+        return;
+    }
+    
+    // Mostrar misiones completadas
+    completedMissionsDiv.style.display = 'block';
+    
+    for (let level = 1; level <= 8; level++) {
+        if (gameState.isLevelCompleted(level)) {
+            const config = LEVELS_CONFIG[level];
+            const stars = gameState.getLevelStars(level);
+            
+            const missionItem = document.createElement('div');
+            missionItem.className = 'mission-item';
+            
+            missionItem.innerHTML = `
+                <div class="mission-name">
+                    <i class="${config.icon}"></i>
+                    ${config.nameEs}
+                </div>
+                <div class="mission-stars">
+                    ${Array(stars).fill('<i class="fas fa-star"></i>').join('')}
+                    ${Array(3-stars).fill('<i class="far fa-star"></i>').join('')}
+                </div>
+            `;
+            
+            missionsList.appendChild(missionItem);
+        }
+    }
+}
+
+// ===== THEORY REMINDER =====
+function showTheoryReminder() {
+    const theoryReminder = document.getElementById('theoryReminder');
+    
+    // Mostrar recordatorio por 10 segundos al inicializar
+    theoryReminder.style.display = 'flex';
+    
+    // Opcional: ocultar el recordatorio después de 10 segundos
+    setTimeout(() => {
+        theoryReminder.style.opacity = '0.7';
+    }, 10000);
+    
+    // Agregar click handler para cerrar el recordatorio
+    theoryReminder.addEventListener('click', () => {
+        theoryReminder.style.display = 'none';
+    });
+}
+
 // ===== DEBUGGING FUNCTIONS (Development only) =====
 if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     window.debugGame = {
@@ -579,6 +645,7 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             updateUI();
             setupLevelNodes();
             positionPlayerShip();
+            updateCompletedMissions(); // Actualizar misiones completadas también
         },
         showStorage: () => {
             console.log('LocalStorage contents:', {
