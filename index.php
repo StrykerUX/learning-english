@@ -3,308 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>English Trainer - Dashboard</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>English Trainer - Adventure Map</title>
+    <link rel="stylesheet" href="css/style_mario.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="header-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <circle cx="12" cy="12" r="11"></circle>
-                    <path d="M9 12l2 2 4-4"></path>
-                </svg>
-                English Trainer
-            </h1>
-            <div class="user-stats">
-                <div class="stat-card">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
-                    </svg>
-                    <span id="total-points">0</span> Puntos
+    <div class="game-world">
+        <!-- Sky Background -->
+        <div class="sky-background">
+            <div class="clouds">
+                <div class="cloud cloud-1"></div>
+                <div class="cloud cloud-2"></div>
+                <div class="cloud cloud-3"></div>
+            </div>
+        </div>
+        
+        <!-- Header Stats -->
+        <header class="header-stats">
+            <div class="logo">
+                <img src="https://img.icons8.com/fluency/48/000000/graduation-cap.png" alt="Logo">
+                <h1>English Adventure</h1>
+            </div>
+            <div class="stats">
+                <div class="stat-item coins">
+                    <img src="https://img.icons8.com/fluency/32/000000/star.png" alt="Star">
+                    <span id="total-points">130</span>
                 </div>
-                <div class="stat-card">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
-                    </svg>
-                    <span id="words-learned">0</span>/100 Palabras
+                <div class="stat-item words">
+                    <img src="https://img.icons8.com/fluency/32/000000/chat.png" alt="Words">
+                    <span id="words-learned">0/100</span>
                 </div>
-                <div class="stat-card">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 12l2 2 4-4"></path>
-                        <circle cx="12" cy="12" r="11"></circle>
-                    </svg>
-                    <span id="completed-levels">0</span>/8 Completados
+                <div class="stat-item levels">
+                    <img src="https://img.icons8.com/fluency/32/000000/checkmark.png" alt="Completed">
+                    <span id="completed-levels">2/8</span>
                 </div>
             </div>
         </header>
 
-        <main class="main">
-            <!-- Vocabulary Games Category -->
-            <section class="category-section">
-                <h2 class="category-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
-                    </svg>
-                    Juegos de Vocabulario
-                </h2>
-                <div class="games-grid">
-                    <div class="game-card" data-category="vocabulary" data-game="1" data-status="unlocked">
-                        <div class="game-header">
-                            <div class="game-icon vocabulary">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
-                                </svg>
-                            </div>
-                            <div class="game-info">
-                                <h3>Palabras Básicas</h3>
-                                <p>20 palabras esenciales</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="11"></circle>
-                                    <path d="M9 12l2 2 4-4"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 palabras</span>
-                        </div>
-                    </div>
+        <!-- Game Map -->
+        <div class="game-map">
+            <!-- Path Line -->
+            <svg class="path-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid meet">
+                <path d="M100,700 C300,700 400,600 600,600 C800,600 900,500 1100,400" 
+                      class="game-path" stroke="#4A90E2" stroke-width="8" fill="none"/>
+            </svg>
 
-                    <div class="game-card" data-category="vocabulary" data-game="2" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon memory">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                                </svg>
-                            </div>
-                            <div class="game-info">
-                                <h3>Memorama</h3>
-                                <p>Encuentra las parejas</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 palabras</span>
-                        </div>
+            <!-- Level Nodes -->
+            <div class="level-node" data-level="1" data-status="completed" style="left: 8%; top: 75%;">
+                <div class="node-container">
+                    <div class="node-circle completed">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/speech-bubble.png" alt="Words">
+                        <div class="crown">👑</div>
                     </div>
-
-                    <div class="game-card" data-category="vocabulary" data-game="3" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon hangman">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="9" cy="7" r="2"></circle>
-                                    <path d="m9 9v6"></path>
-                                    <path d="m9 15h-3"></path>
-                                    <path d="m9 15h3"></path>
-                                    <path d="M21 2v6h-6"></path>
-                                </svg>
+                    <div class="level-popup">
+                        <h3>Palabras Básicas</h3>
+                        <p class="level-description">20 palabras esenciales</p>
+                        <div class="progress-info">
+                            <div class="stars">
+                                <span class="star filled">⭐</span>
+                                <span class="star filled">⭐</span>
+                                <span class="star filled">⭐</span>
                             </div>
-                            <div class="game-info">
-                                <h3>Ahorcado</h3>
-                                <p>Adivina la palabra</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
+                            <div class="points">+50 puntos</div>
                         </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
+                        <button class="level-btn replay-btn">Jugar de Nuevo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-node" data-level="2" data-status="completed" style="left: 25%; top: 68%;">
+                <div class="node-container">
+                    <div class="node-circle completed">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/memory-game.png" alt="Memory">
+                        <div class="crown">👑</div>
+                    </div>
+                    <div class="level-popup">
+                        <h3>Memorama</h3>
+                        <p class="level-description">Encuentra las parejas</p>
+                        <div class="progress-info">
+                            <div class="stars">
+                                <span class="star filled">⭐</span>
+                                <span class="star filled">⭐</span>
+                                <span class="star">⭐</span>
                             </div>
-                            <span class="progress-text">0 palabras</span>
+                            <div class="points">+30 puntos</div>
+                        </div>
+                        <button class="level-btn replay-btn">Jugar de Nuevo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-node" data-level="3" data-status="unlocked" style="left: 50%; top: 60%;">
+                <div class="node-container">
+                    <div class="node-circle unlocked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/hangman.png" alt="Hangman">
+                    </div>
+                    <div class="level-popup">
+                        <h3>Ahorcado</h3>
+                        <p class="level-description">Adivina la palabra</p>
+                        <div class="progress-info">
+                            <div class="difficulty">
+                                <span class="difficulty-icon">⚡</span>
+                                <span>Moderado</span>
+                            </div>
+                            <div class="estimated-points">+40 puntos posibles</div>
+                        </div>
+                        <button class="level-btn play-btn">¡Jugar!</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-node" data-level="4" data-status="locked" style="left: 70%; top: 52%;">
+                <div class="node-container">
+                    <div class="node-circle locked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/clock.png" alt="Present">
+                        <div class="lock">🔒</div>
+                    </div>
+                    <div class="level-popup">
+                        <h3>Presente Simple</h3>
+                        <p class="level-description">Rutinas y hechos</p>
+                        <div class="progress-info">
+                            <div class="unlock-requirement">
+                                <span>🔓 Completa nivel anterior</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Grammar Games Category -->
-            <section class="category-section">
-                <h2 class="category-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <polyline points="12,6 12,12 16,14"></polyline>
-                    </svg>
-                    Tiempos Verbales
-                </h2>
-                <div class="games-grid">
-                    <div class="game-card" data-category="grammar" data-game="4" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon present-simple">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <polyline points="12,6 12,12 16,14"></polyline>
-                                </svg>
-                            </div>
-                            <div class="game-info">
-                                <h3>Presente Simple</h3>
-                                <p>Rutinas y hechos</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 completado</span>
-                        </div>
+            <div class="level-node" data-level="5" data-status="locked" style="left: 75%; top: 42%;">
+                <div class="node-container">
+                    <div class="node-circle locked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/running.png" alt="Continuous">
+                        <div class="lock">🔒</div>
                     </div>
-
-                    <div class="game-card" data-category="grammar" data-game="5" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon present-continuous">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="8,12 13,17 20,10"></polyline>
-                                    <path d="M21 12c0 2-1 4-3 6s-4 3-6 3-4-1-6-3-3-4-3-6 1-4 3-6 4-3 6-3"></path>
-                                </svg>
+                    <div class="level-popup">
+                        <h3>Presente Continuo</h3>
+                        <p class="level-description">Acciones presentes</p>
+                        <div class="progress-info">
+                            <div class="unlock-requirement">
+                                <span>🔓 Completa nivel anterior</span>
                             </div>
-                            <div class="game-info">
-                                <h3>Presente Continuo</h3>
-                                <p>Acciones presentes</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 completado</span>
-                        </div>
-                    </div>
-
-                    <div class="game-card" data-category="grammar" data-game="6" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon past-simple">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 3v18h18"></path>
-                                    <path d="M4 18l4-4 4 2 4-4 4 4"></path>
-                                </svg>
-                            </div>
-                            <div class="game-info">
-                                <h3>Pasado Simple</h3>
-                                <p>Eventos pasados</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 completado</span>
-                        </div>
-                    </div>
-
-                    <div class="game-card" data-category="grammar" data-game="7" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon future-simple">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"></path>
-                                    <line x1="8" y1="12" x2="16" y2="12"></line>
-                                    <line x1="12" y1="8" x2="12" y2="16"></line>
-                                </svg>
-                            </div>
-                            <div class="game-info">
-                                <h3>Futuro Simple</h3>
-                                <p>Planes y predicciones</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 completado</span>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
 
-            <!-- Special Games Category -->
-            <section class="category-section">
-                <h2 class="category-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"></path>
-                        <path d="M12 2v8"></path>
-                        <path d="m7 10-4-4 4-4"></path>
-                        <path d="m17 10 4-4-4-4"></path>
-                    </svg>
-                    Juegos Especiales
-                </h2>
-                <div class="games-grid">
-                    <div class="game-card" data-category="special" data-game="8" data-status="locked">
-                        <div class="game-header">
-                            <div class="game-icon prepositions">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"></path>
-                                    <path d="M12 2v8"></path>
-                                    <path d="m7 10-4-4 4-4"></path>
-                                    <path d="m17 10 4-4-4-4"></path>
-                                </svg>
+            <div class="level-node" data-level="6" data-status="locked" style="left: 85%; top: 35%;">
+                <div class="node-container">
+                    <div class="node-circle locked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/time-machine.png" alt="Past">
+                        <div class="lock">🔒</div>
+                    </div>
+                    <div class="level-popup">
+                        <h3>Pasado Simple</h3>
+                        <p class="level-description">Eventos pasados</p>
+                        <div class="progress-info">
+                            <div class="unlock-requirement">
+                                <span>🔓 Completa nivel anterior</span>
                             </div>
-                            <div class="game-info">
-                                <h3>Preposiciones</h3>
-                                <p>Encuentra la posición</p>
-                            </div>
-                            <div class="game-status">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-                                    <path d="m7 11 5-5 5 5"></path>
-                                </svg>
-                            </div>
-                        </div>
-                        <div class="game-progress">
-                            <div class="progress-bar">
-                                <div class="progress-fill" style="width: 0%"></div>
-                            </div>
-                            <span class="progress-text">0 preposiciones</span>
                         </div>
                     </div>
                 </div>
-            </section>
-        </main>
+            </div>
+
+            <div class="level-node" data-level="7" data-status="locked" style="left: 90%; top: 25%;">
+                <div class="node-container">
+                    <div class="node-circle locked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/crystal-ball.png" alt="Future">
+                        <div class="lock">🔒</div>
+                    </div>
+                    <div class="level-popup">
+                        <h3>Futuro Simple</h3>
+                        <p class="level-description">Planes y predicciones</p>
+                        <div class="progress-info">
+                            <div class="unlock-requirement">
+                                <span>🔓 Completa nivel anterior</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-node" data-level="8" data-status="locked" style="left: 92%; top: 15%;">
+                <div class="node-container">
+                    <div class="node-circle locked">
+                        <img src="https://img.icons8.com/cute-clipart/64/000000/geography.png" alt="Prepositions">
+                        <div class="lock">🔒</div>
+                    </div>
+                    <div class="level-popup">
+                        <h3>Preposiciones</h3>
+                        <p class="level-description">Encuentra la posición</p>
+                        <div class="progress-info">
+                            <div class="unlock-requirement">
+                                <span>🔓 Completa nivel anterior</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Character -->
+            <div class="character" style="left: 45%; top: 55%;">
+                <img src="https://img.icons8.com/cute-clipart/64/000000/graduation-cap.png" alt="Character">
+            </div>
+        </div>
+
+        <!-- Progress Modal (for when a level is completed) -->
+        <div id="progressModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>¡Nivel Completado!</h2>
+                    <button class="modal-close" onclick="closeModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="celebration">
+                        <div class="stars-celebration">⭐⭐⭐</div>
+                        <h3 id="modalTitle">Palabras Básicas</h3>
+                        <p id="modalDescription">¡Excelente trabajo!</p>
+                        <div class="rewards">
+                            <div class="reward-item">
+                                <img src="https://img.icons8.com/fluency/48/000000/star.png" alt="Points">
+                                <span id="earnedPoints">+50 puntos</span>
+                            </div>
+                            <div class="reward-item">
+                                <img src="https://img.icons8.com/fluency/48/000000/trophy.png" alt="Achievement">
+                                <span>¡Nuevo logro desbloqueado!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn secondary" onclick="closeModal()">Continuar</button>
+                    <button class="btn primary" onclick="playAgain()">Jugar de Nuevo</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/main_mario.js"></script>
 </body>
 </html>
