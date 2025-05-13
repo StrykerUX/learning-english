@@ -11,6 +11,47 @@ session_start();
     <link rel="stylesheet" href="../css/hangman.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Enhanced hangman art display */
+        .hangman-art {
+            min-height: 240px;
+            font-size: 1.2rem;
+            line-height: 1.1;
+            letter-spacing: 2px;
+        }
+        
+        /* Progressive hints container */
+        .hints-container {
+            background: var(--blue-pastel);
+            border: 3px solid var(--bg-space);
+            border-radius: var(--radius-soft);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            color: var(--bg-space);
+        }
+        
+        .hint-item {
+            margin-bottom: var(--space-xs);
+            font-size: var(--font-size-base);
+            line-height: 1.4;
+        }
+        
+        .hint-number {
+            font-weight: 700;
+            color: var(--purple-bright);
+        }
+        
+        .hint-text {
+            color: var(--bg-space);
+        }
+        
+        @media (max-width: 768px) {
+            .hangman-art {
+                font-size: 1rem;
+                min-height: 180px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -53,7 +94,10 @@ session_start();
         
         <div class="word-display">
             <div class="word-letters" id="word-letters"></div>
-            <div class="hint-display" id="hint-display"></div>
+        </div>
+        
+        <div class="hints-container" id="hints-container">
+            <!-- Progressive hints will appear here -->
         </div>
         
         <div class="alphabet-grid" id="alphabet-grid">
@@ -84,31 +128,157 @@ session_start();
 
     <script src="../js/games.js"></script>
     <script>
-        // Game data
+        // Enhanced game data with multiple progressive hints
         const words = [
-            { word: 'HELLO', hint: 'Saludo común en inglés' },
-            { word: 'WORLD', hint: 'El planeta donde vivimos' },
-            { word: 'FRIEND', hint: 'Persona querida y cercana' },
-            { word: 'FAMILY', hint: 'Grupo de personas emparentadas' },
-            { word: 'SCHOOL', hint: 'Lugar donde se estudia' },
-            { word: 'WATER', hint: 'Líquido esencial para la vida' },
-            { word: 'HAPPY', hint: 'Sentimiento de alegría' },
-            { word: 'HOUSE', hint: 'Lugar donde vives' },
-            { word: 'MUSIC', hint: 'Arte de combinar sonidos' },
-            { word: 'SMILE', hint: 'Expresión facial de felicidad' }
+            { 
+                word: 'HELLO',
+                hints: [
+                    'Una forma de saludar a alguien',
+                    'Primera palabra que muchos aprenden en inglés',
+                    'Se dice cuando conoces a alguien por primera vez'
+                ]
+            },
+            { 
+                word: 'WORLD',
+                hints: [
+                    'El planeta donde vivimos',
+                    'Incluye todos los continentes y océanos',
+                    'Después de "Hello" en una frase famosa'
+                ]
+            },
+            { 
+                word: 'FRIEND',
+                hints: [
+                    'Alguien con quien pasas tiempo y te diviertes',
+                    'Una relación que no es familiar ni romántica',
+                    'Ross, Rachel, Monica, Chandler, Joey y Phoebe'
+                ]
+            },
+            { 
+                word: 'FAMILY',
+                hints: [
+                    'Las personas más cercanas a ti por sangre',
+                    'Incluye padres, hermanos, abuelos',
+                    'Donde naces y creces principalmente'
+                ]
+            },
+            { 
+                word: 'SCHOOL',
+                hints: [
+                    'Lugar donde vas a aprender y estudiar',
+                    'Tiene aulas, maestros y estudiantes',
+                    'Universidad, colegio, primaria son tipos de esto'
+                ]
+            },
+            { 
+                word: 'WATER',
+                hints: [
+                    'Líquido esencial para la vida',
+                    'Lo bebes cuando tienes sed',
+                    'Forma química H2O'
+                ]
+            },
+            { 
+                word: 'HAPPY',
+                hints: [
+                    'Sentimiento de alegría y satisfacción',
+                    'Lo contrario de triste',
+                    'Estado que buscas cuando las cosas van bien'
+                ]
+            },
+            { 
+                word: 'HOUSE',
+                hints: [
+                    'Donde vives con tu familia',
+                    'Tiene habitaciones, cocina y baño',
+                    'Tu hogar, tu refugio'
+                ]
+            },
+            { 
+                word: 'MUSIC',
+                hints: [
+                    'Arte que combina sonidos de manera armónica',
+                    'Se crea con instrumentos o voz',
+                    'Rock, pop, jazz, clásica son géneros'
+                ]
+            },
+            { 
+                word: 'SMILE',
+                hints: [
+                    'Expresión facial de felicidad',
+                    'Mueves los labios hacia arriba',
+                    'Una forma no verbal de mostrar alegría'
+                ]
+            }
         ];
 
-        // Hangman art states
+        // Enhanced hangman art states with better ASCII
         const hangmanStates = [
             '',
-            '   +---+\n       |\n       |\n       |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n       |\n       |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n       |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n   |   |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n  /|   |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n  /|\\  |\n       |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n  /|\\  |\n  /    |\n       |\n=========',
-            '   +---+\n   |   |\n   O   |\n  /|\\  |\n  / \\  |\n       |\n========='
+            `
+       ┌─────┐
+       │     │
+       │      
+       │      
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     │
+       │      
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │      
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │     │
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │    ╱│
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │    ╱│╲
+       │      
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │    ╱│╲
+       │    ╱  
+       │      
+    ═══╧═══`,
+            `
+       ┌─────┐
+       │     │
+       │     ○
+       │    ╱│╲
+       │    ╱ ╲
+       │      
+    ═══╧═══`
         ];
 
         // Game state
@@ -142,7 +312,7 @@ session_start();
             wrongGuesses = [];
             gameOver = false;
 
-            document.getElementById('game-container')?.classList.remove('game-over', 'word-complete');
+            document.querySelector('.game-container')?.classList.remove('game-over', 'word-complete');
 
             updateDisplay();
             createAlphabet();
@@ -219,6 +389,36 @@ session_start();
             updateDisplay();
         }
 
+        // Update progressive hints based on wrong guesses
+        function updateHints() {
+            const hintsContainer = document.getElementById('hints-container');
+            const currentHints = words[currentWordIndex].hints;
+            let hintsToShow = [];
+            
+            // Progressive hint system
+            if (wrongGuesses.length >= 1) {
+                hintsToShow.push(currentHints[0]);
+            }
+            if (wrongGuesses.length >= 3) {
+                hintsToShow.push(currentHints[1]);
+            }
+            if (wrongGuesses.length >= 6) {
+                hintsToShow.push(currentHints[2]);
+            }
+            
+            // Update hints display
+            if (hintsToShow.length > 0) {
+                hintsContainer.innerHTML = hintsToShow.map((hint, index) => 
+                    `<div class="hint-item">
+                        <span class="hint-number">💡 Pista ${index + 1}:</span>
+                        <span class="hint-text">${hint}</span>
+                    </div>`
+                ).join('');
+            } else {
+                hintsContainer.innerHTML = '<div class="hint-item"><span class="hint-text">¡Adivina las letras! Las pistas aparecerán después de algunos errores.</span></div>';
+            }
+        }
+
         // Reveal word when game over
         function revealWord() {
             // Disable all buttons
@@ -266,8 +466,8 @@ session_start();
                 .join(' ');
             document.getElementById('word-letters').textContent = displayWord;
 
-            // Update hint
-            document.getElementById('hint-display').textContent = words[currentWordIndex].hint;
+            // Update progressive hints
+            updateHints();
         }
 
         // End game
