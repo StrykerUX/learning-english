@@ -7,10 +7,21 @@ class TestingMode {
         this.enabled = false;
         this.button = null;
         this.panel = null;
+        this.overlay = null;
+        this.selectedLevels = new Set();
         this.init();
     }
 
     init() {
+        // Wait for page to load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => this.checkUser());
+        } else {
+            this.checkUser();
+        }
+    }
+
+    checkUser() {
         // Check if current user is "Stryker"
         const playerName = localStorage.getItem('playerName') || '';
         if (playerName.toLowerCase() === 'stryker') {
@@ -123,7 +134,7 @@ class TestingMode {
         this.panel.innerHTML = `
             <div class="testing-panel-header">
                 <h3><i class="fas fa-flask"></i> Testing Mode</h3>
-                <button class="testing-close-btn" onclick="testingMode.togglePanel()">
+                <button class="testing-close-btn">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -134,18 +145,32 @@ class TestingMode {
                 </div>
                 
                 <div class="testing-controls">
-                    <h4>Individual Level Controls</h4>
+                    <h4>Select Levels to Complete</h4>
+                    <div class="testing-selection-controls">
+                        <button class="testing-btn testing-btn-secondary" id="selectAllBtn">
+                            <i class="fas fa-check-square"></i>
+                            Select All
+                        </button>
+                        <button class="testing-btn testing-btn-secondary" id="deselectAllBtn">
+                            <i class="fas fa-square"></i>
+                            Deselect All
+                        </button>
+                    </div>
                     <div class="testing-level-grid" id="testingLevelGrid">
                         <!-- Levels will be generated here -->
                     </div>
                     
-                    <h4>Bulk Actions</h4>
+                    <h4>Actions</h4>
                     <div class="testing-bulk-actions">
-                        <button class="testing-btn testing-btn-success" onclick="testingMode.completeAllLevels()">
+                        <button class="testing-btn testing-btn-success" id="completeSelectedBtn">
+                            <i class="fas fa-check"></i>
+                            Complete Selected
+                        </button>
+                        <button class="testing-btn testing-btn-primary" id="completeAllBtn">
                             <i class="fas fa-check-double"></i>
                             Complete All Levels
                         </button>
-                        <button class="testing-btn testing-btn-warning" onclick="testingMode.resetAllProgress()">
+                        <button class="testing-btn testing-btn-warning" id="resetAllBtn">
                             <i class="fas fa-undo"></i>
                             Reset All Progress
                         </button>
@@ -178,7 +203,7 @@ class TestingMode {
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                width: 500px;
+                width: 600px;
                 max-width: 90vw;
                 max-height: 80vh;
                 background: #2d3748;
@@ -250,9 +275,15 @@ class TestingMode {
                 font-size: 16px;
             }
             
+            .testing-selection-controls {
+                display: flex;
+                gap: 10px;
+                margin-bottom: 15px;
+            }
+            
             .testing-level-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 10px;
                 margin-bottom: 20px;
             }
@@ -261,13 +292,34 @@ class TestingMode {
                 background: #4a5568;
                 padding: 15px;
                 border-radius: 8px;
-                text-align: center;
+                border: 2px solid transparent;
+                transition: all 0.2s ease;
             }
             
-            .testing-level-item h5 {
-                margin: 0 0 10px 0;
+            .testing-level-item.selected {
+                border-color: #68d391;
+                background: #2d5a41;
+            }
+            
+            .testing-level-checkbox {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-bottom: 10px;
+                cursor: pointer;
+            }
+            
+            .testing-level-checkbox input[type="checkbox"] {
+                width: 18px;
+                height: 18px;
+                cursor: pointer;
+            }
+            
+            .testing-level-checkbox label {
                 color: #fff;
                 font-size: 14px;
+                font-weight: 600;
+                cursor: pointer;
             }
             
             .testing-level-status {
@@ -328,6 +380,15 @@ class TestingMode {
                 background: #4299e1;
             }
             
+            .testing-btn-secondary {
+                background: #a0aec0;
+                color: #2d3748;
+            }
+            
+            .testing-btn-secondary:hover {
+                background: #718096;
+            }
+            
             .testing-stats {
                 background: #4a5568;
                 padding: 15px;
@@ -373,9 +434,38 @@ class TestingMode {
         this.overlay.addEventListener('click', () => this.togglePanel());
         document.body.appendChild(this.overlay);
         
+        // Add event listeners
+        this.setupEventListeners();
+        
         // Generate level grid
         this.generateLevelGrid();
         this.updateStats();
+    }
+
+    setupEventListeners() {
+        // Close button
+        const closeBtn = this.panel.querySelector('.testing-close-btn');
+        closeBtn.addEventListener('click', () => this.togglePanel());
+        
+        // Select All button
+        const selectAllBtn = this.panel.querySelector('#selectAllBtn');
+        selectAllBtn.addEventListener('click', () => this.selectAllLevels());
+        
+        // Deselect All button
+        const deselectAllBtn = this.panel.querySelector('#deselectAllBtn');
+        deselectAllBtn.addEventListener('click', () => this.deselectAllLevels());
+        
+        // Complete Selected button
+        const completeSelectedBtn = this.panel.querySelector('#completeSelectedBtn');
+        completeSelectedBtn.addEventListener('click', () => this.completeSelectedLevels());
+        
+        // Complete All button
+        const completeAllBtn = this.panel.querySelector('#completeAllBtn');
+        completeAllBtn.addEventListener('click', () => this.completeAllLevels());
+        
+        // Reset All button
+        const resetAllBtn = this.panel.querySelector('#resetAllBtn');
+        resetAllBtn.addEventListener('click', () => this.resetAllProgress());
     }
 
     generateLevelGrid() {
@@ -383,34 +473,91 @@ class TestingMode {
         if (!grid) return;
         
         grid.innerHTML = '';
+        this.selectedLevels.clear();
         
-        // Access gameState from global scope
+        // Get gameState from global scope
         const gameState = window.gameState;
+        const LEVELS_CONFIG = window.LEVELS_CONFIG;
+        
+        if (!gameState || !LEVELS_CONFIG) {
+            console.warn('GameState or LEVELS_CONFIG not available');
+            return;
+        }
         
         for (let level = 1; level <= 8; level++) {
-            const config = window.LEVELS_CONFIG[level];
+            const config = LEVELS_CONFIG[level];
             const isCompleted = gameState.isLevelCompleted(level);
             const stars = gameState.getLevelStars(level);
             
             const levelItem = document.createElement('div');
             levelItem.className = 'testing-level-item';
             levelItem.innerHTML = `
-                <h5>${config.nameEs}</h5>
+                <div class="testing-level-checkbox">
+                    <input type="checkbox" id="level-${level}" value="${level}">
+                    <label for="level-${level}">${config.nameEs}</label>
+                </div>
                 <div class="testing-level-status ${isCompleted ? 'completed' : 'incomplete'}">
                     ${isCompleted ? `✅ Completado (${stars} estrellas)` : '❌ No completado'}
                 </div>
-                <button class="testing-btn testing-btn-primary" onclick="testingMode.completeLevel(${level})">
-                    <i class="fas fa-check"></i>
-                    Completar
-                </button>
             `;
             
+            // Add checkbox event listener
+            const checkbox = levelItem.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', (e) => {
+                if (e.target.checked) {
+                    this.selectedLevels.add(level);
+                    levelItem.classList.add('selected');
+                } else {
+                    this.selectedLevels.delete(level);
+                    levelItem.classList.remove('selected');
+                }
+                this.updateButtonStates();
+            });
+            
             grid.appendChild(levelItem);
+        }
+        
+        this.updateButtonStates();
+    }
+
+    selectAllLevels() {
+        this.selectedLevels.clear();
+        const checkboxes = this.panel.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = true;
+            const level = parseInt(checkbox.value);
+            this.selectedLevels.add(level);
+            checkbox.closest('.testing-level-item').classList.add('selected');
+        });
+        this.updateButtonStates();
+    }
+
+    deselectAllLevels() {
+        this.selectedLevels.clear();
+        const checkboxes = this.panel.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = false;
+            checkbox.closest('.testing-level-item').classList.remove('selected');
+        });
+        this.updateButtonStates();
+    }
+
+    updateButtonStates() {
+        const completeSelectedBtn = this.panel.querySelector('#completeSelectedBtn');
+        completeSelectedBtn.disabled = this.selectedLevels.size === 0;
+        
+        if (this.selectedLevels.size === 0) {
+            completeSelectedBtn.style.opacity = '0.5';
+            completeSelectedBtn.style.cursor = 'not-allowed';
+        } else {
+            completeSelectedBtn.style.opacity = '1';
+            completeSelectedBtn.style.cursor = 'pointer';
         }
     }
 
     updateStats() {
         const gameState = window.gameState;
+        if (!gameState) return;
         
         document.getElementById('testingStatsStars').textContent = gameState.totalStars;
         document.getElementById('testingStatsPoints').textContent = gameState.totalPoints;
@@ -456,6 +603,42 @@ class TestingMode {
         // Show notification if available
         if (typeof window.showNotification === 'function') {
             window.showNotification(`Nivel ${level} completado exitosamente!`, 'success');
+        }
+    }
+
+    completeSelectedLevels() {
+        if (this.selectedLevels.size === 0) {
+            alert('No has seleccionado ningún nivel.');
+            return;
+        }
+        
+        const levelList = Array.from(this.selectedLevels).join(', ');
+        if (!confirm(`¿Completar los niveles ${levelList} con 100% de aciertos?`)) {
+            return;
+        }
+        
+        const gameState = window.gameState;
+        
+        this.selectedLevels.forEach(level => {
+            gameState.completeLevel(level, 100, 3);
+        });
+        
+        // Update UI
+        if (typeof window.updateUI === 'function') {
+            window.updateUI();
+        }
+        if (typeof window.setupLevelNodes === 'function') {
+            window.setupLevelNodes();
+        }
+        if (typeof window.positionPlayerShip === 'function') {
+            window.positionPlayerShip();
+        }
+        
+        this.updateStats();
+        this.generateLevelGrid();
+        
+        if (typeof window.showNotification === 'function') {
+            window.showNotification(`${this.selectedLevels.size} niveles completados exitosamente!`, 'success');
         }
     }
 
@@ -523,13 +706,23 @@ class TestingMode {
     }
 }
 
-// Initialize testing mode when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-    // Add a small delay to ensure other scripts are loaded
-    setTimeout(() => {
-        window.testingMode = new TestingMode();
-    }, 100);
-});
-
-// Make testingMode available globally for button actions
+// Global variable to store the testing mode instance
 window.testingMode = null;
+
+// Initialize testing mode when DOM is ready
+function initTestingMode() {
+    if (window.testingMode) return; // Already initialized
+    
+    window.testingMode = new TestingMode();
+}
+
+// Multiple initialization attempts to ensure it loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTestingMode);
+} else {
+    initTestingMode();
+}
+
+// Fallback initialization
+setTimeout(initTestingMode, 500);
+setTimeout(initTestingMode, 1000);
