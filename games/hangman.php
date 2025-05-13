@@ -115,7 +115,7 @@ session_start();
         <h2 id="result-title">¡Juego Completado!</h2>
         <div class="stars-display" id="stars-display"></div>
         <p>Puntuación Final: <span id="final-score"></span></p>
-        <p>Palabras Completadas: <span id="words-completed"></span>/10</p>
+        <p>Palabras Completadas: <span id="words-completed"></span></p>
         <div class="game-controls">
             <button class="control-button" onclick="restartGame()">
                 <i class="fas fa-redo"></i> Jugar de Nuevo
@@ -438,8 +438,8 @@ session_start();
 
         // Update display
         function updateDisplay() {
-            // Update stats
-            document.getElementById('current-word').textContent = currentWordIndex + 1;
+            // Update stats with progress format
+            document.getElementById('current-word').textContent = `${currentWordIndex + 1}/${words.length}`;
             document.getElementById('current-score').textContent = score;
             document.getElementById('wrong-guesses').textContent = wrongGuesses.length;
 
@@ -477,7 +477,7 @@ session_start();
 
             // Update results
             document.getElementById('final-score').textContent = score;
-            document.getElementById('words-completed').textContent = wordsCompleted;
+            document.getElementById('words-completed').textContent = `${wordsCompleted}/${words.length}`;
 
             let starsHtml = '';
             for (let i = 0; i < 3; i++) {
