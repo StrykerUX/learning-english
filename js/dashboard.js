@@ -1,4 +1,43 @@
-// ===== GAME STATE MANAGEMENT =====
+// ===== STORAGE CHANGE DETECTION =====
+window.addEventListener('storage', handleStorageChange);
+window.addEventListener('focus', handleWindowFocus);
+window.addEventListener('gameComplete', handleGameComplete);
+
+function handleStorageChange(e) {
+    // Reload game state when localStorage changes
+    if (e.key && (e.key.startsWith('completed') || e.key.startsWith('level') || e.key.startsWith('total'))) {
+        reloadGameState();
+    }
+}
+
+function handleWindowFocus() {
+    // Check for updates when window gains focus (returning from game)
+    reloadGameState();
+}
+
+function handleGameComplete(e) {
+    // Handle the custom game complete event
+    const { levelId, score, stars } = e.detail;
+    console.log(`Dashboard received game complete event: Level ${levelId}, Score: ${score}, Stars: ${stars}`);
+    reloadGameState();
+}
+
+function reloadGameState() {
+    // Create new gameState instance with updated localStorage data
+    gameState = new GameState();
+    
+    // Update UI with fresh data
+    updateUI();
+    setupLevelNodes();
+    positionPlayerShip();
+    
+    console.log('Game state reloaded:', {
+        completedLevels: gameState.completedLevels,
+        totalStars: gameState.totalStars,
+        totalPoints: gameState.totalPoints,
+        highestUnlocked: gameState.highestUnlocked
+    });
+}// ===== GAME STATE MANAGEMENT =====
 class GameState {
     constructor() {
         this.playerName = localStorage.getItem('playerName') || '';
@@ -224,11 +263,20 @@ playerNameInput.addEventListener('keypress', (e) => {
 function initializeDashboard() {
     if (isInitialized) return;
     
+    console.log('Initializing dashboard...');
+    console.log('Current gameState:', {
+        completedLevels: gameState.completedLevels,
+        totalStars: gameState.totalStars,
+        totalPoints: gameState.totalPoints,
+        highestUnlocked: gameState.highestUnlocked
+    });
+    
     updateUI();
     setupLevelNodes();
     positionPlayerShip();
     
     isInitialized = true;
+    console.log('Dashboard initialized successfully');
 }
 
 // ===== UI UPDATES =====
@@ -380,6 +428,7 @@ function showNotification(message, type = 'info') {
 
 // ===== GAME COMPLETION CALLBACK =====
 window.onGameComplete = function(level, score, stars) {
+    console.log(`Dashboard received onGameComplete: Level ${level}, Score: ${score}, Stars: ${stars}`);
     gameState.completeLevel(level, score, stars);
     updateUI();
     setupLevelNodes();
@@ -446,6 +495,15 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             updateUI();
             setupLevelNodes();
             positionPlayerShip();
+        },
+        showStorage: () => {
+            console.log('LocalStorage contents:', {
+                completedLevels: localStorage.getItem('completedLevels'),
+                levelStars: localStorage.getItem('levelStars'),
+                totalPoints: localStorage.getItem('totalPoints'),
+                totalStars: localStorage.getItem('totalStars'),
+                highestUnlocked: localStorage.getItem('highestUnlocked')
+            });
         }
     };
     
@@ -453,4 +511,5 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
     console.log('- debugGame.reset() - Reset all progress');
     console.log('- debugGame.unlockAll() - Unlock all levels');
     console.log('- debugGame.completeLevel(level, score, stars) - Complete a level');
+    console.log('- debugGame.showStorage() - Show localStorage contents');
 }

@@ -236,6 +236,8 @@ function calculateStars(score, maxScore) {
 
 // ===== LEVEL COMPLETION HANDLER =====
 function handleLevelCompletion(levelId, score, stars) {
+    console.log(`Handling level completion: Level ${levelId}, Score: ${score}, Stars: ${stars}`);
+    
     // Save progress to localStorage directly (compatible with dashboard.js)
     const gameState = {
         playerName: localStorage.getItem('playerName') || '',
@@ -247,13 +249,29 @@ function handleLevelCompletion(levelId, score, stars) {
         highestUnlocked: parseInt(localStorage.getItem('highestUnlocked')) || 1
     };
     
+    console.log('Current game state:', gameState);
+    
+    // Check if this level was already completed
+    const wasCompleted = gameState.completedLevels[levelId] === true;
+    const oldScore = gameState.levelBestScores[levelId] || 0;
+    
     // Update game state
     gameState.completedLevels[levelId] = true;
     gameState.levelStars[levelId] = Math.max(gameState.levelStars[levelId] || 0, stars);
     gameState.levelBestScores[levelId] = Math.max(gameState.levelBestScores[levelId] || 0, score);
-    gameState.totalPoints += score;
+    
+    // Only add points if this is the first completion or if we got a better score
+    if (!wasCompleted || score > oldScore) {
+        console.log(`Adding ${score} points to total (wasCompleted: ${wasCompleted}, oldScore: ${oldScore})`);
+        gameState.totalPoints += score;
+    } else {
+        console.log(`Not adding points - already completed with score ${oldScore}`);
+    }
+    
     gameState.totalStars = Object.values(gameState.levelStars).reduce((a, b) => a + b, 0);
     gameState.highestUnlocked = Math.max(gameState.highestUnlocked, levelId + 1);
+    
+    console.log('Updated game state:', gameState);
     
     // Save back to localStorage
     localStorage.setItem('playerName', gameState.playerName);
@@ -263,6 +281,8 @@ function handleLevelCompletion(levelId, score, stars) {
     localStorage.setItem('levelStars', JSON.stringify(gameState.levelStars));
     localStorage.setItem('levelBestScores', JSON.stringify(gameState.levelBestScores));
     localStorage.setItem('highestUnlocked', gameState.highestUnlocked.toString());
+    
+    console.log('Saved to localStorage successfully');
     
     // Save old format as well for compatibility
     const gameStats = JSON.parse(localStorage.getItem('gameStats') || '{}');
@@ -277,6 +297,14 @@ function handleLevelCompletion(levelId, score, stars) {
         
         localStorage.setItem('gameStats', JSON.stringify(gameStats));
     }
+    
+    // Create a custom event to notify the dashboard
+    const gameCompleteEvent = new CustomEvent('gameComplete', {
+        detail: { levelId, score, stars }
+    });
+    window.dispatchEvent(gameCompleteEvent);
+    
+    console.log('Game completion event dispatched');
     
     // Try to notify parent window (for iframe contexts)
     try {
