@@ -1,24 +1,11 @@
 // Mario Bros Style JavaScript for English Trainer
 $(document).ready(function() {
-    // Game state management
-    const gameState = {
-        totalPoints: 130,
-        wordsLearned: 0,
-        maxWords: 100,
-        completedLevels: 2,
-        totalLevels: 8,
-        levels: {
-            1: { status: 'completed', points: 50, stars: 3 },
-            2: { status: 'completed', points: 30, stars: 2 },
-            3: { status: 'unlocked', points: 0, stars: 0 },
-            4: { status: 'locked', points: 0, stars: 0 },
-            5: { status: 'locked', points: 0, stars: 0 },
-            6: { status: 'locked', points: 0, stars: 0 },
-            7: { status: 'locked', points: 0, stars: 0 },
-            8: { status: 'locked', points: 0, stars: 0 }
-        }
-    };
-
+    // Initialize progress from localStorage
+    initializeProgress();
+    
+    // Game state management - usando el sistema existente
+    let gameState = getProgress();
+    
     // Initialize the interface
     initializeInterface();
 
@@ -41,36 +28,134 @@ $(document).ready(function() {
     // Add floating particles
     addFloatingParticles();
 
+    function initializeProgress() {
+        // Initialize localStorage if it doesn't exist
+        if (!localStorage.getItem('englishTrainer')) {
+            const initialData = {
+                totalPoints: 0,
+                wordsLearned: 0,
+                gamesCompleted: 0,
+                gameProgress: {
+                    1: { completed: false, score: 0, wordsLearned: 0 },  // Basic Vocabulary
+                    2: { completed: false, score: 0, wordsLearned: 0 },  // Memory Game
+                    3: { completed: false, score: 0, wordsLearned: 0 },  // Hangman
+                    4: { completed: false, score: 0, progress: 0 },      // Present Simple
+                    5: { completed: false, score: 0, progress: 0 },      // Present Continuous
+                    6: { completed: false, score: 0, progress: 0 },      // Past Simple
+                    7: { completed: false, score: 0, progress: 0 },      // Future Simple
+                    8: { completed: false, score: 0, wordsLearned: 0 }   // Prepositions
+                }
+            };
+            localStorage.setItem('englishTrainer', JSON.stringify(initialData));
+        }
+    }
+
+    function getProgress() {
+        return JSON.parse(localStorage.getItem('englishTrainer'));
+    }
+
+    function saveProgress(data) {
+        localStorage.setItem('englishTrainer', JSON.stringify(data));
+    }
+
     function initializeInterface() {
         // Update stats in header
-        $('#total-points').text(gameState.totalPoints);
-        $('#words-learned').text(`${gameState.wordsLearned}/${gameState.maxWords}`);
-        $('#completed-levels').text(`${gameState.completedLevels}/${gameState.totalLevels}`);
+        const progress = getProgress();
+        $('#total-points').text(progress.totalPoints);
+        $('#words-learned').text(`${progress.wordsLearned}/100`);
+        $('#completed-levels').text(`${progress.gamesCompleted}/8`);
 
         // Initialize level states
         $('.level-node').each(function() {
             const level = $(this).data('level');
-            const levelData = gameState.levels[level];
+            const gameData = progress.gameProgress[level];
             
-            $(this).attr('data-status', levelData.status);
+            // Determine status
+            let status = 'locked';
+            if (gameData.completed) {
+                status = 'completed';
+            } else if (isGameUnlocked(level)) {
+                status = 'unlocked';
+            }
+            
+            $(this).attr('data-status', status);
             
             // Update visual indicators
             const $circle = $(this).find('.node-circle');
             const $popup = $(this).find('.level-popup');
             
             $circle.removeClass('completed unlocked locked')
-                   .addClass(levelData.status);
+                   .addClass(status);
             
-            if (levelData.status === 'completed') {
+            if (status === 'completed') {
+                // Calculate stars based on score
+                const stars = calculateStars(gameData.score, level);
                 const $stars = $popup.find('.stars .star');
                 $stars.each(function(index) {
-                    if (index < levelData.stars) {
+                    if (index < stars) {
                         $(this).addClass('filled');
                     }
                 });
-                $popup.find('.points').text(`+${levelData.points} puntos`);
+                $popup.find('.points').text(`+${gameData.score} puntos`);
+            } else if (status === 'unlocked') {
+                // Update estimated points
+                const estimatedPoints = getEstimatedPoints(level);
+                $popup.find('.estimated-points').text(`+${estimatedPoints} puntos posibles`);
             }
         });
+
+        // Move character to current level
+        const currentLevel = getCurrentLevel();
+        if (currentLevel > 0) {
+            moveCharacterToLevel(currentLevel);
+        }
+    }
+
+    function isGameUnlocked(gameNumber) {
+        if (gameNumber === 1) return true; // First game is always unlocked
+        
+        const progress = getProgress();
+        
+        // Define unlock requirements
+        const unlockRequirements = {
+            2: [1],           // Memory unlocks after Basic Vocabulary
+            3: [1, 2],        // Hangman unlocks after Vocabulary + Memory
+            4: [1, 2, 3],     // Present Simple unlocks after all vocabulary games
+            5: [4],           // Present Continuous unlocks after Present Simple
+            6: [4, 5],        // Past Simple unlocks after Present tenses
+            7: [4, 5, 6],     // Future Simple unlocks after all previous tenses
+            8: [1, 2, 3, 4]   // Prepositions unlocks after all vocabulary + present simple
+        };
+        
+        const requirements = unlockRequirements[gameNumber] || [];
+        return requirements.every(req => progress.gameProgress[req]?.completed);
+    }
+
+    function calculateStars(score, level) {
+        // Calculate stars based on score
+        if (score >= 90) return 3;
+        if (score >= 70) return 2;
+        if (score >= 50) return 1;
+        return 0;
+    }
+
+    function getEstimatedPoints(level) {
+        // Estimated points for each level
+        const estimatedPoints = {
+            1: 50, 2: 40, 3: 45, 4: 60,
+            5: 60, 6: 65, 7: 65, 8: 50
+        };
+        return estimatedPoints[level] || 40;
+    }
+
+    function getCurrentLevel() {
+        const progress = getProgress();
+        for (let i = 1; i <= 8; i++) {
+            if (!progress.gameProgress[i].completed) {
+                return i;
+            }
+        }
+        return 8; // All completed
     }
 
     function handleLevelClick(level, status) {
@@ -88,17 +173,48 @@ $(document).ready(function() {
         const $levelNode = $(`[data-level="${level}"]`);
         $levelNode.find('.node-circle').addClass('starting');
         
-        // Simulate level start
+        // Navigate to the game using the original system's paths
+        navigateToGame(level);
+    }
+
+    function navigateToGame(game) {
+        // Define navigation paths based on the original structure
+        const gamePaths = {
+            1: 'games/vocabulary-basic.php',
+            2: 'games/memory-game.php',
+            3: 'games/hangman.php',
+            4: 'games/present-simple.php',
+            5: 'games/present-continuous.php',
+            6: 'games/past-simple.php',
+            7: 'games/future-simple.php',
+            8: 'games/prepositions.php'
+        };
+        
+        // Check if we need to show theory first
+        const theoryRequired = [4, 5, 6, 7]; // Grammar games need theory
+        
         showNotification('¡Iniciando nivel...', 'info');
         
         setTimeout(() => {
-            // Redirect to the actual game
-            window.location.href = `games/level${level}.php`;
-        }, 1500);
+            if (theoryRequired.includes(parseInt(game))) {
+                // Navigate to theory first
+                const theoryPaths = {
+                    4: 'theory/present-simple.php',
+                    5: 'theory/present-continuous.php',
+                    6: 'theory/past-simple.php',
+                    7: 'theory/future-simple.php'
+                };
+                window.location.href = theoryPaths[game];
+            } else {
+                // Navigate directly to game
+                window.location.href = gamePaths[game];
+            }
+        }, 1000);
     }
 
     function showReplayModal(level) {
-        const levelData = gameState.levels[level];
+        const progress = getProgress();
+        const gameData = progress.gameProgress[level];
         const levelNames = {
             1: 'Palabras Básicas',
             2: 'Memorama',
@@ -112,7 +228,7 @@ $(document).ready(function() {
         
         $('#modalTitle').text(levelNames[level]);
         $('#modalDescription').text('¿Quieres volver a jugar este nivel?');
-        $('#earnedPoints').text(`+${levelData.points} puntos`);
+        $('#earnedPoints').text(`+${gameData.score} puntos`);
         
         // Store current level for replay
         $('#progressModal').data('current-level', level);
@@ -123,91 +239,8 @@ $(document).ready(function() {
         showNotification('¡Completa el nivel anterior para desbloquear!', 'warning');
     }
 
-    function completeLevel(level, points, stars) {
-        // Update game state
-        gameState.levels[level] = {
-            status: 'completed',
-            points: points,
-            stars: stars
-        };
-        
-        // Update totals
-        gameState.totalPoints += points;
-        gameState.completedLevels++;
-        
-        // Unlock next level
-        if (level < gameState.totalLevels) {
-            gameState.levels[level + 1].status = 'unlocked';
-        }
-        
-        // Update interface
-        initializeInterface();
-        
-        // Show completion modal
-        showCompletionModal(level, points, stars);
-        
-        // Move character to new position
-        moveCharacterToLevel(level + 1);
-    }
-
-    function showCompletionModal(level, points, stars) {
-        const levelNames = {
-            1: 'Palabras Básicas',
-            2: 'Memorama',
-            3: 'Ahorcado',
-            4: 'Presente Simple',
-            5: 'Presente Continuo',
-            6: 'Pasado Simple',
-            7: 'Futuro Simple',
-            8: 'Preposiciones'
-        };
-        
-        $('#modalTitle').text(levelNames[level]);
-        $('#modalDescription').text('¡Excelente trabajo!');
-        $('#earnedPoints').text(`+${points} puntos`);
-        
-        // Update stars display
-        const $starsContainer = $('.stars-celebration');
-        let starsHTML = '';
-        for (let i = 0; i < stars; i++) {
-            starsHTML += '⭐';
-        }
-        $starsContainer.html(starsHTML);
-        
-        $('#progressModal').show();
-        
-        // Add celebration effects
-        addCelebrationEffects();
-    }
-
-    function addCelebrationEffects() {
-        // Create confetti effect
-        for (let i = 0; i < 20; i++) {
-            const $confetti = $('<div>')
-                .addClass('confetti')
-                .css({
-                    position: 'fixed',
-                    width: '10px',
-                    height: '10px',
-                    background: ['#FF6B6B', '#FFD93D', '#4ECDC4', '#FF9F43'][Math.floor(Math.random() * 4)],
-                    left: Math.random() * 100 + '%',
-                    top: '-10px',
-                    zIndex: 3000
-                });
-            
-            $('body').append($confetti);
-            
-            $confetti.animate({
-                top: $(window).height() + 'px',
-                left: '+=' + (Math.random() - 0.5) * 200
-            }, 3000, function() {
-                $(this).remove();
-            });
-        }
-    }
-
     function moveCharacterToLevel(level) {
-        if (level > gameState.totalLevels) return;
+        if (level > 8) return;
         
         const $targetLevel = $(`[data-level="${level}"]`);
         const $character = $('.character');
@@ -397,30 +430,68 @@ $(document).ready(function() {
         .appendTo('head');
 
     // Update progress when returning from a game
-    // This would be called when a game is completed
-    window.updateProgress = function(level, points, stars) {
-        completeLevel(level, points, stars);
+    // This function is called by games when completed
+    window.updateGameProgress = function(gameNumber, data) {
+        const progress = getProgress();
+        
+        // Update specific game progress
+        if (data.questionsAnswered !== undefined) {
+            // Grammar games
+            progress.gameProgress[gameNumber].progress = data.questionsAnswered;
+            progress.gameProgress[gameNumber].score = Math.max(
+                progress.gameProgress[gameNumber].score || 0, 
+                data.score
+            );
+            
+            if (data.questionsAnswered >= 10 && data.score >= 70) {
+                progress.gameProgress[gameNumber].completed = true;
+                progress.gamesCompleted = Object.values(progress.gameProgress).filter(g => g.completed).length;
+                progress.totalPoints += data.score;
+            }
+        } else if (data.wordsLearned !== undefined) {
+            // Vocabulary games
+            progress.gameProgress[gameNumber].wordsLearned = Math.max(
+                progress.gameProgress[gameNumber].wordsLearned || 0,
+                data.wordsLearned
+            );
+            progress.gameProgress[gameNumber].score = Math.max(
+                progress.gameProgress[gameNumber].score || 0,
+                data.score
+            );
+            
+            const maxWords = getMaxWordsForGame(gameNumber);
+            if (data.wordsLearned >= maxWords * 0.7) { // 70% of words learned
+                progress.gameProgress[gameNumber].completed = true;
+                progress.gamesCompleted = Object.values(progress.gameProgress).filter(g => g.completed).length;
+            }
+            
+            progress.totalPoints += data.pointsGained || 0;
+            progress.wordsLearned = Math.max(progress.wordsLearned, 
+                Object.values(progress.gameProgress)
+                    .filter(g => g.wordsLearned !== undefined)
+                    .reduce((sum, g) => sum + (g.wordsLearned || 0), 0)
+            );
+        }
+        
+        saveProgress(progress);
+        
+        // Refresh the interface
+        initializeInterface();
     };
 
-    // Save game state to localStorage
-    function saveGameState() {
-        localStorage.setItem('englishTrainerState', JSON.stringify(gameState));
+    function getMaxWordsForGame(gameNumber) {
+        const wordsPerGame = {
+            1: 20,  // Basic Vocabulary
+            2: 15,  // Memory Game
+            3: 20,  // Hangman
+            8: 15   // Prepositions
+        };
+        return wordsPerGame[gameNumber] || 10;
     }
 
-    // Load game state from localStorage
-    function loadGameState() {
-        const savedState = localStorage.getItem('englishTrainerState');
-        if (savedState) {
-            Object.assign(gameState, JSON.parse(savedState));
-        }
-    }
-
-    // Initialize game state
-    loadGameState();
-    
     // Save game state when page unloads
     $(window).on('beforeunload', function() {
-        saveGameState();
+        saveProgress(getProgress());
     });
     
     // Add keyboard shortcuts
@@ -429,4 +500,15 @@ $(document).ready(function() {
             closeModal();
         }
     });
+
+    // Global functions for games
+    window.englishTrainer = {
+        getProgress,
+        saveProgress,
+        updateGameProgress: window.updateGameProgress,
+        showNotification,
+        updateDashboard: initializeInterface,
+        getMaxWordsForGame,
+        isGameUnlocked
+    };
 });
