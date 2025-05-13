@@ -7,196 +7,82 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ahorcado - English Trainer</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/games.css">
+    <link rel="stylesheet" href="../css/hangman.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .game-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #0ff;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .hangman-display {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-        
-        .hangman-art {
-            font-family: 'Space Mono', monospace;
-            font-size: 1.5rem;
-            color: #0ff;
-            white-space: pre-line;
-            margin-bottom: 1rem;
-        }
-        
-        .word-display {
-            font-size: 3rem;
-            letter-spacing: 10px;
-            color: #ffd700;
-            margin-bottom: 1rem;
-        }
-        
-        .hint-display {
-            color: #888;
-            font-style: italic;
-            margin-bottom: 2rem;
-        }
-        
-        .alphabet-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-        
-        .letter-button {
-            aspect-ratio: 1;
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1.5rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .letter-button:hover {
-            border-color: #0ff;
-            background: rgba(0, 255, 255, 0.1);
-        }
-        
-        .letter-button.correct {
-            background: #22c55e;
-            border-color: #16a34a;
-        }
-        
-        .letter-button.incorrect {
-            background: #dc2626;
-            border-color: #991b1b;
-        }
-        
-        .letter-button:disabled {
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-        
-        .game-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-item {
-            text-align: center;
-            background: #1a1a1a;
-            padding: 1rem;
-            border-radius: 10px;
-            border: 2px solid #333;
-        }
-        
-        .results-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            background: rgba(0, 0, 0, 0.95);
-            border: 3px solid #0ff;
-            border-radius: 15px;
-            padding: 2rem;
-            text-align: center;
-            z-index: 1000;
-            transition: transform 0.3s ease;
-        }
-        
-        .results-panel.visible {
-            transform: translate(-50%, -50%) scale(1);
-        }
-        
-        .next-button {
-            padding: 0.8rem 1.5rem;
-            border: 2px solid #10b981;
-            background: transparent;
-            color: #10b981;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-        }
-        
-        .next-button:hover {
-            background: #10b981;
-            color: #000;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="universe">
-        <div class="stars-bg"></div>
+    <div class="game-container">
+        <button class="back-button" onclick="goHome()">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
         
-        <div class="game-container">
-            <button class="back-button control-button" onclick="goHome()">
-                <i class="fas fa-arrow-left"></i> Volver
-            </button>
-            
-            <div class="game-header">
-                <h1>Ahorcado</h1>
-                <p>Adivina la palabra en inglés letra por letra</p>
+        <div class="game-header">
+            <h1>Ahorcado</h1>
+            <p>Adivina la palabra en inglés letra por letra</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="score-label">Palabra</div>
+                <div class="score-value" id="current-word">1</div>
             </div>
-            
-            <div class="game-stats">
-                <div class="stat-item">
-                    <div class="score-label">Palabra</div>
-                    <div class="score-value" id="current-word">1</div>
-                </div>
-                <div class="stat-item">
-                    <div class="score-label">Puntos</div>
-                    <div class="score-value" id="current-score">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="score-label">Errores</div>
-                    <div class="score-value" id="wrong-guesses">0</div>
-                </div>
+            <div class="stat-item">
+                <div class="score-label">Puntos</div>
+                <div class="score-value" id="current-score">0</div>
             </div>
-            
-            <div class="hangman-display">
-                <div class="hangman-art" id="hangman-art"></div>
-                <div class="word-display" id="word-display"></div>
-                <div class="hint-display" id="hint-display"></div>
-            </div>
-            
-            <div class="alphabet-grid" id="alphabet-grid">
-                <!-- Alphabet buttons will be generated here -->
-            </div>
-            
-            <div class="game-controls">
-                <button class="next-button" id="next-button" onclick="nextWord()" style="display: none;">
-                    Siguiente Palabra <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="stat-item">
+                <div class="score-label">Errores</div>
+                <div class="score-value" id="wrong-guesses">0</div>
             </div>
         </div>
         
-        <div class="results-panel" id="results-panel">
-            <h2 id="result-title">¡Juego Completado!</h2>
-            <div class="stars-display" id="stars-display"></div>
-            <p>Puntuación Final: <span id="final-score"></span></p>
-            <p>Palabras Completadas: <span id="words-completed"></span>/10</p>
-            <div class="game-controls">
-                <button class="control-button" onclick="returnToBase()">
-                    <i class="fas fa-rocket"></i> Regresar a Base
-                </button>
-                <button class="control-button" onclick="continueJourney()">
-                    <i class="fas fa-space-shuttle"></i> Continuar Misión
-                </button>
-            </div>
+        <div class="hangman-progress" id="hangman-progress">
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+            <div class="progress-step"></div>
+        </div>
+        
+        <div class="hangman-art" id="hangman-art"></div>
+        
+        <div class="word-display">
+            <div class="word-letters" id="word-letters"></div>
+            <div class="hint-display" id="hint-display"></div>
+        </div>
+        
+        <div class="alphabet-grid" id="alphabet-grid">
+            <!-- Alphabet buttons will be generated here -->
+        </div>
+        
+        <div class="game-controls">
+            <button class="next-button control-button" id="next-button" onclick="nextWord()" style="display: none;">
+                Siguiente Palabra <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="results-panel" id="results-panel">
+        <h2 id="result-title">¡Juego Completado!</h2>
+        <div class="stars-display" id="stars-display"></div>
+        <p>Puntuación Final: <span id="final-score"></span></p>
+        <p>Palabras Completadas: <span id="words-completed"></span>/10</p>
+        <div class="game-controls">
+            <button class="control-button" onclick="restartGame()">
+                <i class="fas fa-redo"></i> Jugar de Nuevo
+            </button>
+            <button class="control-button" onclick="continueToNextLevel(3)">
+                <i class="fas fa-arrow-right"></i> Siguiente Nivel
+            </button>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/games.js"></script>
     <script>
         // Game data
         const words = [
@@ -256,21 +142,26 @@ session_start();
             wrongGuesses = [];
             gameOver = false;
 
+            document.getElementById('game-container')?.classList.remove('game-over', 'word-complete');
+
             updateDisplay();
             createAlphabet();
-            $('#next-button').hide();
+            document.getElementById('next-button').style.display = 'none';
         }
 
         // Create alphabet buttons
         function createAlphabet() {
             const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-            const grid = $('#alphabet-grid');
-            grid.empty();
+            const grid = document.getElementById('alphabet-grid');
+            grid.innerHTML = '';
 
             for (let letter of alphabet) {
-                const button = $(`<button class="letter-button" data-letter="${letter}">${letter}</button>`);
-                button.click(() => guessLetter(letter));
-                grid.append(button);
+                const button = document.createElement('button');
+                button.className = 'letter-button';
+                button.textContent = letter;
+                button.dataset.letter = letter;
+                button.onclick = () => guessLetter(letter);
+                grid.appendChild(button);
             }
         }
 
@@ -279,36 +170,48 @@ session_start();
             if (guessedLetters.includes(letter) || gameOver) return;
 
             guessedLetters.push(letter);
-            const button = $(`.letter-button[data-letter="${letter}"]`);
-            button.prop('disabled', true);
+            const button = document.querySelector(`.letter-button[data-letter="${letter}"]`);
+            button.disabled = true;
 
             if (currentWord.includes(letter)) {
                 // Correct guess
                 correctGuesses.push(letter);
-                button.addClass('correct');
+                button.classList.add('correct');
+                pulseElement(button, 'var(--green-bright)');
                 score += 10;
+
+                showNotification('¡Correcto!', 'success');
 
                 // Check if word is complete
                 if (currentWord.split('').every(l => correctGuesses.includes(l))) {
                     // Word completed!
                     wordsCompleted++;
                     score += 50; // Bonus for completing word
+                    document.querySelector('.game-container').classList.add('word-complete');
+                    showNotification('¡Palabra completada!', 'success');
+                    
                     setTimeout(() => {
-                        $('#next-button').show();
+                        document.getElementById('next-button').style.display = 'inline-flex';
                     }, 1000);
                 }
             } else {
                 // Wrong guess
                 wrongGuesses.push(letter);
-                button.addClass('incorrect');
+                button.classList.add('incorrect');
+                animateElement(button, 'translateX(-10px)');
                 score = Math.max(0, score - 5);
+
+                showNotification('Letra incorrecta', 'warning');
 
                 // Check if game over for this word
                 if (wrongGuesses.length >= 8) {
                     gameOver = true;
+                    document.querySelector('.game-container').classList.add('game-over');
                     revealWord();
+                    showNotification('¡Palabra no completada!', 'error');
+                    
                     setTimeout(() => {
-                        $('#next-button').show();
+                        document.getElementById('next-button').style.display = 'inline-flex';
                     }, 1000);
                 }
             }
@@ -319,7 +222,9 @@ session_start();
         // Reveal word when game over
         function revealWord() {
             // Disable all buttons
-            $('.letter-button').prop('disabled', true);
+            document.querySelectorAll('.letter-button').forEach(button => {
+                button.disabled = true;
+            });
             
             // Mark all letters as revealed
             currentWord.split('').forEach(letter => {
@@ -338,90 +243,84 @@ session_start();
         // Update display
         function updateDisplay() {
             // Update stats
-            $('#current-word').text(currentWordIndex + 1);
-            $('#current-score').text(score);
-            $('#wrong-guesses').text(wrongGuesses.length);
+            document.getElementById('current-word').textContent = currentWordIndex + 1;
+            document.getElementById('current-score').textContent = score;
+            document.getElementById('wrong-guesses').textContent = wrongGuesses.length;
 
             // Update hangman art
-            $('#hangman-art').text(hangmanStates[wrongGuesses.length]);
+            document.getElementById('hangman-art').textContent = hangmanStates[wrongGuesses.length];
+
+            // Update progress steps
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                if (index < wrongGuesses.length) {
+                    step.classList.add('danger');
+                } else {
+                    step.classList.remove('danger');
+                }
+            });
 
             // Update word display
             let displayWord = currentWord
                 .split('')
                 .map(letter => correctGuesses.includes(letter) ? letter : '_')
                 .join(' ');
-            $('#word-display').text(displayWord);
+            document.getElementById('word-letters').textContent = displayWord;
 
             // Update hint
-            $('#hint-display').text(words[currentWordIndex].hint);
+            document.getElementById('hint-display').textContent = words[currentWordIndex].hint;
         }
 
         // End game
         function endGame() {
             // Calculate stars
             const percentage = (wordsCompleted / words.length) * 100;
-            let stars = 1;
-            if (percentage >= 60) stars = 2;
-            if (percentage >= 80) stars = 3;
+            let stars = calculateStars(score, words.length * 60);
 
             // Final score bonus
             score += wordsCompleted * 25;
 
             // Update results
-            $('#final-score').text(score);
-            $('#words-completed').text(wordsCompleted);
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('words-completed').textContent = wordsCompleted;
 
             let starsHtml = '';
             for (let i = 0; i < 3; i++) {
                 if (i < stars) {
                     starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
                 } else {
-                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
+                    starsHtml += '<i class="far fa-star" style="color: rgba(255, 255, 255, 0.3);"></i>';
                 }
             }
-            $('#stars-display').html(starsHtml);
+            document.getElementById('stars-display').innerHTML = starsHtml;
 
             // Show results panel
-            $('#results-panel').addClass('visible');
+            document.getElementById('results-panel').classList.add('visible');
 
-            // Notify parent window about completion
-            if (window.opener && window.opener.onGameComplete) {
-                window.opener.onGameComplete(3, score, stars);
-            }
+            // Handle level completion
+            handleLevelCompletion(3, score, stars);
+
+            showNotification('¡Juego completado!', 'success');
         }
 
-        // Función no utilizada - removida para evitar confusión
-        // Los usuarios solo pueden regresar o continuar
-
-        // Return to base (dashboard)
-        function returnToBase() {
-            // Guardar progreso y regresar al dashboard
-            window.location.href = '../index.html';
-        }
-
-        // Continue to next level
-        function continueJourney() {
-            // Verificar si es el último nivel
-            if (3 < 8) { // Nivel 3 < total de niveles
-                // Ir al siguiente nivel
-                window.location.href = '../theory/present-simple.php';
-            } else {
-                // Si es el último nivel, mostrar pantalla de felicitaciones
-                window.location.href = '../congratulations.html';
-            }
-        }
-
-        // Initialize game on load
-        $(document).ready(() => {
+        // Restart game
+        function restartGame() {
+            document.getElementById('results-panel').classList.remove('visible');
             initGame();
-        });
+        }
 
         // Keyboard support
-        $(document).keydown(function(e) {
-            const letter = String.fromCharCode(e.keyCode);
-            if (letter >= 'A' && letter <= 'Z') {
-                guessLetter(letter);
+        document.addEventListener('keydown', function(e) {
+            if (!gameOver) {
+                const letter = e.key.toUpperCase();
+                if (letter >= 'A' && letter <= 'Z') {
+                    guessLetter(letter);
+                }
             }
+        });
+
+        // Initialize game on load
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
         });
     </script>
 </body>

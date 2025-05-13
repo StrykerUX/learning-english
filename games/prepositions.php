@@ -7,200 +7,116 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preposiciones - English Trainer</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/games.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .game-container {
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #0ff;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-        }
-        
+        /* Specific styles for prepositions game */
         .visual-scenario {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 2rem;
-            margin-bottom: 2rem;
             text-align: center;
+            margin-bottom: var(--space-lg);
+            padding: var(--space-xl);
+            background: var(--orange-pastel);
+            border-radius: var(--radius-soft);
+            border: 3px solid var(--bg-space);
+            box-shadow: var(--shadow-subtle);
         }
         
         .scenario-visual {
             font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #0ff;
+            margin-bottom: var(--space-md);
         }
         
         .scenario-description {
-            font-size: 1.3rem;
-            color: #fff;
-            margin-bottom: 0.5rem;
-        }
-        
-        .sentence-display {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 1.5rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 2px solid #333;
-        }
-        
-        .sentence-text {
-            font-size: 2rem;
-            color: #fff;
-            margin-bottom: 1rem;
-        }
-        
-        .missing-word {
-            color: #ffd700;
-            background: rgba(255, 215, 0, 0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            border: 2px dashed #ffd700;
-        }
-        
-        .sentence-translation {
-            color: #888;
-            font-style: italic;
-            font-size: 1.2rem;
+            font-size: var(--font-size-lg);
+            color: var(--bg-space);
+            font-weight: 600;
+            line-height: 1.4;
         }
         
         .options-container {
-            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
         }
         
-        .option-button {
-            padding: 1rem;
-            background: #1a1a1a;
-            border: 2px solid #333;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-        
-        .option-button:hover {
-            border-color: #0ff;
-            background: rgba(0, 255, 255, 0.1);
-        }
-        
-        .option-button.correct {
-            background: #22c55e;
-            border-color: #16a34a;
-        }
-        
-        .option-button.incorrect {
-            background: #dc2626;
-            border-color: #991b1b;
-        }
-        
-        .explanation-panel {
-            background: rgba(34, 197, 94, 0.1);
-            border: 2px solid #16a34a;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 2rem;
-            display: none;
-        }
-        
-        .explanation-panel.visible {
-            display: block;
-        }
-        
-        .explanation-panel h3 {
-            color: #16a34a;
-            margin-bottom: 0.5rem;
-        }
-        
-        .explanation-panel p {
-            color: #ccc;
-            line-height: 1.5;
+        @media (max-width: 768px) {
+            .scenario-visual {
+                font-size: 2rem;
+            }
+            
+            .scenario-description {
+                font-size: var(--font-size-base);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="universe">
-        <div class="stars-bg"></div>
+    <div class="game-container">
+        <button class="back-button" onclick="goHome()">
+            <i class="fas fa-arrow-left"></i> Volver
+        </button>
         
-        <div class="game-container">
-            <button class="back-button control-button" onclick="goHome()">
-                <i class="fas fa-arrow-left"></i> Volver
-            </button>
-            
-            <div class="game-header">
-                <h1>Preposiciones</h1>
-                <p>Aprende dónde están las cosas con las preposiciones</p>
+        <div class="game-header">
+            <h1>Preposiciones</h1>
+            <p>Aprende dónde están las cosas con las preposiciones</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-item">
+                <div class="score-label">Situación</div>
+                <div class="score-value" id="current-sentence">1</div>
             </div>
-            
-            <div class="game-stats">
-                <div class="stat-item">
-                    <div class="score-label">Situación</div>
-                    <div class="score-value" id="current-sentence">1</div>
-                </div>
-                <div class="stat-item">
-                    <div class="score-label">Puntos</div>
-                    <div class="score-value" id="current-score">0</div>
-                </div>
-                <div class="stat-item">
-                    <div class="score-label">Correctas</div>
-                    <div class="score-value" id="correct-answers">0</div>
-                </div>
+            <div class="stat-item">
+                <div class="score-label">Puntos</div>
+                <div class="score-value" id="current-score">0</div>
             </div>
-            
-            <div class="visual-scenario">
-                <div class="scenario-visual" id="scenario-visual"></div>
-                <div class="scenario-description" id="scenario-description"></div>
-            </div>
-            
-            <div class="sentence-display">
-                <div class="sentence-text" id="sentence-text"></div>
-                <div class="sentence-translation" id="sentence-translation"></div>
-            </div>
-            
-            <div class="explanation-panel" id="explanation-panel">
-                <h3>Explicación</h3>
-                <p id="explanation-text"></p>
-            </div>
-            
-            <div class="options-container" id="options-container">
-                <!-- Options will be generated here -->
-            </div>
-            
-            <div class="game-controls">
-                <button class="next-button control-button" id="next-button" onclick="nextSentence()" style="display: none;">
-                    Siguiente <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="stat-item">
+                <div class="score-label">Correctas</div>
+                <div class="score-value" id="correct-answers">0</div>
             </div>
         </div>
         
-        <div class="results-panel" id="results-panel">
-            <h2>¡Juego Completado!</h2>
-            <div class="stars-display" id="stars-display"></div>
-            <p>Puntuación Final: <span id="final-score"></span></p>
-            <p>Correctas: <span id="final-correct"></span>/12</p>
-            <div class="game-controls">
-                <button class="control-button" onclick="returnToBase()">
-                    <i class="fas fa-rocket"></i> Regresar a Base
-                </button>
-                <button class="control-button" onclick="continueJourney()">
-                    <i class="fas fa-space-shuttle"></i> Continuar Misión
-                </button>
-            </div>
+        <div class="visual-scenario">
+            <div class="scenario-visual" id="scenario-visual"></div>
+            <div class="scenario-description" id="scenario-description"></div>
+        </div>
+        
+        <div class="sentence-display">
+            <div class="sentence-text" id="sentence-text"></div>
+            <div class="sentence-translation" id="sentence-translation"></div>
+        </div>
+        
+        <div class="explanation-panel" id="explanation-panel">
+            <h3>Explicación</h3>
+            <p id="explanation-text"></p>
+        </div>
+        
+        <div class="options-container" id="options-container">
+            <!-- Options will be generated here -->
+        </div>
+        
+        <div class="game-controls">
+            <button class="next-button control-button" id="next-button" onclick="nextSentence()" style="display: none;">
+                Siguiente <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+    
+    <div class="results-panel" id="results-panel">
+        <h2>¡Juego Completado!</h2>
+        <div class="stars-display" id="stars-display"></div>
+        <p>Puntuación Final: <span id="final-score"></span></p>
+        <p>Correctas: <span id="final-correct"></span>/12</p>
+        <div class="game-controls">
+            <button class="control-button" onclick="restartGame()">
+                <i class="fas fa-redo"></i> Jugar de Nuevo
+            </button>
+            <button class="control-button" onclick="continueToNextLevel(8)">
+                <i class="fas fa-rocket"></i> ¡Misión Completa!
+            </button>
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="../js/games.js"></script>
     <script>
         // Game data for Prepositions
         const sentences = [
@@ -340,16 +256,16 @@ session_start();
             const sentence = sentences[currentSentence];
             
             // Display visual scenario
-            $('#scenario-visual').text(sentence.visual);
-            $('#scenario-description').text(sentence.description);
+            document.getElementById('scenario-visual').textContent = sentence.visual;
+            document.getElementById('scenario-description').textContent = sentence.description;
             
             // Display sentence with blank
             const sentenceWithBlank = sentence.sentence.replace(/_____/, '<span class="missing-word">_____</span>');
-            $('#sentence-text').html(sentenceWithBlank);
-            $('#sentence-translation').text(sentence.translation);
+            document.getElementById('sentence-text').innerHTML = sentenceWithBlank;
+            document.getElementById('sentence-translation').textContent = sentence.translation;
             
             // Hide explanation panel
-            $('#explanation-panel').removeClass('visible');
+            document.getElementById('explanation-panel').classList.remove('visible');
             
             // Generate options
             generateOptions();
@@ -359,19 +275,18 @@ session_start();
         // Generate answer options
         function generateOptions() {
             const sentence = sentences[currentSentence];
-            const container = $('#options-container');
-            container.empty();
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
             
             // Shuffle options
-            const shuffledOptions = [...sentence.options].sort(() => Math.random() - 0.5);
+            const shuffledOptions = shuffleArray(sentence.options);
             
             shuffledOptions.forEach(option => {
-                const button = $(`<button class="option-button" data-option="${option}">
-                    ${option}
-                </button>`);
-                
-                button.click(() => selectOption(option));
-                container.append(button);
+                const button = document.createElement('button');
+                button.className = 'option-button';
+                button.textContent = option;
+                button.onclick = () => selectOption(option);
+                container.appendChild(button);
             });
         }
 
@@ -381,33 +296,37 @@ session_start();
             const isCorrect = selectedOption === sentence.correct;
             
             // Disable all buttons
-            $('.option-button').prop('disabled', true);
-            
-            // Show feedback
-            $('.option-button').each(function() {
-                const option = $(this).data('option');
-                if (option === sentence.correct) {
-                    $(this).addClass('correct');
-                } else if (option === selectedOption && !isCorrect) {
-                    $(this).addClass('incorrect');
+            const buttons = document.querySelectorAll('.option-button');
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === sentence.correct) {
+                    button.classList.add('correct');
+                    if (isCorrect) {
+                        pulseElement(button, 'var(--green-bright)');
+                    }
+                } else if (button.textContent === selectedOption && !isCorrect) {
+                    button.classList.add('incorrect');
+                    animateElement(button, 'translateX(-5px)');
                 }
             });
             
             // Show explanation
-            $('#explanation-text').text(sentence.explanation);
-            $('#explanation-panel').addClass('visible');
+            document.getElementById('explanation-text').textContent = sentence.explanation;
+            document.getElementById('explanation-panel').classList.add('visible');
             
             // Update score
             if (isCorrect) {
                 correctAnswers++;
                 score += 15;
+                showNotification('¡Correcto!', 'success');
             } else {
                 score = Math.max(0, score - 3);
+                showNotification('Incorrecto. Inténtalo de nuevo.', 'error');
             }
             
             // Show next button
             setTimeout(() => {
-                $('#next-button').show();
+                document.getElementById('next-button').style.display = 'inline-flex';
             }, 1000);
             
             updateDisplay();
@@ -416,15 +335,15 @@ session_start();
         // Next sentence
         function nextSentence() {
             currentSentence++;
-            $('#next-button').hide();
+            document.getElementById('next-button').style.display = 'none';
             showSentence();
         }
 
         // Update display
         function updateDisplay() {
-            $('#current-score').text(score);
-            $('#current-sentence').text(currentSentence + 1);
-            $('#correct-answers').text(correctAnswers);
+            document.getElementById('current-score').textContent = score;
+            document.getElementById('current-sentence').textContent = currentSentence + 1;
+            document.getElementById('correct-answers').textContent = correctAnswers;
         }
 
         // End game
@@ -433,56 +352,39 @@ session_start();
             
             // Calculate stars
             const percentage = (correctAnswers / sentences.length) * 100;
-            let stars = 1;
-            if (percentage >= 70) stars = 2;
-            if (percentage >= 90) stars = 3;
+            let stars = calculateStars(score, sentences.length * 15);
             
             // Update results
-            $('#final-score').text(score);
-            $('#final-correct').text(correctAnswers);
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-correct').textContent = correctAnswers;
             
             let starsHtml = '';
             for (let i = 0; i < 3; i++) {
                 if (i < stars) {
                     starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
                 } else {
-                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
+                    starsHtml += '<i class="far fa-star" style="color: rgba(255, 255, 255, 0.3);"></i>';
                 }
             }
-            $('#stars-display').html(starsHtml);
+            document.getElementById('stars-display').innerHTML = starsHtml;
             
             // Show results panel
-            $('#results-panel').addClass('visible');
+            document.getElementById('results-panel').classList.add('visible');
             
-            // Notify parent window about completion
-            if (window.opener && window.opener.onGameComplete) {
-                window.opener.onGameComplete(8, score, stars);
-            }
+            // Handle level completion
+            handleLevelCompletion(8, score, stars);
+            
+            showNotification('¡Juego completado!', 'success');
         }
 
-        // Función no utilizada - removida para evitar confusión
-        // Los usuarios solo pueden regresar o continuar
-
-        // Return to base (dashboard)
-        function returnToBase() {
-            // Guardar progreso y regresar al dashboard
-            window.location.href = '../index.html';
-        }
-
-        // Continue to next level
-        function continueJourney() {
-            // Verificar si es el último nivel
-            if (8 >= 8) { // Nivel 8 es el último nivel
-                // Si es el último nivel, mostrar pantalla de felicitaciones
-                window.location.href = '../congratulations.html';
-            } else {
-                // Esto no debería ejecutarse en el nivel 8
-                window.location.href = '../congratulations.html';
-            }
+        // Restart game
+        function restartGame() {
+            document.getElementById('results-panel').classList.remove('visible');
+            initGame();
         }
 
         // Initialize game on load
-        $(document).ready(() => {
+        document.addEventListener('DOMContentLoaded', () => {
             initGame();
         });
     </script>
