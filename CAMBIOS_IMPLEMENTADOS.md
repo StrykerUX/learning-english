@@ -35,12 +35,13 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
   - Responsive para móviles
 
 ### 5. ✅ Estilos del Nivel 8 (Prepositions) ACTUALIZADO
-- **Problema**: El nivel 8 se veía demasiado destacado y tenía fondo naranja
+- **Problema**: El nivel 8 se veía demasiado destacado y tenía fondo naranja/oscuro
 - **Solución**:
-  - **NUEVO**: Eliminado completamente el fondo naranja (ahora es transparente)
+  - **NUEVO**: Cambiado a fondo amarillo exactamente igual que los otros niveles
+  - **NUEVO**: Eliminados todos los estilos especiales (special-platform, special-circle)
   - Removido el resplandor especial
   - Removida la animación especial (ahora tiene la misma que los otros niveles)
-  - Mantiene el flujo visual progresivo
+  - Mantiene el flujo visual progresivo con la misma apariencia que los demás
 
 ### 6. ✅ Footer NUEVO
 - **Característica Nueva**: Footer con enlace a Imstryker

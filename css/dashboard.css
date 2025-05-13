@@ -90,6 +90,19 @@ body {
     border: 3px solid var(--bg-space) !important;
 }
 
+/* Asegurar que el nivel 8 se vea exactamente como los otros */
+.level-node.special .special-platform {
+    background: transparent !important;
+}
+
+.level-node.special .special-circle,
+.level-node.special .node-circle {
+    background: var(--yellow-pastel) !important;
+    border: 4px solid var(--bg-space) !important;
+    border-radius: 50% !important;
+    box-shadow: var(--shadow-soft) !important;
+}
+
 /* ===== STARFIELD BACKGROUND ===== */
 .starfield {
     position: fixed;
@@ -477,14 +490,22 @@ body {
 }
 
 .level-node.special .node-circle,
-.level-node.special .special-platform {
-    background: transparent; /* Quitamos el fondo naranja */
-    border-color: var(--orange-bright);
-    box-shadow: var(--shadow-soft); /* Removido el resplandor especial */
+.level-node.special .special-platform,
+.level-node.special .special-circle {
+    background: var(--yellow-pastel) !important; /* Igual que los otros niveles */
+    border-color: var(--bg-space) !important; /* Borde normal */
+    box-shadow: var(--shadow-soft) !important; /* Sombra normal */
 }
 
 .level-node.special.unlocked {
-    /* Removida la animación especial para que sea como los otros nodos */
+    /* Igual animación que los otros nodos */
+    animation: nodeGlow 2s ease-in-out infinite;
+}
+
+.level-node.special.unlocked .node-circle,
+.level-node.special.unlocked .special-circle {
+    background: var(--yellow-pastel) !important;
+    color: var(--bg-space) !important;
     animation: nodeGlow 2s ease-in-out infinite;
 }
 
