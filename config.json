@@ -1,0 +1,96 @@
+{
+  "app": {
+    "name": "English Trainer",
+    "version": "1.0.0-MVP",
+    "description": "Plataforma gamificada para aprender inglés básico",
+    "language": "es",
+    "theme": "soft-neo-brutalism"
+  },
+  "game": {
+    "questionsPerLevel": 10,
+    "pointsPerCorrectAnswer": 10,
+    "passingScorePercentage": 70,
+    "maxAttempts": null,
+    "timeLimit": null
+  },
+  "levels": {
+    "1": {
+      "name": "Vocabulario Básico",
+      "description": "Aprende palabras esenciales",
+      "topics": ["colors", "numbers", "family", "animals"],
+      "difficulty": "A1",
+      "prerequisites": []
+    },
+    "2": {
+      "name": "Presente Simple",
+      "description": "Oraciones en presente",
+      "topics": ["affirmative", "negative", "questions", "third_person"],
+      "difficulty": "A1",
+      "prerequisites": [1]
+    },
+    "3": {
+      "name": "Presente Continuo",
+      "description": "Acciones en progreso",
+      "topics": ["am_is_are", "verb_ing", "negative", "questions"],
+      "difficulty": "A1",
+      "prerequisites": [2]
+    },
+    "4": {
+      "name": "Pasado Simple",
+      "description": "Eventos del pasado",
+      "topics": ["regular_verbs", "irregular_verbs", "negative", "questions"],
+      "difficulty": "A1",
+      "prerequisites": [3]
+    },
+    "5": {
+      "name": "Futuro Simple",
+      "description": "Planes y predicciones",
+      "topics": ["will_future", "going_to", "negative", "questions"],
+      "difficulty": "A1",
+      "prerequisites": [4]
+    }
+  },
+  "ui": {
+    "colors": {
+      "primary": "#E8F4FD",
+      "secondary": "#F0E6FF",
+      "accent": "#FFEAE6",
+      "success": "#E6F7F1",
+      "warning": "#FFF3E6"
+    },
+    "fonts": {
+      "primary": "Inter",
+      "weights": [400, 500, 600, 700]
+    },
+    "animations": {
+      "duration": "0.3s",
+      "easing": "ease"
+    }
+  },
+  "features": {
+    "localStorage": true,
+    "notifications": true,
+    "progressTracking": true,
+    "levelUnlocking": true,
+    "responsiveDesign": true,
+    "darkMode": false,
+    "audio": false,
+    "multiplayer": false
+  },
+  "analytics": {
+    "trackProgress": true,
+    "trackTime": false,
+    "trackAttempts": true,
+    "trackErrors": false
+  },
+  "future_features": [
+    "User authentication",
+    "Database integration",
+    "Audio pronunciation",
+    "More game types",
+    "Progress analytics",
+    "Social features",
+    "Adaptive difficulty",
+    "Certificates"
+  ]
+}
