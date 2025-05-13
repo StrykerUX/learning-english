@@ -1,0 +1,669 @@
+/* Mario Bros Style CSS for English Trainer */
+:root {
+    /* Color Palette */
+    --sky-blue: #87CEEB;
+    --cloud-white: #FFFFFF;
+    --grass-green: #228B22;
+    --path-blue: #4A90E2;
+    --primary-red: #FF6B6B;
+    --secondary-yellow: #FFD93D;
+    --success-green: #4ECDC4;
+    --warning-orange: #FF9F43;
+    
+    /* Text Colors */
+    --text-white: #FFFFFF;
+    --text-dark: #2C3E50;
+    --text-shadow: rgba(0, 0, 0, 0.3);
+    
+    /* Fonts */
+    --font-title: 'Fredoka One', cursive;
+    --font-body: 'Inter', sans-serif;
+    
+    /* Shadows */
+    --shadow-heavy: 0 6px 12px rgba(0, 0, 0, 0.3);
+    --shadow-light: 0 3px 6px rgba(0, 0, 0, 0.2);
+    
+    /* Animations */
+    --bounce-duration: 0.6s;
+    --float-duration: 3s;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    overflow: hidden;
+    background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+    height: 100vh;
+}
+
+/* Game World Container */
+.game-world {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Sky Background with Clouds */
+.sky-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    background: linear-gradient(to bottom, #87CEEB 0%, #98FB98 100%);
+    z-index: 1;
+}
+
+.clouds {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+
+.cloud {
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.8;
+    animation: cloudFloat var(--float-duration) infinite ease-in-out;
+}
+
+.cloud:before {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+}
+
+.cloud:after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50px;
+}
+
+.cloud-1 {
+    width: 80px;
+    height: 40px;
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.cloud-1:before {
+    width: 50px;
+    height: 50px;
+    top: -25px;
+    left: 10px;
+}
+
+.cloud-1:after {
+    width: 60px;
+    height: 40px;
+    top: -15px;
+    right: 10px;
+}
+
+.cloud-2 {
+    width: 100px;
+    height: 50px;
+    top: 15%;
+    right: 20%;
+    animation-delay: -1s;
+}
+
+.cloud-2:before {
+    width: 60px;
+    height: 60px;
+    top: -30px;
+    left: 15px;
+}
+
+.cloud-2:after {
+    width: 70px;
+    height: 50px;
+    top: -20px;
+    right: 15px;
+}
+
+.cloud-3 {
+    width: 120px;
+    height: 60px;
+    top: 25%;
+    left: 60%;
+    animation-delay: -2s;
+}
+
+@keyframes cloudFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+/* Header Stats */
+.header-stats {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1000px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border-radius: 20px;
+    padding: 15px 25px;
+    box-shadow: var(--shadow-heavy);
+    z-index: 1000;
+    border: 3px solid var(--text-dark);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo h1 {
+    font-family: var(--font-title);
+    font-size: 1.8rem;
+    color: var(--primary-red);
+    text-shadow: 2px 2px 0 var(--text-shadow);
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--secondary-yellow);
+    padding: 10px 15px;
+    border-radius: 15px;
+    border: 2px solid var(--text-dark);
+    font-weight: 700;
+    font-size: 1.1rem;
+    box-shadow: var(--shadow-light);
+    transition: transform 0.2s ease;
+}
+
+.stat-item:hover {
+    transform: scale(1.05);
+}
+
+/* Game Map */
+.game-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+/* Path SVG */
+.path-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.game-path {
+    stroke-dasharray: 20 10;
+    animation: pathAnimation 3s linear infinite;
+}
+
+@keyframes pathAnimation {
+    to { stroke-dashoffset: -30; }
+}
+
+/* Level Nodes */
+.level-node {
+    position: absolute;
+    z-index: 10;
+    cursor: pointer;
+}
+
+.node-container {
+    position: relative;
+}
+
+.node-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 4px solid var(--text-dark);
+    box-shadow: var(--shadow-heavy);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.node-circle.completed {
+    background: linear-gradient(45deg, var(--success-green), #66EDD4);
+    animation: completedBounce var(--bounce-duration) infinite ease-in-out;
+}
+
+.node-circle.unlocked {
+    background: linear-gradient(45deg, var(--secondary-yellow), #FFE066);
+    animation: unlockedPulse 2s infinite ease-in-out;
+}
+
+.node-circle.locked {
+    background: #E0E0E0;
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.node-circle img {
+    width: 50px;
+    height: 50px;
+    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.3));
+}
+
+.crown, .lock {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 1.5rem;
+    filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.3));
+}
+
+/* Level Popup */
+.level-popup {
+    position: absolute;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: var(--shadow-heavy);
+    border: 3px solid var(--text-dark);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 20;
+}
+
+.level-node:hover .level-popup {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-10px);
+}
+
+.level-popup h3 {
+    font-family: var(--font-title);
+    font-size: 1.2rem;
+    color: var(--primary-red);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.level-description {
+    color: var(--text-dark);
+    font-size: 0.9rem;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.progress-info {
+    margin-bottom: 15px;
+}
+
+.stars {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: 1.2rem;
+    opacity: 0.3;
+}
+
+.star.filled {
+    opacity: 1;
+    animation: starTwinkle 1.5s infinite ease-in-out;
+}
+
+@keyframes starTwinkle {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.points, .estimated-points {
+    text-align: center;
+    font-weight: 700;
+    color: var(--success-green);
+}
+
+.difficulty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: var(--warning-orange);
+    font-weight: 600;
+}
+
+.unlock-requirement {
+    text-align: center;
+    color: var(--text-dark);
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+/* Buttons */
+.level-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 15px;
+    font-family: var(--font-title);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+}
+
+.play-btn {
+    background: var(--primary-red);
+    color: white;
+}
+
+.replay-btn {
+    background: var(--success-green);
+    color: white;
+}
+
+.level-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.level-btn:active {
+    transform: translateY(0);
+}
+
+/* Character */
+.character {
+    position: absolute;
+    z-index: 15;
+    animation: characterFloat var(--float-duration) infinite ease-in-out;
+}
+
+.character img {
+    width: 60px;
+    height: 60px;
+    filter: drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.3));
+}
+
+@keyframes characterFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+/* Animations */
+@keyframes completedBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes unlockedPulse {
+    0%, 100% { box-shadow: var(--shadow-heavy); }
+    50% { box-shadow: 0 6px 20px rgba(255, 211, 61, 0.6); }
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 25px;
+    padding: 0;
+    max-width: 400px;
+    width: 90%;
+    border: 4px solid var(--text-dark);
+    box-shadow: var(--shadow-heavy);
+    overflow: hidden;
+    animation: modalAppear 0.5s ease;
+}
+
+@keyframes modalAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-header {
+    background: var(--primary-red);
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+}
+
+.modal-header h2 {
+    font-family: var(--font-title);
+    font-size: 1.5rem;
+    text-shadow: 2px 2px 0 var(--text-shadow);
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s ease;
+}
+
+.modal-close:hover {
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: 30px;
+    text-align: center;
+}
+
+.celebration {
+    animation: celebrationBounce 1s ease infinite;
+}
+
+@keyframes celebrationBounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+.stars-celebration {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: starConfetti 1s ease;
+}
+
+@keyframes starConfetti {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+}
+
+.modal-body h3 {
+    font-family: var(--font-title);
+    color: var(--primary-red);
+    margin-bottom: 10px;
+}
+
+.rewards {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.reward-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--secondary-yellow);
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid var(--text-dark);
+    font-weight: 600;
+}
+
+.modal-footer {
+    padding: 20px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    background: #f8f9fa;
+    border-top: 3px solid var(--text-dark);
+}
+
+.btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 15px;
+    font-family: var(--font-title);
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-light);
+    border: 2px solid var(--text-dark);
+}
+
+.btn.primary {
+    background: var(--primary-red);
+    color: white;
+}
+
+.btn.secondary {
+    background: white;
+    color: var(--text-dark);
+}
+
+.btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-stats {
+        width: 95%;
+        padding: 10px 15px;
+    }
+    
+    .logo h1 {
+        font-size: 1.4rem;
+    }
+    
+    .stats {
+        gap: 10px;
+    }
+    
+    .stat-item {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .node-circle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .node-circle img {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .level-popup {
+        width: 200px;
+        padding: 15px;
+    }
+    
+    .character img {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+/* Easter Eggs and Special Effects */
+.level-node:hover .node-circle.completed {
+    animation: celebrationSpin 0.8s ease;
+}
+
+@keyframes celebrationSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Particle Effects (opcional - se puede implementar con JavaScript) */
+.particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.particle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--secondary-yellow);
+    border-radius: 50%;
+    animation: particleFall linear infinite;
+}
+
+@keyframes particleFall {
+    0% {
+        transform: translateY(-100vh);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+}
