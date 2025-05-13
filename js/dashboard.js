@@ -70,7 +70,8 @@ class GameState {
     }
 
     isLevelUnlocked(level) {
-        return level <= this.highestUnlocked;
+        // En el MVP, todos los niveles están desbloqueados
+        return true;
     }
 
     isLevelCompleted(level) {
@@ -306,8 +307,23 @@ function setupLevelNodes() {
             `;
         }
         
-        // Add click handler
-        node.addEventListener('click', () => handleLevelClick(level));
+        // Update tooltip content based on completion status
+        updateTooltipContent(node, level);
+        
+        // Add tooltip click handler
+        const playBtn = node.querySelector('.tooltip-play-btn');
+        if (playBtn) {
+            playBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                playLevel(level);
+            });
+        }
+        
+        // Add click handler to node circle
+        const nodeCircle = node.querySelector('.node-circle');
+        if (nodeCircle) {
+            nodeCircle.addEventListener('click', () => handleLevelClick(level));
+        }
         
         // Add keyboard navigation
         node.addEventListener('keydown', (e) => {
@@ -320,17 +336,20 @@ function setupLevelNodes() {
         // Make focusable
         node.setAttribute('tabindex', '0');
     });
+    
+    // Agregar animación después de configurar todos los nodos
+    addNextLevelAnimation();
 }
 
 // ===== NODE STATE MANAGEMENT =====
 function updateNodeState(node, level) {
-    const isUnlocked = gameState.isLevelUnlocked(level);
     const isCompleted = gameState.isLevelCompleted(level);
     const stars = gameState.getLevelStars(level);
     
     // Reset classes
-    node.classList.remove('unlocked', 'completed', 'locked');
+    node.classList.remove('unlocked', 'completed', 'locked', 'next-level');
     
+    // En MVP todos los niveles están desbloqueados
     if (isCompleted) {
         node.classList.add('completed');
         // Update stars display
@@ -341,30 +360,63 @@ function updateNodeState(node, level) {
                 star.classList.add('fas');
             }
         });
-    } else if (isUnlocked) {
-        node.classList.add('unlocked');
     } else {
-        node.classList.add('locked');
+        node.classList.add('unlocked');
     }
 }
 
 // ===== LEVEL CLICK HANDLER =====
 function handleLevelClick(level) {
-    if (!gameState.isLevelUnlocked(level)) {
-        showNotification('¡Este nivel está bloqueado! Completa los niveles anteriores primero.', 'warning');
-        return;
-    }
-    
+    // En MVP todos los niveles están desbloqueados
     // Va directo a la teoría del nivel
     const config = LEVELS_CONFIG[level];
     window.location.href = `theory/${config.theoryFile}`;
 }
 
-// ===== LEVEL PANEL FUNCTIONS =====
-// Removido porque ya no usamos el panel
+// ===== NEXT LEVEL ANIMATION =====
+function addNextLevelAnimation() {
+    // Remover animación previa
+    document.querySelectorAll('.level-node').forEach(node => {
+        node.classList.remove('next-level');
+    });
+    
+    // Encontrar el próximo nivel por completar
+    let nextLevelToComplete = 1;
+    for (let i = 1; i <= 8; i++) {
+        if (!gameState.isLevelCompleted(i)) {
+            nextLevelToComplete = i;
+            break;
+        }
+    }
+    
+    // Si hay un nivel por completar, agregar animación
+    if (nextLevelToComplete <= 8) {
+        const nextNode = document.querySelector(`[data-level="${nextLevelToComplete}"]`);
+        if (nextNode) {
+            nextNode.classList.add('next-level');
+        }
+    }
+}
 
-// ===== NAVIGATION FUNCTIONS =====
-// Removido porque ya no necesitamos estas funciones
+// ===== TOOLTIP CONTENT UPDATE =====
+function updateTooltipContent(node, level) {
+    const isCompleted = gameState.isLevelCompleted(level);
+    const playBtn = node.querySelector('.tooltip-play-btn');
+    
+    if (playBtn) {
+        if (isCompleted) {
+            playBtn.textContent = 'Volver a jugar / Play Again';
+        } else {
+            playBtn.textContent = 'Play / Jugar';
+        }
+    }
+}
+
+// ===== PLAY LEVEL FUNCTION =====
+function playLevel(level) {
+    const config = LEVELS_CONFIG[level];
+    window.location.href = `games/${config.gameFile}`;
+}
 
 // ===== PLAYER SHIP POSITIONING =====
 function positionPlayerShip() {
@@ -432,6 +484,7 @@ window.onGameComplete = function(level, score, stars) {
     gameState.completeLevel(level, score, stars);
     updateUI();
     setupLevelNodes();
+    addNextLevelAnimation();
     positionPlayerShip();
     
     showNotification(`¡Nivel ${level} completado! ${stars} estrella${stars !== 1 ? 's' : ''} obtenida${stars !== 1 ? 's' : ''}! ✨`, 'success');
