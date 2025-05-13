@@ -10,6 +10,39 @@ session_start();
     <link rel="stylesheet" href="../css/games.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Specific styles for larger memory grid */
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .memory-card {
+            aspect-ratio: 1;
+            font-size: var(--font-size-sm);
+        }
+        
+        @media (max-width: 768px) {
+            .memory-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .memory-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            
+            .memory-card {
+                font-size: var(--font-size-xs);
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="game-container">
@@ -70,16 +103,29 @@ session_start();
 
     <script src="../js/games.js"></script>
     <script>
-        // Game data - vocabulary pairs
+        // Expanded vocabulary with varying difficulty levels
         const vocabulary = [
+            // EASY - Palabras básicas
             { english: 'Cat', spanish: 'Gato' },
             { english: 'Dog', spanish: 'Perro' },
             { english: 'House', spanish: 'Casa' },
-            { english: 'Car', spanish: 'Coche' },
-            { english: 'Book', spanish: 'Libro' },
-            { english: 'Apple', spanish: 'Manzana' },
-            { english: 'Tree', spanish: 'Árbol' },
-            { english: 'Sun', spanish: 'Sol' }
+            { english: 'Water', spanish: 'Agua' },
+            { english: 'Fire', spanish: 'Fuego' },
+            
+            // MEDIUM - Palabras intermedias
+            { english: 'Beautiful', spanish: 'Hermoso' },
+            { english: 'Important', spanish: 'Importante' },
+            { english: 'Dangerous', spanish: 'Peligroso' },
+            { english: 'Education', spanish: 'Educación' },
+            { english: 'Government', spanish: 'Gobierno' },
+            
+            // HARD - Palabras difíciles
+            { english: 'Responsibility', spanish: 'Responsabilidad' },
+            { english: 'Consciousness', spanish: 'Conciencia' },
+            { english: 'Sophisticated', spanish: 'Sofisticado' },
+            { english: 'Extraordinary', spanish: 'Extraordinario' },
+            { english: 'Entrepreneur', spanish: 'Empresario' },
+            { english: 'Sophisticated', spanish: 'Sofisticado' }
         ];
 
         // Game state
@@ -153,7 +199,7 @@ session_start();
                 
                 cardElement.innerHTML = `
                     <div class="card-front">
-                        <i class="fas fa-question"></i>
+                        <i class="fas fa-brain"></i>
                     </div>
                     <div class="card-back">
                         ${card.text}
@@ -196,7 +242,14 @@ session_start();
                 card1.matched = true;
                 card2.matched = true;
                 matchedPairs++;
-                score += 20;
+                
+                // Different points based on word difficulty
+                const word = vocabulary[card1.pairId];
+                let points = 20;
+                if (word.english.length > 10) points = 30; // Hard words
+                else if (word.english.length > 6) points = 25; // Medium words
+                
+                score += points;
                 
                 // Add visual feedback
                 const element1 = document.querySelector(`.memory-card[data-id="${card1.id}"]`);
@@ -208,7 +261,7 @@ session_start();
                 pulseElement(element1, 'var(--green-bright)');
                 pulseElement(element2, 'var(--green-bright)');
                 
-                showNotification('¡Pareja encontrada!', 'success');
+                showNotification(`¡Pareja encontrada! +${points} puntos`, 'success');
                 
                 // Check if game is complete
                 if (matchedPairs === vocabulary.length) {
@@ -216,7 +269,7 @@ session_start();
                 }
             } else {
                 // No match
-                score = Math.max(0, score - 2);
+                score = Math.max(0, score - 3);
                 
                 // Add mismatch animation
                 const element1 = document.querySelector(`.memory-card[data-id="${card1.id}"]`);
@@ -260,15 +313,15 @@ session_start();
             gameCompleted = true;
             clearInterval(timerInterval);
             
-            // Calculate time and move bonuses
-            const timeBonus = Math.max(0, 300 - Math.floor(gameTime / 1000));
+            // Calculate bonuses
+            const timeBonus = Math.max(0, 600 - Math.floor(gameTime / 1000)); // More time for more cards
             const moveBonus = Math.max(0, (vocabulary.length * 2 - moves) * 5);
             score += timeBonus + moveBonus;
             
-            // Calculate stars
+            // Calculate stars (adjusted for harder difficulty)
             let stars = 1;
-            if (score >= 180 && moves <= vocabulary.length * 1.5) stars = 2;
-            if (score >= 220 && moves <= vocabulary.length * 1.2) stars = 3;
+            if (score >= 350 && moves <= vocabulary.length * 1.8) stars = 2;
+            if (score >= 500 && moves <= vocabulary.length * 1.5) stars = 3;
             
             // Update results
             document.getElementById('final-score').textContent = score;
@@ -291,7 +344,7 @@ session_start();
             // Handle level completion
             handleLevelCompletion(2, score, stars);
             
-            showNotification('¡Juego completado!', 'success');
+            showNotification('¡Juego completado! Excelente memoria', 'success');
         }
 
         // Restart game
