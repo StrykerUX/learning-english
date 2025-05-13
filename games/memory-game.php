@@ -223,11 +223,11 @@ session_start();
             <p>Tiempo: <span id="final-time"></span></p>
             <p>Movimientos: <span id="final-moves"></span></p>
             <div class="game-controls">
-                <button class="control-button" onclick="restartGame()">
-                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                <button class="control-button" onclick="returnToBase()">
+                    <i class="fas fa-rocket"></i> Regresar a Base
                 </button>
-                <button class="control-button" onclick="goHome()">
-                    <i class="fas fa-home"></i> Menú Principal
+                <button class="control-button" onclick="continueJourney()">
+                    <i class="fas fa-space-shuttle"></i> Continuar Misión
                 </button>
             </div>
         </div>
@@ -448,16 +448,25 @@ session_start();
             }
         }
 
-        // Restart game
-        function restartGame() {
-            $('#results-panel').removeClass('visible');
-            clearInterval(timerInterval);
-            initGame();
+        // Función no utilizada - removida para evitar confusión
+        // Los usuarios solo pueden regresar o continuar
+
+        // Return to base (dashboard)
+        function returnToBase() {
+            // Guardar progreso y regresar al dashboard
+            window.location.href = '../index.html';
         }
 
-        // Go to home
-        function goHome() {
-            window.location.href = '../index.html';
+        // Continue to next level
+        function continueJourney() {
+            // Verificar si es el último nivel
+            if (2 < 8) { // Nivel 2 < total de niveles
+                // Ir al siguiente nivel
+                window.location.href = '../theory/spelling-tips.php';
+            } else {
+                // Si es el último nivel, mostrar pantalla de felicitaciones
+                window.location.href = '../congratulations.html';
+            }
         }
 
         // Initialize game on load

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡FELICITACIONES! - English Space Explorer</title>
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #000;
+            overflow-x: hidden;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .congratulations-container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .success-card {
+            background: linear-gradient(135deg, 
+                rgba(26, 26, 46, 0.95), 
+                rgba(16, 16, 35, 0.95));
+            backdrop-filter: blur(20px);
+            border: 3px solid #9c88ff;
+            border-radius: 25px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 
+                0 20px 50px rgba(156, 136, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .cosmic-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+            background-size: 200% 200%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+            animation: shimmer 2s ease-in-out infinite alternate,
+                       pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .achievement-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .achievement-badge {
+            background: linear-gradient(135deg, #6eb5ff, #9c88ff);
+            border-radius: 50%;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(110, 181, 255, 0.4);
+            animation: rotate 6s linear infinite;
+        }
+
+        .achievement-badge i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .stars-showcase {
+            font-size: 4rem;
+            margin: 2rem 0;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        .stars-showcase .fa-star {
+            color: #ffd700;
+            filter: drop-shadow(0 0 10px #ffd700);
+            margin: 0 0.5rem;
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        .stars-showcase .fa-star:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .stars-showcase .fa-star:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { transform: scale(1); filter: brightness(1); }
+            50% { transform: scale(1.2); filter: brightness(1.5); }
+        }
+
+        .completion-message {
+            color: #e0e6ed;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 2rem 0;
+            line-height: 1.6;
+        }
+
+        .completion-message.excellent {
+            color: #64f58d;
+        }
+
+        .completion-message.good {
+            color: #ffed4e;
+        }
+
+        .completion-message.improving {
+            color: #ff9a9e;
+        }
+
+        .stats-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-item {
+            background: rgba(156, 136, 255, 0.1);
+            border: 1px solid rgba(156, 136, 255, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #9c88ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #9ca3af;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-top: 3rem;
+            flex-wrap: wrap;
+        }
+
+        .cosmic-button {
+            background: linear-gradient(135deg, #9c88ff, #6eb5ff);
+            border: none;
+            border-radius: 50px;
+            padding: 1rem 2rem;
+            color: white;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cosmic-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(156, 136, 255, 0.4);
+        }
+
+        .cosmic-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .cosmic-button:hover::before {
+            left: 100%;
+        }
+
+        .celebration-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #ffd700;
+            border-radius: 50%;
+            opacity: 0;
+            animation: float-up 3s ease-out infinite;
+        }
+
+        @keyframes float-up {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-50vh) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100vh) scale(0);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .cosmic-title {
+                font-size: 2.5rem;
+            }
+            
+            .completion-message {
+                font-size: 1.2rem;
+            }
+            
+            .stats-display {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Starfield Background -->
+    <div class="starfield" id="starfield"></div>
+    
+    <!-- Floating Asteroids -->
+    <div class="asteroids" id="asteroids"></div>
+    
+    <!-- Celebration Particles -->
+    <div class="celebration-particles" id="particles"></div>
+    
+    <div class="congratulations-container">
+        <div class="success-card">
+            <h1 class="cosmic-title">¡FELICITACIONES!</h1>
+            
+            <div class="achievement-display">
+                <div class="achievement-badge">
+                    <i class="fas fa-medal"></i>
+                </div>
+                <div class="achievement-badge">
+                    <i class="fas fa-rocket"></i>
+                </div>
+                <div class="achievement-badge">
+                    <i class="fas fa-trophy"></i>
+                </div>
+            </div>
+            
+            <div class="stars-showcase" id="starsShowcase">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+            </div>
+            
+            <div class="completion-message" id="completionMessage">
+                Has completado exitosamente tu misión espacial de aprendizaje del inglés. 
+                Tu dedicación y esfuerzo te han llevado a dominar todos los niveles.
+            </div>
+            
+            <div class="stats-display">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalPoints">0</div>
+                    <div class="stat-label">Puntos Totales</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="totalStars">0</div>
+                    <div class="stat-label">Estrellas Ganadas</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="levelsCompleted">8</div>
+                    <div class="stat-label">Misiones Completadas</div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <a href="index.html" class="cosmic-button">
+                    <i class="fas fa-home"></i>
+                    <span>Regresar a Base</span>
+                </a>
+                <button class="cosmic-button" onclick="celebrateAgain()">
+                    <i class="fas fa-party-horn"></i>
+                    <span>¡Celebrar de Nuevo!</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Crear starfield
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            const numStars = 150;
+            
+            for (let i = 0; i < numStars; i++) {
+                const star = document.createElement('div');
+                star.className = `star ${Math.random() > 0.5 ? 'small' : Math.random() > 0.7 ? 'medium' : 'large'}`;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.setProperty('--duration', (Math.random() * 3 + 1) + 's');
+                starfield.appendChild(star);
+            }
+        }
+
+        // Crear asteroides flotantes
+        function createAsteroids() {
+            const asteroids = document.getElementById('asteroids');
+            const asteroidIcons = ['fa-meteor', 'fa-star', 'fa-sun', 'fa-moon'];
+            
+            function createAsteroid() {
+                const asteroid = document.createElement('div');
+                asteroid.className = 'asteroid';
+                asteroid.innerHTML = `<i class="fas ${asteroidIcons[Math.floor(Math.random() * asteroidIcons.length)]}"></i>`;
+                asteroid.style.top = Math.random() * 100 + '%';
+                asteroid.style.left = '-100px';
+                asteroid.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                asteroid.style.animationDelay = Math.random() * 2 + 's';
+                
+                asteroids.appendChild(asteroid);
+                
+                setTimeout(() => {
+                    asteroid.remove();
+                }, 15000);
+            }
+            
+            // Crear asteroide cada 3-6 segundos
+            setInterval(createAsteroid, Math.random() * 3000 + 3000);
+        }
+
+        // Crear partículas de celebración
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 3 + 's';
+                particle.style.background = `hsl(${Math.random() * 60 + 40}, 100%, 60%)`;
+                particles.appendChild(particle);
+            }
+        }
+
+        // Cargar datos del juego
+        function loadGameData() {
+            const gameState = {
+                totalPoints: parseInt(localStorage.getItem('totalPoints')) || 0,
+                totalStars: parseInt(localStorage.getItem('totalStars')) || 0,
+                levelStars: JSON.parse(localStorage.getItem('levelStars')) || {}
+            };
+
+            // Actualizar UI con datos
+            document.getElementById('totalPoints').textContent = gameState.totalPoints;
+            document.getElementById('totalStars').textContent = gameState.totalStars;
+
+            // Calcular mensaje basado en el rendimiento
+            const percentage = (gameState.totalStars / (8 * 3)) * 100; // 8 niveles, 3 estrellas cada uno
+            let messageClass = 'improving';
+            let message = 'Has comenzado tu viaje en el inglés. ¡Sigue practicando para mejorar!';
+
+            if (percentage >= 90) {
+                messageClass = 'excellent';
+                message = '¡PERFECTO! Eres un verdadero maestro del inglés espacial. ¡Sin un solo error!';
+            } else if (percentage >= 70) {
+                messageClass = 'good';
+                message = '¡Excelente trabajo! Tu dominio del inglés es impresionante. ¡Continúa así!';
+            } else if (percentage >= 50) {
+                messageClass = 'improving';
+                message = '¡Buen progreso! Sigue practicando y pronto dominarás el inglés por completo.';
+            }
+
+            const messageElement = document.getElementById('completionMessage');
+            messageElement.textContent = message;
+            messageElement.className = `completion-message ${messageClass}`;
+
+            // Ajustar estrellas mostradas
+            const starsToShow = Math.min(3, Math.ceil(percentage / 33.33));
+            const starsContainer = document.getElementById('starsShowcase');
+            starsContainer.innerHTML = '';
+            
+            for (let i = 0; i < starsToShow; i++) {
+                const star = document.createElement('i');
+                star.className = 'fas fa-star';
+                star.style.animationDelay = `${i * 0.5}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Función para celebrar de nuevo
+        function celebrateAgain() {
+            // Crear más partículas
+            createParticles();
+            
+            // Agregar efecto de confeti
+            const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#95e1d3', '#f3c4fb'];
+            
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'absolute';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confetti.style.animation = `float-up 2s ease-out forwards`;
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 2000);
+            }
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            createStarfield();
+            createAsteroids();
+            createParticles();
+            loadGameData();
+        });
+    </script>
+</body>
+</html>

@@ -249,6 +249,15 @@ function setupLevelNodes() {
         // Update node appearance based on state
         updateNodeState(node, level);
         
+        // Update node label with bilingual text
+        const nodeLabel = node.querySelector('.node-label');
+        if (nodeLabel && config) {
+            nodeLabel.innerHTML = `
+                <div class="label-english">${config.name}</div>
+                <div class="label-spanish">${config.nameEs}</div>
+            `;
+        }
+        
         // Add click handler
         node.addEventListener('click', () => handleLevelClick(level));
         

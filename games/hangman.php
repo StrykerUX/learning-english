@@ -186,11 +186,11 @@ session_start();
             <p>Puntuación Final: <span id="final-score"></span></p>
             <p>Palabras Completadas: <span id="words-completed"></span>/10</p>
             <div class="game-controls">
-                <button class="control-button" onclick="restartGame()">
-                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                <button class="control-button" onclick="returnToBase()">
+                    <i class="fas fa-rocket"></i> Regresar a Base
                 </button>
-                <button class="control-button" onclick="goHome()">
-                    <i class="fas fa-home"></i> Menú Principal
+                <button class="control-button" onclick="continueJourney()">
+                    <i class="fas fa-space-shuttle"></i> Continuar Misión
                 </button>
             </div>
         </div>
@@ -390,15 +390,25 @@ session_start();
             }
         }
 
-        // Restart game
-        function restartGame() {
-            $('#results-panel').removeClass('visible');
-            initGame();
+        // Función no utilizada - removida para evitar confusión
+        // Los usuarios solo pueden regresar o continuar
+
+        // Return to base (dashboard)
+        function returnToBase() {
+            // Guardar progreso y regresar al dashboard
+            window.location.href = '../index.html';
         }
 
-        // Go to home
-        function goHome() {
-            window.location.href = '../index.html';
+        // Continue to next level
+        function continueJourney() {
+            // Verificar si es el último nivel
+            if (3 < 8) { // Nivel 3 < total de niveles
+                // Ir al siguiente nivel
+                window.location.href = '../theory/present-simple.php';
+            } else {
+                // Si es el último nivel, mostrar pantalla de felicitaciones
+                window.location.href = '../congratulations.html';
+            }
         }
 
         // Initialize game on load
