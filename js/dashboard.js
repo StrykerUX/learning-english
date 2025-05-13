@@ -51,56 +51,72 @@ class GameState {
 const LEVELS_CONFIG = {
     1: {
         name: 'Basic Words',
+        nameEs: 'Palabras Básicas',
         description: 'Learn essential English vocabulary with 40 basic words.',
+        descriptionEs: 'Aprende vocabulario esencial del inglés con 40 palabras básicas.',
         icon: 'fas fa-book-open',
         gameFile: 'vocabulary-basic.php',
         theoryFile: 'basic-words.php'
     },
     2: {
         name: 'Memory Game',
+        nameEs: 'Juego de Memoria',
         description: 'Match English words with their Spanish translations.',
+        descriptionEs: 'Relaciona palabras en inglés con sus traducciones en español.',
         icon: 'fas fa-puzzle-piece',
         gameFile: 'memory-game.php',
         theoryFile: 'memory-tips.php'
     },
     3: {
         name: 'Hangman',
+        nameEs: 'Ahorcado',
         description: 'Guess the word letter by letter in this classic game.',
+        descriptionEs: 'Adivina la palabra letra por letra en este juego clásico.',
         icon: 'fas fa-spell-check',
         gameFile: 'hangman.php',
         theoryFile: 'spelling-tips.php'
     },
     4: {
         name: 'Present Simple',
+        nameEs: 'Presente Simple',
         description: 'Master the present simple tense with interactive exercises.',
+        descriptionEs: 'Domina el presente simple con ejercicios interactivos.',
         icon: 'fas fa-clock',
         gameFile: 'present-simple.php',
         theoryFile: 'present-simple.php'
     },
     5: {
         name: 'Present Continuous',
+        nameEs: 'Presente Continuo',
         description: 'Learn about actions happening right now.',
+        descriptionEs: 'Aprende sobre acciones que suceden ahora mismo.',
         icon: 'fas fa-running',
         gameFile: 'present-continuous.php',
         theoryFile: 'present-continuous.php'
     },
     6: {
         name: 'Past Simple',
+        nameEs: 'Pasado Simple',
         description: 'Practice talking about past events and actions.',
+        descriptionEs: 'Practica hablando sobre eventos y acciones del pasado.',
         icon: 'fas fa-history',
         gameFile: 'past-simple.php',
         theoryFile: 'past-simple.php'
     },
     7: {
         name: 'Future Simple',
+        nameEs: 'Futuro Simple',
         description: 'Express future plans and predictions.',
+        descriptionEs: 'Expresa planes futuros y predicciones.',
         icon: 'fas fa-rocket',
         gameFile: 'future-simple.php',
         theoryFile: 'future-simple.php'
     },
     8: {
         name: 'Prepositions',
+        nameEs: 'Preposiciones',
         description: 'Learn where things are with prepositions of place.',
+        descriptionEs: 'Aprende dónde están las cosas con preposiciones de lugar.',
         icon: 'fas fa-location-arrow',
         gameFile: 'prepositions.php',
         theoryFile: 'prepositions.php'
@@ -282,67 +298,16 @@ function handleLevelClick(level) {
         return;
     }
     
-    currentSelectedLevel = level;
-    openLevelPanel(level);
+    // Va directo a la teoría del nivel
+    const config = LEVELS_CONFIG[level];
+    window.location.href = `theory/${config.theoryFile}`;
 }
 
 // ===== LEVEL PANEL FUNCTIONS =====
-function openLevelPanel(level) {
-    const config = LEVELS_CONFIG[level];
-    const bestScore = gameState.getLevelBestScore(level);
-    const stars = gameState.getLevelStars(level);
-    
-    // Update panel content
-    document.getElementById('panelTitle').textContent = config.name;
-    document.getElementById('panelDescription').textContent = config.description;
-    document.getElementById('panelIcon').innerHTML = `<i class="${config.icon}"></i>`;
-    document.getElementById('panelBestScore').textContent = bestScore;
-    
-    // Update stars
-    const starElements = document.querySelectorAll('#panelStars i');
-    starElements.forEach((star, index) => {
-        if (index < stars) {
-            star.classList.remove('far');
-            star.classList.add('fas');
-        } else {
-            star.classList.remove('fas');
-            star.classList.add('far');
-        }
-    });
-    
-    // Show panel
-    levelPanel.classList.add('show');
-    
-    // Close panel when clicking outside
-    document.addEventListener('click', handlePanelOutsideClick);
-}
-
-function closeLevelPanel() {
-    levelPanel.classList.remove('show');
-    currentSelectedLevel = null;
-    document.removeEventListener('click', handlePanelOutsideClick);
-}
-
-function handlePanelOutsideClick(e) {
-    if (!levelPanel.contains(e.target) && !e.target.closest('.level-node')) {
-        closeLevelPanel();
-    }
-}
+// Removido porque ya no usamos el panel
 
 // ===== NAVIGATION FUNCTIONS =====
-function openTheory() {
-    if (!currentSelectedLevel) return;
-    
-    const config = LEVELS_CONFIG[currentSelectedLevel];
-    window.open(`theory/${config.theoryFile}`, '_blank');
-}
-
-function playLevel() {
-    if (!currentSelectedLevel) return;
-    
-    const config = LEVELS_CONFIG[currentSelectedLevel];
-    window.location.href = `games/${config.gameFile}`;
-}
+// Removido porque ya no necesitamos estas funciones
 
 // ===== PLAYER SHIP POSITIONING =====
 function positionPlayerShip() {
