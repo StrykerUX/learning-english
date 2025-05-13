@@ -728,21 +728,22 @@ body {
 
 /* ===== COMPLETED MISSIONS DISPLAY ===== */
 .completed-missions {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: sticky;
+    top: 100px; /* Debajo del header */
+    right: 20px;
+    float: right;
     background: rgba(26, 26, 46, 0.9);
     backdrop-filter: blur(20px);
     padding: var(--space-md);
     border-radius: var(--radius-soft);
     border: 3px solid var(--purple-bright);
     color: white;
-    max-width: 300px;
-    width: 90%;
+    max-width: 280px;
+    width: auto;
     text-align: center;
     z-index: 50;
     box-shadow: var(--shadow-soft);
+    margin-top: 20px;
 }
 
 .missions-title {
@@ -874,8 +875,17 @@ body {
     
     /* Responsive for completed missions */
     .completed-missions {
+        position: fixed;
+        top: auto;
+        bottom: 90px; /* Sobre el footer y recordatorio */
+        right: 10px;
+        left: 10px;
+        float: none;
         max-width: 90%;
+        width: calc(100% - 20px);
         padding: var(--space-sm);
+        margin: 0;
+        border-radius: var(--radius-soft);
     }
     
     .missions-title {
@@ -932,9 +942,17 @@ body {
     
     /* Extra small screen adjustments */
     .completed-missions {
-        top: 40%;
-        max-height: 50vh;
-        overflow-y: auto;
+        position: fixed;
+        top: auto;
+        bottom: 80px; /* Más cerca del footer */
+        right: 5px;
+        left: 5px;
+        float: none;
+        max-width: 95%;
+        width: calc(100% - 10px);
+        padding: var(--space-xs);
+        margin: 0;
+        transform: none;
     }
     
     .theory-reminder {

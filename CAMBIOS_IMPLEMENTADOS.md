@@ -18,13 +18,16 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
   - Mantenidos solo los bordes específicos necesarios para el diseño
   - Si persiste el problema, puede ser causado por algún CSS de browser o extension
 
-### 3. ✅ Misiones Completadas
-- **Característica Nueva**: Se agregó una sección central que muestra las misiones completadas
+### 3. ✅ Misiones Completadas ACTUALIZADO
+- **Característica Nueva**: Se agregó una sección que muestra las misiones completadas
+- **Posición Actualizada**:
+  - **Desktop**: Esquina superior derecha con posición sticky (siempre visible al hacer scroll)
+  - **Móvil/Responsive**: Parte inferior sin sticky (fijo en el bottom)
 - **Funcionalidad**:
   - Se muestra automáticamente cuando hay niveles completados
   - Muestra el icono, nombre en español y estrellas obtenidas de cada nivel
   - Se oculta cuando no hay misiones completadas
-  - Responsive para móviles
+  - Completamente responsive
 
 ### 4. ✅ Recordatorio de Teoría
 - **Característica Nueva**: Mensaje recordando al usuario ver la teoría antes de jugar
@@ -68,6 +71,7 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
    - Agregado recordatorio de teoría
    - Footer con enlace a Imstryker
    - ✅ **NUEVO**: Nivel 8 simplificado (sin clases especiales)
+   - La estructura del HTML de misiones completadas se mantiene igual
 
 3. **`js/dashboard.js`**:
    - Nueva función `updateCompletedMissions()`
@@ -139,3 +143,50 @@ He implementado todos los cambios solicitados para mejorar la interfaz de Englis
 ## El nivel 8 ahora es visualmente idéntico a todos los demás niveles! 🎯
 
 **¡Todos los cambios están completados y el nivel 8 se ve perfectamente!** 🚀
+
+## Últimos Cambios - Reubicación de Misiones Completadas
+
+### Cambio de Posición
+
+**Antes**: Las misiones estaban en el centro de la pantalla
+**Ahora**: 
+- **Desktop**: Esquina superior derecha con posición sticky (siempre visible al hacer scroll)
+- **Móvil**: Parte inferior sin sticky (posición fixed)
+
+### Ventajas de la nueva posición:
+- ✅ No obstruye el mapa central
+- ✅ Siempre visible en desktop (sticky)
+- ✅ En móvil está en una zona cómoda
+- ✅ No interfiere con la navegación
+
+### CSS implementado:
+```css
+/* Desktop - sticky en la esquina superior derecha */
+.completed-missions {
+    position: sticky;
+    top: 100px; /* Debajo del header */
+    right: 20px;
+    float: right;
+    max-width: 280px;
+    /* ... otros estilos ... */
+}
+
+/* Móvil - fixed en la parte inferior */
+@media (max-width: 768px) {
+    .completed-missions {
+        position: fixed;
+        top: auto;
+        bottom: 90px; /* Sobre el footer y recordatorio */
+        right: 10px;
+        left: 10px;
+        width: calc(100% - 20px);
+        /* ... otros estilos ... */
+    }
+}
+```
+
+### 🎉 Resultado Final:
+- ✅ Misiones completadas en esquina superior derecha (desktop)
+- ✅ Misiones en la parte inferior (móvil)
+- ✅ Nivel 8 idéntico a todos los demás niveles
+- ✅ Interfaz limpia y bien organizada
