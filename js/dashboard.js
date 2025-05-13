@@ -134,7 +134,6 @@ const playerNameInput = document.getElementById('playerName');
 const playerNameDisplay = document.getElementById('playerNameDisplay');
 const totalStarsDisplay = document.getElementById('totalStars');
 const totalPointsDisplay = document.getElementById('totalPoints');
-const levelPanel = document.getElementById('levelPanel');
 const notification = document.getElementById('notification');
 const playerShip = document.getElementById('playerShip');
 
@@ -228,6 +227,25 @@ function initializeDashboard() {
     setupLevelNodes();
     positionPlayerShip();
     
+    // Asegurar que las etiquetas bilingües se muestren correctamente
+    setTimeout(() => {
+        console.log('Verificando etiquetas bilingües...');
+        const nodeLabels = document.querySelectorAll('.node-label');
+        nodeLabels.forEach((label, index) => {
+            if (!label.querySelector('.label-english')) {
+                console.log(`Actualizando etiqueta para nivel ${index + 1}`);
+                const level = index + 1;
+                const config = LEVELS_CONFIG[level];
+                if (config) {
+                    label.innerHTML = `
+                        <div class="label-english">${config.name}</div>
+                        <div class="label-spanish">${config.nameEs}</div>
+                    `;
+                }
+            }
+        });
+    }, 100);
+    
     isInitialized = true;
 }
 
@@ -241,6 +259,7 @@ function updateUI() {
 // ===== LEVEL NODES SETUP =====
 function setupLevelNodes() {
     const levelNodes = document.querySelectorAll('.level-node');
+    console.log(`Configurando ${levelNodes.length} nodos de nivel`);
     
     levelNodes.forEach((node, index) => {
         const level = index + 1;
@@ -252,6 +271,7 @@ function setupLevelNodes() {
         // Update node label with bilingual text
         const nodeLabel = node.querySelector('.node-label');
         if (nodeLabel && config) {
+            console.log(`Actualizando etiqueta del nivel ${level}: ${config.name} / ${config.nameEs}`);
             nodeLabel.innerHTML = `
                 <div class="label-english">${config.name}</div>
                 <div class="label-spanish">${config.nameEs}</div>
@@ -272,6 +292,8 @@ function setupLevelNodes() {
         // Make focusable
         node.setAttribute('tabindex', '0');
     });
+    
+    console.log('Configuración de nodos completada');
 }
 
 // ===== NODE STATE MANAGEMENT =====
@@ -307,16 +329,15 @@ function handleLevelClick(level) {
         return;
     }
     
-    // Va directo a la teoría del nivel
+    // Va directo a la teoría del nivel - eliminado el panel
     const config = LEVELS_CONFIG[level];
     window.location.href = `theory/${config.theoryFile}`;
 }
 
-// ===== LEVEL PANEL FUNCTIONS =====
-// Removido porque ya no usamos el panel
+// Panel de nivel eliminado - ya no se usa
 
-// ===== NAVIGATION FUNCTIONS =====
-// Removido porque ya no necesitamos estas funciones
+// ===== PANEL DE NIVEL ELIMINADO =====
+// Ya no se usa el panel porque va directamente a la teoría
 
 // ===== PLAYER SHIP POSITIONING =====
 function positionPlayerShip() {
@@ -390,34 +411,27 @@ window.onGameComplete = function(level, score, stars) {
 
 // ===== KEYBOARD NAVIGATION =====
 document.addEventListener('keydown', (e) => {
-    // Close panel with Escape
-    if (e.key === 'Escape' && levelPanel.classList.contains('show')) {
-        closeLevelPanel();
-    }
-    
     // Navigate levels with arrow keys
-    if (!levelPanel.classList.contains('show')) {
-        const levelNodes = document.querySelectorAll('.level-node');
-        const focusedIndex = Array.from(levelNodes).findIndex(node => node === document.activeElement);
+    const levelNodes = document.querySelectorAll('.level-node');
+    const focusedIndex = Array.from(levelNodes).findIndex(node => node === document.activeElement);
+    
+    if (focusedIndex !== -1) {
+        let nextIndex = focusedIndex;
         
-        if (focusedIndex !== -1) {
-            let nextIndex = focusedIndex;
-            
-            switch (e.key) {
-                case 'ArrowUp':
-                case 'ArrowLeft':
-                    nextIndex = Math.max(0, focusedIndex - 1);
-                    break;
-                case 'ArrowDown':
-                case 'ArrowRight':
-                    nextIndex = Math.min(levelNodes.length - 1, focusedIndex + 1);
-                    break;
-            }
-            
-            if (nextIndex !== focusedIndex) {
-                e.preventDefault();
-                levelNodes[nextIndex].focus();
-            }
+        switch (e.key) {
+            case 'ArrowUp':
+            case 'ArrowLeft':
+                nextIndex = Math.max(0, focusedIndex - 1);
+                break;
+            case 'ArrowDown':
+            case 'ArrowRight':
+                nextIndex = Math.min(levelNodes.length - 1, focusedIndex + 1);
+                break;
+        }
+        
+        if (nextIndex !== focusedIndex) {
+            e.preventDefault();
+            levelNodes[nextIndex].focus();
         }
     }
 });
