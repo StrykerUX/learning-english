@@ -9,7 +9,7 @@ $(document).ready(function() {
         localStorage.setItem('visitedBefore', 'true');
     }
 
-    // Handle game card clicks with animation
+    // Handle game card clicks with modal
     $('.game-card').click(function() {
         const category = $(this).data('category');
         const game = $(this).data('game');
@@ -27,10 +27,8 @@ $(document).ready(function() {
             return;
         }
         
-        // Navigate to appropriate game
-        setTimeout(() => {
-            navigateToGame(category, game);
-        }, 200);
+        // Show modal for game confirmation
+        showGameModal(game, category);
     });
     
     // Add hover effect for game cards
@@ -39,9 +37,22 @@ $(document).ready(function() {
             $(this).css('transform', 'translateY(-5px)');
         },
         function() {
-            $(this).css('transform', 'translateY(-3px)');
+            if (!$(this).hasClass('clicked')) {
+                $(this).css('transform', '');
+            }
         }
     );
+
+    // Modal handlers
+    $('#modal-close, #modal-cancel').click(function() {
+        $('#game-modal').hide();
+    });
+
+    $('#game-modal').click(function(e) {
+        if (e.target === this) {
+            $(this).hide();
+        }
+    });
 });
 
 function initializeProgress() {
@@ -149,8 +160,65 @@ function isGameUnlocked(gameNumber) {
     return requirements.every(req => progress.gameProgress[req]?.completed);
 }
 
+function showGameModal(gameNumber, category) {
+    const gameInfo = getGameInfo(gameNumber);
+    
+    $('#modal-title').text(gameInfo.title);
+    $('#modal-description').text(gameInfo.description);
+    
+    // Clear any previous handlers
+    $('#modal-confirm').off('click');
+    
+    // Add handler for this specific game
+    $('#modal-confirm').click(function() {
+        $('#game-modal').hide();
+        navigateToGame(category, gameNumber);
+    });
+    
+    $('#game-modal').show();
+}
+
+function getGameInfo(gameNumber) {
+    const gameInfos = {
+        1: {
+            title: 'Palabras Básicas',
+            description: 'Aprende 20 palabras esenciales: colores, números, familia y animales.'
+        },
+        2: {
+            title: 'Memorama',
+            description: 'Encuentra las parejas de palabras en inglés y español. 3 rondas de diversión.'
+        },
+        3: {
+            title: 'Ahorcado',
+            description: 'Adivina 20 palabras con máximo 8 errores. ¡Usa las pistas!'
+        },
+        4: {
+            title: 'Presente Simple',
+            description: 'Aprende las estructuras básicas del presente simple.'
+        },
+        5: {
+            title: 'Presente Continuo',
+            description: 'Domina el presente continuo para hablar de acciones actuales.'
+        },
+        6: {
+            title: 'Pasado Simple',
+            description: 'Aprende verbos regulares e irregulares en pasado.'
+        },
+        7: {
+            title: 'Futuro Simple',
+            description: 'Diferencias entre "will" y "going to" para el futuro.'
+        },
+        8: {
+            title: 'Preposiciones',
+            description: 'Aprende preposiciones con elementos visuales e interactivos.'
+        }
+    };
+    
+    return gameInfos[gameNumber] || { title: 'Juego', description: 'Descripción del juego' };
+}
+
 function navigateToGame(category, game) {
-    // Define navigation paths
+    // Define navigation paths based on the new structure
     const gamePaths = {
         1: 'games/vocabulary-basic.php',
         2: 'games/memory-game.php',

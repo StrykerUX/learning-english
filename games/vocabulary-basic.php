@@ -18,7 +18,7 @@
             </h1>
             <div class="score-display">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
                 </svg>
                 <span id="score">0</span> puntos | <span id="question-counter">1</span>/20
             </div>
@@ -58,149 +58,29 @@
 
             const questions = [
                 // Colors
-                {
-                    question: '¿Cuál es la traducción de "Red"?',
-                    options: ['Rojo', 'Azul', 'Verde', 'Amarillo'],
-                    correct: 0,
-                    explanation: 'Red significa "Rojo" en español',
-                    word: 'RED'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Blue"?',
-                    options: ['Negro', 'Blanco', 'Azul', 'Verde'],
-                    correct: 2,
-                    explanation: 'Blue significa "Azul" en español',
-                    word: 'BLUE'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Green"?',
-                    options: ['Verde', 'Amarillo', 'Morado', 'Rosa'],
-                    correct: 0,
-                    explanation: 'Green significa "Verde" en español',
-                    word: 'GREEN'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Yellow"?',
-                    options: ['Naranja', 'Amarillo', 'Rojo', 'Azul'],
-                    correct: 1,
-                    explanation: 'Yellow significa "Amarillo" en español',
-                    word: 'YELLOW'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Black"?',
-                    options: ['Blanco', 'Gris', 'Negro', 'Café'],
-                    correct: 2,
-                    explanation: 'Black significa "Negro" en español',
-                    word: 'BLACK'
-                },
-                {
-                    question: '¿Cuál es la traducción de "White"?',
-                    options: ['Blanco', 'Gris', 'Beige', 'Plateado'],
-                    correct: 0,
-                    explanation: 'White significa "Blanco" en español',
-                    word: 'WHITE'
-                },
+                { question: '¿Cuál es la traducción de "Red"?', options: ['Rojo', 'Azul', 'Verde', 'Amarillo'], correct: 0, explanation: 'Red significa "Rojo" en español', word: 'RED' },
+                { question: '¿Cuál es la traducción de "Blue"?', options: ['Negro', 'Blanco', 'Azul', 'Verde'], correct: 2, explanation: 'Blue significa "Azul" en español', word: 'BLUE' },
+                { question: '¿Cuál es la traducción de "Green"?', options: ['Verde', 'Amarillo', 'Morado', 'Rosa'], correct: 0, explanation: 'Green significa "Verde" en español', word: 'GREEN' },
+                { question: '¿Cuál es la traducción de "Yellow"?', options: ['Naranja', 'Amarillo', 'Rojo', 'Azul'], correct: 1, explanation: 'Yellow significa "Amarillo" en español', word: 'YELLOW' },
+                { question: '¿Cuál es la traducción de "Black"?', options: ['Blanco', 'Gris', 'Negro', 'Café'], correct: 2, explanation: 'Black significa "Negro" en español', word: 'BLACK' },
                 // Numbers
-                {
-                    question: '¿Cómo se dice "Uno" en inglés?',
-                    options: ['Zero', 'One', 'Two', 'Three'],
-                    correct: 1,
-                    explanation: 'One es el número uno en inglés',
-                    word: 'ONE'
-                },
-                {
-                    question: '¿Cómo se dice "Dos" en inglés?',
-                    options: ['One', 'Two', 'Three', 'Four'],
-                    correct: 1,
-                    explanation: 'Two es el número dos en inglés',
-                    word: 'TWO'
-                },
-                {
-                    question: '¿Cómo se dice "Tres" en inglés?',
-                    options: ['Two', 'Three', 'Four', 'Five'],
-                    correct: 1,
-                    explanation: 'Three es el número tres en inglés',
-                    word: 'THREE'
-                },
-                {
-                    question: '¿Cómo se dice "Cuatro" en inglés?',
-                    options: ['Three', 'Four', 'Five', 'Six'],
-                    correct: 1,
-                    explanation: 'Four es el número cuatro en inglés',
-                    word: 'FOUR'
-                },
-                {
-                    question: '¿Cómo se dice "Cinco" en inglés?',
-                    options: ['Four', 'Five', 'Six', 'Seven'],
-                    correct: 1,
-                    explanation: 'Five es el número cinco en inglés',
-                    word: 'FIVE'
-                },
+                { question: '¿Cómo se dice "Uno" en inglés?', options: ['Zero', 'One', 'Two', 'Three'], correct: 1, explanation: 'One es el número uno en inglés', word: 'ONE' },
+                { question: '¿Cómo se dice "Dos" en inglés?', options: ['One', 'Two', 'Three', 'Four'], correct: 1, explanation: 'Two es el número dos en inglés', word: 'TWO' },
+                { question: '¿Cómo se dice "Tres" en inglés?', options: ['Two', 'Three', 'Four', 'Five'], correct: 1, explanation: 'Three es el número tres en inglés', word: 'THREE' },
+                { question: '¿Cómo se dice "Cuatro" en inglés?', options: ['Three', 'Four', 'Five', 'Six'], correct: 1, explanation: 'Four es el número cuatro en inglés', word: 'FOUR' },
+                { question: '¿Cómo se dice "Cinco" en inglés?', options: ['Four', 'Five', 'Six', 'Seven'], correct: 1, explanation: 'Five es el número cinco en inglés', word: 'FIVE' },
                 // Family
-                {
-                    question: '¿Cuál es la traducción de "Mother"?',
-                    options: ['Hermana', 'Madre', 'Padre', 'Tía'],
-                    correct: 1,
-                    explanation: 'Mother significa "Madre" en español',
-                    word: 'MOTHER'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Father"?',
-                    options: ['Padre', 'Hermano', 'Tío', 'Abuelo'],
-                    correct: 0,
-                    explanation: 'Father significa "Padre" en español',
-                    word: 'FATHER'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Sister"?',
-                    options: ['Madre', 'Tía', 'Hermana', 'Abuela'],
-                    correct: 2,
-                    explanation: 'Sister significa "Hermana" en español',
-                    word: 'SISTER'
-                },
-                {
-                    question: '¿Cuál es la traducción de "Brother"?',
-                    options: ['Primo', 'Hermano', 'Tío', 'Padre'],
-                    correct: 1,
-                    explanation: 'Brother significa "Hermano" en español',
-                    word: 'BROTHER'
-                },
+                { question: '¿Cuál es la traducción de "Mother"?', options: ['Hermana', 'Madre', 'Padre', 'Tía'], correct: 1, explanation: 'Mother significa "Madre" en español', word: 'MOTHER' },
+                { question: '¿Cuál es la traducción de "Father"?', options: ['Padre', 'Hermano', 'Tío', 'Abuelo'], correct: 0, explanation: 'Father significa "Padre" en español', word: 'FATHER' },
+                { question: '¿Cuál es la traducción de "Sister"?', options: ['Madre', 'Tía', 'Hermana', 'Abuela'], correct: 2, explanation: 'Sister significa "Hermana" en español', word: 'SISTER' },
+                { question: '¿Cuál es la traducción de "Brother"?', options: ['Primo', 'Hermano', 'Tío', 'Padre'], correct: 1, explanation: 'Brother significa "Hermano" en español', word: 'BROTHER' },
                 // Animals
-                {
-                    question: '¿Cómo se dice "Gato" en inglés?',
-                    options: ['Dog', 'Cat', 'Bird', 'Fish'],
-                    correct: 1,
-                    explanation: 'Cat es la palabra en inglés para gato',
-                    word: 'CAT'
-                },
-                {
-                    question: '¿Cómo se dice "Perro" en inglés?',
-                    options: ['Cat', 'Dog', 'Horse', 'Bird'],
-                    correct: 1,
-                    explanation: 'Dog es la palabra en inglés para perro',
-                    word: 'DOG'
-                },
-                {
-                    question: '¿Cómo se dice "Pájaro" en inglés?',
-                    options: ['Cat', 'Dog', 'Bird', 'Fish'],
-                    correct: 2,
-                    explanation: 'Bird es la palabra en inglés para pájaro',
-                    word: 'BIRD'
-                },
-                {
-                    question: '¿Cómo se dice "Pez" en inglés?',
-                    options: ['Cat', 'Dog', 'Bird', 'Fish'],
-                    correct: 3,
-                    explanation: 'Fish es la palabra en inglés para pez',
-                    word: 'FISH'
-                },
-                {
-                    question: '¿Cómo se dice "Caballo" en inglés?',
-                    options: ['Dog', 'Cat', 'Horse', 'Bird'],
-                    correct: 2,
-                    explanation: 'Horse es la palabra en inglés para caballo',
-                    word: 'HORSE'
-                }
+                { question: '¿Cómo se dice "Gato" en inglés?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correct: 1, explanation: 'Cat es la palabra en inglés para gato', word: 'CAT' },
+                { question: '¿Cómo se dice "Perro" en inglés?', options: ['Cat', 'Dog', 'Horse', 'Bird'], correct: 1, explanation: 'Dog es la palabra en inglés para perro', word: 'DOG' },
+                { question: '¿Cómo se dice "Pájaro" en inglés?', options: ['Cat', 'Dog', 'Bird', 'Fish'], correct: 2, explanation: 'Bird es la palabra en inglés para pájaro', word: 'BIRD' },
+                { question: '¿Cómo se dice "Pez" en inglés?', options: ['Cat', 'Dog', 'Bird', 'Fish'], correct: 3, explanation: 'Fish es la palabra en inglés para pez', word: 'FISH' },
+                { question: '¿Cuál es la traducción de "White"?', options: ['Blanco', 'Gris', 'Beige', 'Plateado'], correct: 0, explanation: 'White significa "Blanco" en español', word: 'WHITE' },
+                { question: '¿Cómo se dice "Caballo" en inglés?', options: ['Dog', 'Cat', 'Horse', 'Bird'], correct: 2, explanation: 'Horse es la palabra en inglés para caballo', word: 'HORSE' }
             ];
 
             function loadQuestion() {

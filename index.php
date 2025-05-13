@@ -12,28 +12,28 @@
         <header class="header">
             <h1 class="header-title">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <path d="M9 12l2 2 4-4"></path>
                     <circle cx="12" cy="12" r="11"></circle>
+                    <path d="M9 12l2 2 4-4"></path>
                 </svg>
                 English Trainer
             </h1>
             <div class="user-stats">
                 <div class="stat-card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                        <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
                     </svg>
                     <span id="total-points">0</span> Puntos
                 </div>
                 <div class="stat-card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
                     </svg>
                     <span id="words-learned">0</span>/100 Palabras
                 </div>
                 <div class="stat-card">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M18 6 6 18"></path>
-                        <path d="M6 6l12 12"></path>
+                        <path d="M9 12l2 2 4-4"></path>
+                        <circle cx="12" cy="12" r="11"></circle>
                     </svg>
                     <span id="completed-levels">0</span>/8 Completados
                 </div>
@@ -45,7 +45,7 @@
             <section class="category-section">
                 <h2 class="category-title">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
                     </svg>
                     Juegos de Vocabulario
                 </h2>
@@ -54,7 +54,7 @@
                         <div class="game-header">
                             <div class="game-icon vocabulary">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10z"></path>
                                 </svg>
                             </div>
                             <div class="game-info">
@@ -63,8 +63,8 @@
                             </div>
                             <div class="game-status">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M9 12l2 2 4-4"></path>
                                     <circle cx="12" cy="12" r="11"></circle>
+                                    <path d="M9 12l2 2 4-4"></path>
                                 </svg>
                             </div>
                         </div>
@@ -263,8 +263,8 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"></path>
                         <path d="M12 2v8"></path>
-                        <path d="m7 10-4-4h4"></path>
-                        <path d="m17 10 4-4h-4"></path>
+                        <path d="m7 10-4-4 4-4"></path>
+                        <path d="m17 10 4-4-4-4"></path>
                     </svg>
                     Juegos Especiales
                 </h2>
@@ -275,8 +275,8 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"></path>
                                     <path d="M12 2v8"></path>
-                                    <path d="m7 10-4-4h4"></path>
-                                    <path d="m17 10 4-4h-4"></path>
+                                    <path d="m7 10-4-4 4-4"></path>
+                                    <path d="m17 10 4-4-4-4"></path>
                                 </svg>
                             </div>
                             <div class="game-info">
@@ -300,6 +300,23 @@
                 </div>
             </section>
         </main>
+    </div>
+
+    <!-- Modal for game access -->
+    <div id="game-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">¿Listo para empezar?</h3>
+                <button class="modal-close" id="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <p id="modal-description">Estás a punto de empezar el juego.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" id="modal-cancel">Cancelar</button>
+                <button class="btn primary" id="modal-confirm">Empezar Juego</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
