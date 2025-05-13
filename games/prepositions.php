@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,560 +8,472 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Preposiciones - English Trainer</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Prepositions Game Specific Styles */
-        .preposition-scene {
-            background: white;
-            border: 3px solid var(--text-dark);
-            border-radius: var(--border-radius);
+        .game-container {
+            max-width: 900px;
+            margin: 2rem auto;
             padding: 2rem;
-            min-height: 400px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            gap: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
         }
         
-        .scene-objects {
-            position: relative;
-            width: 100%;
-            max-width: 500px;
-            height: 300px;
-            border: 2px dashed #E0E6ED;
-            border-radius: var(--border-radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .visual-scenario {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
         }
         
-        .object {
-            position: absolute;
-            background: white;
-            border: 2px solid var(--text-dark);
-            border-radius: var(--border-radius-sm);
-            padding: 1rem;
-            box-shadow: 2px 2px 0px var(--shadow-dark);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .scenario-visual {
             font-size: 3rem;
-            cursor: pointer;
+            margin-bottom: 1rem;
+            color: #0ff;
         }
         
-        .object:hover {
-            transform: scale(1.05);
-            box-shadow: 3px 3px 0px var(--shadow-dark);
+        .scenario-description {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 0.5rem;
         }
         
-        .object-1 {
-            background: var(--primary-color);
+        .sentence-display {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 2px solid #333;
         }
         
-        .object-2 {
-            background: var(--secondary-color);
+        .sentence-text {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 1rem;
         }
         
-        .line-svg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
+        .missing-word {
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            border: 2px dashed #ffd700;
         }
         
-        .preposition-options {
+        .sentence-translation {
+            color: #888;
+            font-style: italic;
+            font-size: 1.2rem;
+        }
+        
+        .options-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 1rem;
-            margin-top: 2rem;
+            margin-bottom: 2rem;
         }
         
-        .preposition-btn {
+        .option-button {
             padding: 1rem;
-            border: 2px solid var(--text-dark);
-            border-radius: var(--border-radius-sm);
-            background: white;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-weight: 600;
-            text-align: center;
-            font-size: 1.1rem;
-        }
-        
-        .preposition-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 3px 3px 0px var(--shadow-dark);
-        }
-        
-        .preposition-btn.correct {
-            background: var(--success-color);
-            color: #2ECC71;
-        }
-        
-        .preposition-btn.incorrect {
-            background: var(--accent-color);
-            color: #E74C3C;
-        }
-        
-        .scene-description {
-            background: var(--warning-color);
-            padding: 1rem;
-            border-radius: var(--border-radius-sm);
-            border: 2px solid var(--text-dark);
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .visual-hint {
-            position: absolute;
-            background: var(--warning-color);
-            padding: 0.5rem;
-            border-radius: 50%;
-            border: 2px solid var(--text-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
             font-size: 1.2rem;
             font-weight: bold;
-            animation: pulse 2s infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
         }
         
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+        .option-button:hover {
+            border-color: #0ff;
+            background: rgba(0, 255, 255, 0.1);
         }
         
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .object {
-                font-size: 2rem;
-                padding: 0.75rem;
-            }
-            
-            .scene-objects {
-                height: 250px;
-            }
-            
-            .preposition-options {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .option-button.correct {
+            background: #22c55e;
+            border-color: #16a34a;
+        }
+        
+        .option-button.incorrect {
+            background: #dc2626;
+            border-color: #991b1b;
+        }
+        
+        .explanation-panel {
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid #16a34a;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .explanation-panel.visible {
+            display: block;
+        }
+        
+        .explanation-panel h3 {
+            color: #16a34a;
+            margin-bottom: 0.5rem;
+        }
+        
+        .explanation-panel p {
+            color: #ccc;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="header-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <path d="M19 14v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6"></path>
-                    <path d="M12 2v8"></path>
-                    <path d="m7 10-4-4h4"></path>
-                    <path d="m17 10 4-4h-4"></path>
-                </svg>
-                Preposiciones
-            </h1>
-            <div class="score-display">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <span id="score">0</span> puntos | <span id="question-counter">1</span>/15
+    <div class="universe">
+        <div class="stars-bg"></div>
+        
+        <div class="game-container">
+            <button class="back-button control-button" onclick="goHome()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            
+            <div class="game-header">
+                <h1>Preposiciones</h1>
+                <p>Aprende dónde están las cosas con las preposiciones</p>
             </div>
-        </header>
-
-        <main class="main">
-            <div class="game-container">
-                <div class="question-card">
-                    <h2 id="question">¿Dónde está el círculo?</h2>
-                    <div class="scene-description" id="scene-description">
-                        El círculo está _____ del cuadrado
-                    </div>
+            
+            <div class="game-stats">
+                <div class="stat-item">
+                    <div class="score-label">Situación</div>
+                    <div class="score-value" id="current-sentence">1</div>
                 </div>
-                
-                <div class="preposition-scene" id="scene-container">
-                    <div class="scene-objects" id="objects-container">
-                        <!-- Objects will be positioned here -->
-                        <svg class="line-svg" id="line-svg">
-                            <!-- Lines will be drawn here -->
-                        </svg>
-                    </div>
+                <div class="stat-item">
+                    <div class="score-label">Puntos</div>
+                    <div class="score-value" id="current-score">0</div>
                 </div>
-                
-                <div class="preposition-options" id="options-container">
-                    <!-- Preposition options will be loaded here -->
-                </div>
-                
-                <div class="nav-buttons" style="display: none;" id="result-section">
-                    <div class="btn" id="explanation" style="background: var(--secondary-color); cursor: default;"></div>
-                    <button class="btn success" id="next-question">
-                        Siguiente
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </button>
+                <div class="stat-item">
+                    <div class="score-label">Correctas</div>
+                    <div class="score-value" id="correct-answers">0</div>
                 </div>
             </div>
-        </main>
+            
+            <div class="visual-scenario">
+                <div class="scenario-visual" id="scenario-visual"></div>
+                <div class="scenario-description" id="scenario-description"></div>
+            </div>
+            
+            <div class="sentence-display">
+                <div class="sentence-text" id="sentence-text"></div>
+                <div class="sentence-translation" id="sentence-translation"></div>
+            </div>
+            
+            <div class="explanation-panel" id="explanation-panel">
+                <h3>Explicación</h3>
+                <p id="explanation-text"></p>
+            </div>
+            
+            <div class="options-container" id="options-container">
+                <!-- Options will be generated here -->
+            </div>
+            
+            <div class="game-controls">
+                <button class="next-button control-button" id="next-button" onclick="nextSentence()" style="display: none;">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="results-panel" id="results-panel">
+            <h2>¡Juego Completado!</h2>
+            <div class="stars-display" id="stars-display"></div>
+            <p>Puntuación Final: <span id="final-score"></span></p>
+            <p>Correctas: <span id="final-correct"></span>/12</p>
+            <div class="game-controls">
+                <button class="control-button" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                </button>
+                <button class="control-button" onclick="goHome()">
+                    <i class="fas fa-home"></i> Menú Principal
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../js/main.js"></script>
     <script>
-        $(document).ready(function() {
-            let currentQuestion = 0;
-            let score = 0;
-            let correctAnswers = 0;
-            let wordsLearned = new Set();
+        // Game data for Prepositions
+        const sentences = [
+            {
+                visual: "📚🪑",
+                description: "Un libro está encima de una silla",
+                sentence: "The book is _____ the chair.",
+                translation: "El libro está encima de la silla.",
+                correct: "on",
+                options: ["on", "in", "under", "next to"],
+                explanation: "'On' se usa para objetos que están sobre una superficie."
+            },
+            {
+                visual: "🏠🌳",
+                description: "Una casa está detrás de un árbol",
+                sentence: "The house is _____ the tree.",
+                translation: "La casa está detrás del árbol.",
+                correct: "behind",
+                options: ["behind", "in front of", "next to", "under"],
+                explanation: "'Behind' significa detrás de, lo opuesto a 'in front of'."
+            },
+            {
+                visual: "🐱📦",
+                description: "Un gato está dentro de una caja",
+                sentence: "The cat is _____ the box.",
+                translation: "El gato está dentro de la caja.",
+                correct: "in",
+                options: ["in", "on", "under", "next to"],
+                explanation: "'In' se usa cuando algo está dentro de un espacio cerrado."
+            },
+            {
+                visual: "📱🛋️",
+                description: "Un teléfono está al lado del sofá",
+                sentence: "The phone is _____ the sofa.",
+                translation: "El teléfono está al lado del sofá.",
+                correct: "next to",
+                options: ["next to", "on", "under", "in"],
+                explanation: "'Next to' significa al lado de, cerca de algo."
+            },
+            {
+                visual: "🐕🚗",
+                description: "Un perro está debajo del carro",
+                sentence: "The dog is _____ the car.",
+                translation: "El perro está debajo del carro.",
+                correct: "under",
+                options: ["under", "on", "in", "behind"],
+                explanation: "'Under' significa debajo de, lo opuesto a 'on'."
+            },
+            {
+                visual: "🌺🪴",
+                description: "Una flor está delante de una planta",
+                sentence: "The flower is _____ the plant.",
+                translation: "La flor está delante de la planta.",
+                correct: "in front of",
+                options: ["in front of", "behind", "next to", "on"],
+                explanation: "'In front of' significa delante de, lo opuesto a 'behind'."
+            },
+            {
+                visual: "🔑🚪",
+                description: "Las llaves están en la puerta",
+                sentence: "The keys are _____ the door.",
+                translation: "Las llaves están en la puerta.",
+                correct: "in",
+                options: ["in", "on", "next to", "under"],
+                explanation: "'In' se usa cuando algo está insertado o dentro de algo."
+            },
+            {
+                visual: "🖼️🔲",
+                description: "Un cuadro está entre dos ventanas",
+                sentence: "The picture is _____ the windows.",
+                translation: "El cuadro está entre las ventanas.",
+                correct: "between",
+                options: ["between", "on", "under", "next to"],
+                explanation: "'Between' se usa cuando algo está en el medio de dos objetos."
+            },
+            {
+                visual: "☕📋",
+                description: "Una taza está sobre una mesa",
+                sentence: "The cup is _____ the table.",
+                translation: "La taza está sobre la mesa.",
+                correct: "on",
+                options: ["on", "in", "under", "behind"],
+                explanation: "'On' se usa para objetos que están sobre una superficie."
+            },
+            {
+                visual: "🎒🪑",
+                description: "Una mochila está al lado de la silla",
+                sentence: "The backpack is _____ the chair.",
+                translation: "La mochila está al lado de la silla.",
+                correct: "next to",
+                options: ["next to", "on", "in", "under"],
+                explanation: "'Next to' significa cerca de, al lado de algo."
+            },
+            {
+                visual: "🍕📱",
+                description: "Una pizza está debajo del teléfono",
+                sentence: "The pizza is _____ the phone.",
+                translation: "La pizza está debajo del teléfono.",
+                correct: "under",
+                options: ["under", "on", "in", "next to"],
+                explanation: "'Under' significa debajo de algo."
+            },
+            {
+                visual: "🎪🎯",
+                description: "Una carpa está detrás del objetivo",
+                sentence: "The tent is _____ the target.",
+                translation: "La carpa está detrás del objetivo.",
+                correct: "behind",
+                options: ["behind", "in front of", "on", "under"],
+                explanation: "'Behind' significa detrás de algo."
+            }
+        ];
 
-            const scenarios = [
-                {
-                    question: '¿Dónde está el círculo?',
-                    description: 'El círculo está _____ del cuadrado',
-                    objects: [
-                        { type: 'circle', icon: '●', x: 50, y: 70, style: 'object-1' },
-                        { type: 'square', icon: '■', x: 50, y: 30, style: 'object-2' }
-                    ],
-                    options: ['above', 'below', 'next to', 'inside'],
-                    correct: 1,
-                    correctWord: 'below',
-                    explanation: 'El círculo está por debajo del cuadrado - "below"'
-                },
-                {
-                    question: '¿Dónde está la estrella?',
-                    description: 'La estrella está _____ de la caja',
-                    objects: [
-                        { type: 'box', icon: '□', x: 70, y: 50, style: 'object-2' },
-                        { type: 'star', icon: '★', x: 30, y: 50, style: 'object-1' }
-                    ],
-                    options: ['left', 'right', 'above', 'below'],
-                    correct: 0,
-                    correctWord: 'left',
-                    explanation: 'La estrella está a la izquierda de la caja - "left"'
-                },
-                {
-                    question: '¿Dónde está el triángulo?',
-                    description: 'El triángulo está _____ del círculo',
-                    objects: [
-                        { type: 'circle', icon: '●', x: 30, y: 50, style: 'object-2' },
-                        { type: 'triangle', icon: '▲', x: 70, y: 50, style: 'object-1' }
-                    ],
-                    options: ['left', 'right', 'between', 'under'],
-                    correct: 1,
-                    correctWord: 'right',
-                    explanation: 'El triángulo está a la derecha del círculo - "right"'
-                },
-                {
-                    question: '¿Dónde está el corazón?',
-                    description: 'El corazón está _____ de la estrella',
-                    objects: [
-                        { type: 'star', icon: '★', x: 50, y: 30, style: 'object-2' },
-                        { type: 'heart', icon: '♥', x: 50, y: 70, style: 'object-1' }
-                    ],
-                    options: ['above', 'under', 'beside', 'inside'],
-                    correct: 1,
-                    correctWord: 'under',
-                    explanation: 'El corazón está por debajo de la estrella - "under"'
-                },
-                {
-                    question: '¿Dónde está el diamante?',
-                    description: 'El diamante está _____ de las cajas',
-                    objects: [
-                        { type: 'box1', icon: '□', x: 25, y: 50, style: 'object-2' },
-                        { type: 'box2', icon: '□', x: 75, y: 50, style: 'object-2' },
-                        { type: 'diamond', icon: '♦', x: 50, y: 50, style: 'object-1' }
-                    ],
-                    options: ['between', 'next to', 'above', 'below'],
-                    correct: 0,
-                    correctWord: 'between',
-                    explanation: 'El diamante está entre las cajas - "between"'
-                },
-                {
-                    question: '¿Dónde está el pentágono?',
-                    description: 'El pentágono está _____ del hexágono',
-                    objects: [
-                        { type: 'hexagon', icon: '⬣', x: 50, y: 50, style: 'object-2' },
-                        { type: 'pentagon', icon: '⬟', x: 50, y: 20, style: 'object-1' }
-                    ],
-                    options: ['below', 'above', 'beside', 'inside'],
-                    correct: 1,
-                    correctWord: 'above',
-                    explanation: 'El pentágono está por encima del hexágono - "above"'
-                },
-                {
-                    question: '¿Dónde está el círculo?',
-                    description: 'El círculo está _____ de la línea',
-                    objects: [
-                        { type: 'line', icon: '━', x: 50, y: 50, style: 'object-2' },
-                        { type: 'circle', icon: '●', x: 20, y: 50, style: 'object-1' }
-                    ],
-                    options: ['on', 'left', 'right', 'under'],
-                    correct: 1,
-                    correctWord: 'left',
-                    explanation: 'El círculo está a la izquierda de la línea - "left"'
-                },
-                {
-                    question: '¿Dónde está la flecha?',
-                    description: 'La flecha está _____ del objetivo',
-                    objects: [
-                        { type: 'target', icon: '◎', x: 40, y: 40, style: 'object-2' },
-                        { type: 'arrow', icon: '→', x: 70, y: 60, style: 'object-1' }
-                    ],
-                    options: ['near', 'far', 'next to', 'between'],
-                    correct: 2,
-                    correctWord: 'next to',
-                    explanation: 'La flecha está al lado del objetivo - "next to"'
-                },
-                {
-                    question: '¿Dónde está el punto?',
-                    description: 'El punto está _____ del rectángulo',
-                    objects: [
-                        { type: 'rectangle', icon: '▬', x: 50, y: 40, style: 'object-2' },
-                        { type: 'dot', icon: '•', x: 50, y: 60, style: 'object-1' }
-                    ],
-                    options: ['above', 'below', 'inside', 'around'],
-                    correct: 1,
-                    correctWord: 'below',
-                    explanation: 'El punto está por debajo del rectángulo - "below"'
-                },
-                {
-                    question: '¿Dónde están los círculos?',
-                    description: 'Los círculos están _____ del cuadrado',
-                    objects: [
-                        { type: 'square', icon: '■', x: 50, y: 50, style: 'object-2' },
-                        { type: 'circle1', icon: '●', x: 30, y: 30, style: 'object-1' },
-                        { type: 'circle2', icon: '●', x: 70, y: 70, style: 'object-1' }
-                    ],
-                    options: ['around', 'inside', 'next to', 'between'],
-                    correct: 0,
-                    correctWord: 'around',
-                    explanation: 'Los círculos están alrededor del cuadrado - "around"'
-                },
-                {
-                    question: '¿Dónde está el óvalo?',
-                    description: 'El óvalo está _____ de los triángulos',
-                    objects: [
-                        { type: 'triangle1', icon: '▲', x: 35, y: 40, style: 'object-2' },
-                        { type: 'triangle2', icon: '▲', x: 65, y: 40, style: 'object-2' },
-                        { type: 'oval', icon: '◯', x: 50, y: 60, style: 'object-1' }
-                    ],
-                    options: ['between', 'behind', 'below', 'beside'],
-                    correct: 2,
-                    correctWord: 'below',
-                    explanation: 'El óvalo está por debajo de los triángulos - "below"'
-                },
-                {
-                    question: '¿Dónde está la cruz?',
-                    description: 'La cruz está _____ del círculo',
-                    objects: [
-                        { type: 'circle', icon: '●', x: 40, y: 50, style: 'object-2' },
-                        { type: 'cross', icon: '✕', x: 60, y: 50, style: 'object-1' }
-                    ],
-                    options: ['left', 'right', 'above', 'below'],
-                    correct: 1,
-                    correctWord: 'right',
-                    explanation: 'La cruz está a la derecha del círculo - "right"'
-                },
-                {
-                    question: '¿Dónde está el cubo?',
-                    description: 'El cubo está _____ de la esfera',
-                    objects: [
-                        { type: 'sphere', icon: '⚬', x: 50, y: 30, style: 'object-2' },
-                        { type: 'cube', icon: '⬜', x: 50, y: 70, style: 'object-1' }
-                    ],
-                    options: ['above', 'under', 'beside', 'in front'],
-                    correct: 1,
-                    correctWord: 'under',
-                    explanation: 'El cubo está por debajo de la esfera - "under"'
-                },
-                {
-                    question: '¿Dónde está la barra?',
-                    description: 'La barra está _____ del punto',
-                    objects: [
-                        { type: 'dot', icon: '•', x: 50, y: 20, style: 'object-1' },
-                        { type: 'bar', icon: '▬', x: 50, y: 50, style: 'object-2' }
-                    ],
-                    options: ['above', 'below', 'near', 'far'],
-                    correct: 1,
-                    correctWord: 'below',
-                    explanation: 'La barra está por debajo del punto - "below"'
-                },
-                {
-                    question: '¿Dónde están las estrellas?',
-                    description: 'Las estrellas están _____ del corazón',
-                    objects: [
-                        { type: 'heart', icon: '♥', x: 50, y: 50, style: 'object-2' },
-                        { type: 'star1', icon: '★', x: 25, y: 50, style: 'object-1' },
-                        { type: 'star2', icon: '★', x: 75, y: 50, style: 'object-1' }
-                    ],
-                    options: ['beside', 'around', 'inside', 'between'],
-                    correct: 1,
-                    correctWord: 'around',
-                    explanation: 'Las estrellas están alrededor del corazón - "around"'
-                }
-            ];
+        // Game state
+        let currentSentence = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let gameCompleted = false;
 
-            function loadQuestion() {
-                const scenario = scenarios[currentQuestion];
-                $('#question').text(scenario.question);
-                $('#scene-description').text(scenario.description);
-                $('#question-counter').text(currentQuestion + 1);
+        // Initialize game
+        function initGame() {
+            currentSentence = 0;
+            score = 0;
+            correctAnswers = 0;
+            gameCompleted = false;
+            updateDisplay();
+            showSentence();
+        }
+
+        // Show current sentence
+        function showSentence() {
+            if (currentSentence >= sentences.length) {
+                endGame();
+                return;
+            }
+
+            const sentence = sentences[currentSentence];
+            
+            // Display visual scenario
+            $('#scenario-visual').text(sentence.visual);
+            $('#scenario-description').text(sentence.description);
+            
+            // Display sentence with blank
+            const sentenceWithBlank = sentence.sentence.replace(/_____/, '<span class="missing-word">_____</span>');
+            $('#sentence-text').html(sentenceWithBlank);
+            $('#sentence-translation').text(sentence.translation);
+            
+            // Hide explanation panel
+            $('#explanation-panel').removeClass('visible');
+            
+            // Generate options
+            generateOptions();
+            updateDisplay();
+        }
+
+        // Generate answer options
+        function generateOptions() {
+            const sentence = sentences[currentSentence];
+            const container = $('#options-container');
+            container.empty();
+            
+            // Shuffle options
+            const shuffledOptions = [...sentence.options].sort(() => Math.random() - 0.5);
+            
+            shuffledOptions.forEach(option => {
+                const button = $(`<button class="option-button" data-option="${option}">
+                    ${option}
+                </button>`);
                 
-                // Clear previous content
-                $('#objects-container').empty();
-                $('#line-svg').empty();
-                
-                // Add SVG
-                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svg.setAttribute('class', 'line-svg');
-                svg.setAttribute('viewBox', '0 0 100 100');
-                $('#objects-container').append(svg);
-                
-                // Position objects
-                scenario.objects.forEach((obj, index) => {
-                    const objElement = $(`
-                        <div class="object ${obj.style}" style="left: ${obj.x}%; top: ${obj.y}%;">
-                            ${obj.icon}
-                        </div>
-                    `);
-                    $('#objects-container').append(objElement);
-                });
-                
-                // Draw connecting lines if needed
-                if (scenario.objects.length === 2) {
-                    drawLine(scenario.objects[0], scenario.objects[1]);
+                button.click(() => selectOption(option));
+                container.append(button);
+            });
+        }
+
+        // Handle option selection
+        function selectOption(selectedOption) {
+            const sentence = sentences[currentSentence];
+            const isCorrect = selectedOption === sentence.correct;
+            
+            // Disable all buttons
+            $('.option-button').prop('disabled', true);
+            
+            // Show feedback
+            $('.option-button').each(function() {
+                const option = $(this).data('option');
+                if (option === sentence.correct) {
+                    $(this).addClass('correct');
+                } else if (option === selectedOption && !isCorrect) {
+                    $(this).addClass('incorrect');
                 }
-                
-                // Load options
-                const optionsContainer = $('#options-container');
-                optionsContainer.empty();
-                
-                scenario.options.forEach((option, index) => {
-                    const optionElement = $(`
-                        <button class="preposition-btn" data-index="${index}">
-                            ${option}
-                        </button>
-                    `);
-                    optionsContainer.append(optionElement);
-                });
-                
-                $('#result-section').hide();
+            });
+            
+            // Show explanation
+            $('#explanation-text').text(sentence.explanation);
+            $('#explanation-panel').addClass('visible');
+            
+            // Update score
+            if (isCorrect) {
+                correctAnswers++;
+                score += 15;
+            } else {
+                score = Math.max(0, score - 3);
             }
             
-            function drawLine(obj1, obj2) {
-                const svg = $('.line-svg')[0];
-                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-                
-                line.setAttribute('x1', obj1.x);
-                line.setAttribute('y1', obj1.y);
-                line.setAttribute('x2', obj2.x);
-                line.setAttribute('y2', obj2.y);
-                line.setAttribute('stroke', '#E0E6ED');
-                line.setAttribute('stroke-width', '1');
-                line.setAttribute('stroke-dasharray', '2,2');
-                
-                svg.appendChild(line);
-            }
+            // Show next button
+            setTimeout(() => {
+                $('#next-button').show();
+            }, 1000);
+            
+            updateDisplay();
+        }
 
-            function handleAnswer(selectedIndex) {
-                const scenario = scenarios[currentQuestion];
-                const isCorrect = selectedIndex === scenario.correct;
-                
-                $('.preposition-btn').off('click');
-                $('.preposition-btn').each(function(index) {
-                    if (index === scenario.correct) {
-                        $(this).addClass('correct');
-                    } else if (index === selectedIndex && !isCorrect) {
-                        $(this).addClass('incorrect');
-                    }
-                });
-                
-                if (isCorrect) {
-                    correctAnswers++;
-                    score += 10;
-                    wordsLearned.add(scenario.correctWord);
-                    $('#score').text(score);
-                    englishTrainer.showNotification('¡Correcto! +10 puntos', 'success');
-                } else {
-                    englishTrainer.showNotification(`Incorrecto. La respuesta correcta era: ${scenario.options[scenario.correct]}`, 'error');
-                }
-                
-                $('#explanation').text(scenario.explanation);
-                $('#result-section').show();
-            }
+        // Next sentence
+        function nextSentence() {
+            currentSentence++;
+            $('#next-button').hide();
+            showSentence();
+        }
 
-            function nextQuestion() {
-                currentQuestion++;
-                
-                if (currentQuestion >= scenarios.length) {
-                    showResults();
+        // Update display
+        function updateDisplay() {
+            $('#current-score').text(score);
+            $('#current-sentence').text(currentSentence + 1);
+            $('#correct-answers').text(correctAnswers);
+        }
+
+        // End game
+        function endGame() {
+            gameCompleted = true;
+            
+            // Calculate stars
+            const percentage = (correctAnswers / sentences.length) * 100;
+            let stars = 1;
+            if (percentage >= 70) stars = 2;
+            if (percentage >= 90) stars = 3;
+            
+            // Update results
+            $('#final-score').text(score);
+            $('#final-correct').text(correctAnswers);
+            
+            let starsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < stars) {
+                    starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
                 } else {
-                    loadQuestion();
+                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
                 }
             }
-
-            function showResults() {
-                const percentage = (correctAnswers / scenarios.length) * 100;
-                
-                // Update progress
-                englishTrainer.updateGameProgress(8, {
-                    wordsLearned: wordsLearned.size,
-                    score: score,
-                    pointsGained: score
-                });
-                
-                const resultsContainer = $('.game-container');
-                resultsContainer.html(`
-                    <div class="theory-container">
-                        <div class="theory-content text-center">
-                            <h2>¡Juego Completado!</h2>
-                            <div class="score-display" style="font-size: 1.5rem; margin: 1rem 0;">
-                                ${score} puntos
-                            </div>
-                            <p>Respuestas correctas: ${correctAnswers}/${scenarios.length}</p>
-                            <p>Preposiciones aprendidas: ${wordsLearned.size}</p>
-                            <p>Porcentaje: ${percentage.toFixed(1)}%</p>
-                            ${percentage >= 70 ? '<p style="color: #2ECC71; font-weight: 600;">¡Has completado el juego!</p>' : '<p>Sigue practicando para mejorar tu puntuación.</p>'}
-                        </div>
-                    </div>
-                    <div class="nav-buttons">
-                        <a href="../index.php" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"></path>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            Regresar al Dashboard
-                        </a>
-                        <button class="btn primary" onclick="location.reload()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 2v6h6"></path>
-                                <path d="M21 22v-6h-6"></path>
-                                <path d="M2 14a10 10 0 0 0 20 0"></path>
-                                <path d="M22 10a10 10 0 0 0-20 0"></path>
-                            </svg>
-                            Intentar de Nuevo
-                        </button>
-                    </div>
-                `);
+            $('#stars-display').html(starsHtml);
+            
+            // Show results panel
+            $('#results-panel').addClass('visible');
+            
+            // Notify parent window about completion
+            if (window.opener && window.opener.onGameComplete) {
+                window.opener.onGameComplete(8, score, stars);
             }
+        }
 
-            // Event handlers
-            $(document).on('click', '.preposition-btn', function() {
-                handleAnswer(parseInt($(this).data('index')));
-            });
+        // Restart game
+        function restartGame() {
+            $('#results-panel').removeClass('visible');
+            initGame();
+        }
 
-            $('#next-question').click(function() {
-                nextQuestion();
-            });
+        // Go to home
+        function goHome() {
+            window.location.href = '../index.php';
+        }
 
-            // Initialize game
-            loadQuestion();
+        // Initialize game on load
+        $(document).ready(() => {
+            initGame();
         });
     </script>
 </body>

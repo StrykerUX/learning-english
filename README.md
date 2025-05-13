@@ -1,221 +1,147 @@
-# English Trainer - Versión 2.0
+# English Trainer 📚
 
-🚀 **Plataforma gamificada para aprender inglés con 8 juegos interactivos**
+Una aplicación web gamificada para aprender inglés de manera interactiva y divertida.
 
-## 📋 Descripción del Proyecto
+## 🎮 Descripción
 
-English Trainer es una aplicación web completa diseñada para enseñar inglés básico mediante juegos divertidos e interactivos. Utiliza un diseño **Neo-Brutalismo suave** con colores pastel y las mejores prácticas de UX/UI para crear una experiencia de aprendizaje efectiva y motivadora.
+English Trainer es una plataforma educativa que combina aprendizaje de idiomas con mecánicas de juego. Los usuarios progresan a través de 8 niveles diferentes, cada uno enfocado en aspectos específicos del inglés.
 
-## 🎮 Características Principales
+## ✨ Características
 
-### ✨ 8 Juegos Organizados en 3 Categorías
+- **8 Niveles Progresivos**: Desde vocabulario básico hasta gramática avanzada
+- **Sistema de Puntos y Estrellas**: Gamificación completa con recompensas
+- **Dashboard Interactivo**: Mapa visual del progreso como un videojuego
+- **Teoría Integrada**: Cada juego incluye su página de explicación teórica
+- **Progreso Persistente**: LocalStorage para guardar el avance
+- **Diseño Responsivo**: Funciona en escritorio y móviles
 
-#### **🎯 Juegos de Vocabulario**
-1. **Vocabulario Básico** - 20 palabras esenciales (colores, números, familia, animales)
-2. **Memorama** - 3 rondas con parejas inglés-español
-3. **Ahorcado** - 20 palabras con máximo 8 errores
-4. **Preposiciones** - Juego visual con líneas e iconos
+## 🎯 Los 8 Niveles
 
-#### **⏰ Tiempos Verbales**
-5. **Presente Simple** - Estructuras básicas y conjugaciones
-6. **Presente Continuo** - Acciones en progreso
-7. **Pasado Simple** - Verbos regulares e irregulares
-8. **Futuro Simple** - Will vs Going to
+### Vocabulario (Niveles 1-3)
+1. **Palabras Básicas**: 20 palabras esenciales del inglés
+2. **Memorama**: Encuentra las parejas inglés-español
+3. **Ahorcado**: Adivina palabras con pistas
 
-### 🎯 Sistema de Gamificación
+### Gramática (Niveles 4-7)
+4. **Presente Simple**: Domina rutinas y hechos
+5. **Presente Continuo**: Acciones que ocurren ahora
+6. **Pasado Simple**: Eventos completados en el pasado
+7. **Futuro Simple**: Planes y predicciones
 
-- **100+ palabras para aprender** distribuidas en todos los juegos
-- **Sistema de puntos progresivo** con diferentes valores según dificultad
-- **Desbloqueo secuencial** de juegos basado en rendimiento
-- **Tracking de progreso** con palabras aprendidas y niveles completados
-- **Notificaciones motivadoras** con feedback inmediato
+### Especial (Nivel 8)
+8. **Preposiciones**: Aprende dónde están las cosas
 
-### 🎨 Diseño UX/UI Optimizado
+## 🛠️ Tecnologías
 
-- **Neo-Brutalismo suave** con colores pastel
-- **Microinteracciones** y animaciones fluidas
-- **Responsive design** optimizado para móvil y desktop
-- **Iconografía coherente** con SVG escalables
-- **Feedback visual inmediato** para todas las acciones
+- **Frontend**: HTML5, CSS3, JavaScript (jQuery)
+- **Backend**: PHP (para estructura de páginas)
+- **Base de Datos**: No requiere (localStorage)
+- **Iconos**: Font Awesome
+- **Fuentes**: Google Fonts (Orbitron, Space Mono)
 
-## 🚀 Psicología del Aprendizaje Aplicada
-
-### **Técnicas de Gamificación**
-- **Progresión visual** con barras de progreso
-- **Recompensas inmediatas** (+10 puntos por respuesta correcta)
-- **Sistema de logros** con iconos de completación
-- **Variedad de formatos** para mantener el engagement
-
-### **Mejores Prácticas Pedagógicas**
-- **Repetición espaciada** con diferentes contextos
-- **Feedback constructivo** con explicaciones en español
-- **Dificultad progresiva** desde vocabulario hasta gramática
-- **Múltiples modalidades** (visual, texto, interactividad)
-
-## 📁 Estructura Actualizada
+## 📁 Estructura del Proyecto
 
 ```
-EnglishTrainer/
-├── index.php                 # Dashboard principal con categorías
+learning-english/
+├── index.php              # Dashboard principal
 ├── css/
-│   └── style.css            # Estilos completos y responsive
+│   └── style.css         # Estilos principales
 ├── js/
-│   └── main.js              # JavaScript optimizado y modular
-├── games/                   # 8 juegos interactivos
-│   ├── vocabulary-basic.php # Palabras esenciales
-│   ├── memory-game.php      # Memorama con 3 rondas
-│   ├── hangman.php          # Ahorcado with visual SVG
-│   ├── prepositions.php     # Juego con líneas e iconos
-│   ├── present-simple.php   # Tiempo presente
-│   ├── present-continuous.php # Presente progresivo
-│   ├── past-simple.php      # Tiempo pasado
-│   └── future-simple.php    # Tiempo futuro
-├── theory/                  # Explicaciones en español (para gramática)
+│   └── main.js           # JavaScript principal
+├── games/                # Los 8 juegos
+│   ├── vocabulary-basic.php
+│   ├── memory-game.php
+│   ├── hangman.php
 │   ├── present-simple.php
 │   ├── present-continuous.php
 │   ├── past-simple.php
-│   └── future-simple.php
-├── README.md               # Esta documentación
-├── config.php             # Configuración del sistema
-└── config.json           # Configuración JSON
+│   ├── future-simple.php
+│   └── prepositions.php
+├── theory/               # Páginas de teoría
+│   ├── basic-words.php
+│   ├── memory-tips.php
+│   ├── spelling-tips.php
+│   ├── present-simple.php
+│   ├── present-continuous.php
+│   ├── past-simple.php
+│   ├── future-simple.php
+│   └── prepositions.php
+└── README.md
 ```
 
-## 🎮 Descripción de Juegos
+## 🚀 Instalación
 
-### **1. Vocabulario Básico** 📚
-- 20 preguntas de opción múltiple
-- Categorías: colores, números, familia, animales
-- Sistema de puntos: 10 por respuesta correcta
-
-### **2. Memorama** 🧩
-- 3 rondas de dificultad creciente
-- 5 parejas por ronda (inglés-español)
-- Bonus por precisión y velocidad
-
-### **3. Ahorcado** ⚰️
-- 20 palabras por categorías
-- Máximo 8 errores (visualizados en SVG)
-- Sistema de vidas con corazones
-- Hints en español para cada palabra
-
-### **4. Preposiciones** 📍
-- 15 escenarios visuales interactivos
-- Objetos posicionados con líneas guía
-- Iconos SVG y feedback inmediato
-
-### **5-8. Tiempos Verbales** ⏰
-- 10 preguntas por tiempo verbal
-- Teoría previa en español
-- Enfoque en uso práctico y estructuras
-
-## 💾 Sistema de Progreso Avanzado
-
-```javascript
-// LocalStorage structure
-{
-  totalPoints: 0,
-  wordsLearned: 0,        // De 0 a 100+
-  gamesCompleted: 0,      // De 0 a 8
-  gameProgress: {
-    1: { wordsLearned: 15, score: 150 },     // Vocabulario
-    2: { wordsLearned: 12, score: 120 },     // Memorama
-    3: { wordsLearned: 18, score: 180 },     // Ahorcado
-    4: { progress: 8, score: 80 },           // Presente Simple
-    5: { progress: 10, score: 100 },         // Presente Continuo
-    6: { progress: 7, score: 70 },           // Pasado Simple
-    7: { progress: 9, score: 90 },           // Futuro Simple
-    8: { wordsLearned: 14, score: 140 }      // Preposiciones
-  }
-}
-```
-
-## 🏆 Sistema de Logros
-
-- **Primeros Pasos**: Completar el primer juego
-- **Maestro del Vocabulario**: Completar los 4 juegos de vocabulario
-- **Experto en Gramática**: Completar los 4 tiempos verbales
-- **Completista**: Terminar todos los juegos con +70%
-- **Perfeccionista**: Obtener 100% en cualquier juego
-
-## 📱 Compatibilidad y Tecnología
-
-### **Tecnologías Utilizadas**
-- **Frontend**: HTML5, CSS3, JavaScript ES6, jQuery
-- **Iconos**: SVG inline optimizados
-- **Fuentes**: Inter (Google Fonts)
-- **Storage**: LocalStorage API
-- **Responsive**: CSS Grid + Flexbox
-
-### **Compatibilidad**
-- ✅ Chrome 60+
-- ✅ Firefox 55+
-- ✅ Safari 12+
-- ✅ Edge 44+
-- ✅ Mobile browsers
-
-## 🚀 Instalación y Uso
-
-### **Instalación Local**
+1. Clona el repositorio:
 ```bash
-# Clonar/descargar el proyecto
-cd C:\Users\abrah\Documents\EnglishTrainer
-
-# Opción 1: PHP Built-in Server
-php -S localhost:8000
-
-# Opción 2: Apache/Nginx
-# Copiar a htdocs/www y acceder via localhost
+git clone [URL_DEL_REPOSITORIO]
+cd learning-english
 ```
 
-### **Despliegue**
-```bash
-# Para hosting compartido
-1. Comprimir EnglishTrainer/
-2. Subir al servidor
-3. Extraer en public_html/
-4. Configurar permisos 755
+2. Configura un servidor web local (XAMPP, WAMP, MAMP):
+   - Copia el proyecto a la carpeta htdocs/www del servidor
+   - Inicia Apache
+
+3. Abre en tu navegador:
+```
+http://localhost/learning-english
 ```
 
-## 📈 Futuras Expansiones
+## 🎨 Diseño
 
-### **Versión 3.0 Planeada**
-- [ ] Sistema de usuarios y rankings
-- [ ] Base de datos persistente
-- [ ] Audio y pronunciación
-- [ ] Modo multijugador
-- [ ] Analytics avanzados
-- [ ] Certificados de completación
-- [ ] Más idiomas de interfaz
+- **Estilo**: Neo-brutalismo suave con temática espacial
+- **Colores**: Cian (#0ff), dorado (#ffd700), verde (#16a34a)
+- **Fondo**: Espacio con estrellas y planetas animados
+- **UI**: Elementos de videojuego retro-futurista
 
-### **Nuevo Contenido**
-- [ ] Juego de construcción de oraciones
-- [ ] Diálogos interactivos
-- [ ] Quiz de comprensión auditiva
-- [ ] Modo historia/aventura
+## 📱 Responsive Design
 
-## 🤝 Contribuciones
+El proyecto está optimizado para:
+- 📱 Móviles (320px+)
+- 📱 Tablets (768px+)  
+- 💻 Escritorio (1024px+)
 
-El proyecto está abierto a mejoras y sugerencias:
-- Reportar bugs en Issues
-- Proponer nuevos juegos
-- Mejorar traducciones
-- Optimizar rendimiento
+## 🔧 Personalización
 
-## 📄 Licencia
+Para personalizar el proyecto:
 
-Proyecto educativo de código abierto.
+1. **Colores**: Modifica las variables CSS en `css/style.css`
+2. **Juegos**: Edita los arrays de datos en cada archivo PHP
+3. **Niveles**: Ajusta la configuración en `js/main.js`
+4. **Contenido**: Modifica las páginas de teoría según necesidades
 
-## 📞 Soporte
+## 🎮 Sistema de Progreso
 
-Para dudas o problemas:
-- Revisar documentación
-- Consultar archivo DEPLOYMENT.md
-- Verificar configuración en config.php
+- **Puntos**: Se ganan por respuestas correctas
+- **Estrellas**: 1-3 estrellas por rendimiento
+- **Desbloqueo**: Los niveles se abren progresivamente
+- **Persistencia**: Progreso guardado en localStorage
+
+## 🤝 Contribuir
+
+¡Las contribuciones son bienvenidas!
+
+1. Fork del proyecto
+2. Crea una rama para tu feature
+3. Commit de tus cambios
+4. Push a la rama
+5. Abre un Pull Request
+
+## 📜 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
+
+## 🐛 Reportar Bugs
+
+Si encuentras algún problema, por favor abre un issue describiendo:
+- El problema específico
+- Pasos para reproducirlo
+- Navegador y versión
+- Screenshots si es posible
+
+## 👨‍💻 Autor
+
+Desarrollado con ❤️ para hacer el aprendizaje del inglés más divertido y accesible.
 
 ---
 
-## 🎉 ¡Gracias por usar English Trainer!
-
-**Hecho con ❤️ para aprender inglés de manera divertida**
-
-*"El mejor momento para aprender un idioma fue hace 10 años. El segundo mejor momento es ahora."*
+⭐ Si te gusta este proyecto, dale una estrella en GitHub!

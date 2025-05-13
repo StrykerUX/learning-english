@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,52 +8,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Memorama - English Trainer</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Memory Game Specific Styles */
-        .memory-container {
-            max-width: 600px;
-            margin: 0 auto;
+        .game-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .stat-item {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid #333;
+            text-align: center;
+            flex: 1;
         }
         
         .memory-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin: 2rem 0;
-            aspect-ratio: 1;
+            gap: 15px;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
         
         .memory-card {
             aspect-ratio: 1;
-            background: white;
-            border: 3px solid var(--text-dark);
-            border-radius: var(--border-radius);
+            background: #1a1a1a;
+            border: 3px solid #333;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: all 0.3s ease;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #fff;
             position: relative;
             overflow: hidden;
-            transform-style: preserve-3d;
         }
         
-        .memory-card:hover:not(.flipped):not(.matched) {
-            transform: scale(1.05);
-            box-shadow: 4px 4px 0px var(--shadow-dark);
+        .memory-card:hover {
+            border-color: #0ff;
+            background: rgba(0, 255, 255, 0.1);
         }
         
         .memory-card.flipped {
-            background: var(--primary-color);
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #0ff;
         }
         
         .memory-card.matched {
-            background: var(--success-color);
-            opacity: 0.8;
-            cursor: not-allowed;
+            background: rgba(34, 197, 94, 0.3);
+            border-color: #16a34a;
         }
         
-        .memory-card.unmatched {
-            background: var(--accent-color);
-            animation: shake 0.5s ease;
+        .memory-card.mismatched {
+            background: rgba(220, 38, 38, 0.3);
+            border-color: #991b1b;
+            animation: shake 0.5s ease-in-out;
         }
         
         @keyframes shake {
@@ -59,509 +95,374 @@
             75% { transform: translateX(5px); }
         }
         
-        .card-content {
+        .card-front {
             position: absolute;
-            inset: 0;
+            width: 100%;
+            height: 100%;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 0.5rem;
-            text-align: center;
+            background: #1a1a1a;
+            transition: transform 0.3s ease;
         }
         
         .card-back {
-            background: var(--secondary-color);
-            opacity: 1;
-            transition: opacity 0.3s ease;
-        }
-        
-        .card-back .icon {
-            font-size: 2rem;
-        }
-        
-        .card-front {
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        
-        .memory-card.flipped .card-back {
-            opacity: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 255, 255, 0.1);
+            transform: rotateY(180deg);
+            transition: transform 0.3s ease;
         }
         
         .memory-card.flipped .card-front {
-            opacity: 1;
+            transform: rotateY(-180deg);
         }
         
-        .word-english {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--text-dark);
-            margin-bottom: 0.25rem;
+        .memory-card.flipped .card-back {
+            transform: rotateY(0);
         }
         
-        .word-spanish {
-            font-size: 0.9rem;
-            color: var(--text-light);
-            font-style: italic;
-        }
-        
-        .memory-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        .stat-item {
-            background: white;
-            padding: 1rem;
-            border: 2px solid var(--text-dark);
-            border-radius: var(--border-radius-sm);
-            text-align: center;
-            box-shadow: 2px 2px 0px var(--shadow-dark);
-        }
-        
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--text-accent);
-            display: block;
-        }
-        
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-        
-        .level-info {
-            background: var(--warning-color);
-            padding: 1rem;
-            border-radius: var(--border-radius-sm);
-            border: 2px solid var(--text-dark);
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-        
-        .round-indicator {
+        .game-controls {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 1rem;
         }
         
-        .round-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #E0E6ED;
-            border: 2px solid var(--text-dark);
+        .control-button {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #0ff;
+            background: transparent;
+            color: #0ff;
+            border-radius: 10px;
+            cursor: pointer;
             transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
         }
         
-        .round-dot.completed {
-            background: #2ECC71;
+        .control-button:hover {
+            background: #0ff;
+            color: #000;
         }
         
-        .round-dot.current {
-            background: var(--text-accent);
-            transform: scale(1.3);
+        .results-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 1000;
+            transition: transform 0.3s ease;
         }
         
-        /* Mobile responsive */
-        @media (max-width: 768px) {
-            .memory-grid {
-                gap: 0.75rem;
-            }
-            
-            .word-english {
-                font-size: 0.95rem;
-            }
-            
-            .word-spanish {
-                font-size: 0.8rem;
-            }
-            
-            .memory-stats {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 0.75rem;
-            }
-            
-            .stat-value {
-                font-size: 1.2rem;
-            }
+        .results-panel.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .stars-display {
+            font-size: 3rem;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="header-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
-                    <line x1="8" y1="21" x2="16" y2="21"></line>
-                    <line x1="12" y1="17" x2="12" y2="21"></line>
-                </svg>
-                Memorama
-            </h1>
-            <div class="score-display">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
-                <span id="score">0</span> puntos
+    <div class="universe">
+        <div class="stars-bg"></div>
+        
+        <div class="game-container">
+            <button class="back-button control-button" onclick="goHome()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            
+            <div class="game-header">
+                <h1>Memorama</h1>
+                <p>Encuentra las parejas de palabras en inglés y español</p>
             </div>
-        </header>
-
-        <main class="main">
-            <div class="game-container">
-                <div class="memory-container">
-                    <div class="level-info">
-                        <h3>Ronda <span id="current-round">1</span> de 3</h3>
-                        <p>Encuentra las parejas de palabras en inglés y español</p>
-                    </div>
-                    
-                    <div class="round-indicator" id="round-indicator">
-                        <div class="round-dot current"></div>
-                        <div class="round-dot"></div>
-                        <div class="round-dot"></div>
-                    </div>
-                    
-                    <div class="memory-stats">
-                        <div class="stat-item">
-                            <span class="stat-value" id="matches">0</span>
-                            <span class="stat-label">Parejas</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value" id="attempts">0</span>
-                            <span class="stat-label">Intentos</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value" id="accuracy">100</span>
-                            <span class="stat-label">% Precisión</span>
-                        </div>
-                    </div>
-                    
-                    <div class="memory-grid" id="memory-grid">
-                        <!-- Cards will be generated here -->
-                    </div>
+            
+            <div class="game-stats">
+                <div class="stat-item">
+                    <div class="score-label">Puntos</div>
+                    <div class="score-value" id="current-score">0</div>
                 </div>
-                
-                <div class="nav-buttons" style="display: none;" id="result-section">
-                    <div class="btn" id="result-message" style="background: var(--secondary-color); cursor: default;"></div>
-                    <button class="btn success" id="next-round">
-                        Siguiente Ronda
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </button>
+                <div class="stat-item">
+                    <div class="score-label">Movimientos</div>
+                    <div class="score-value" id="moves-count">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="score-label">Parejas</div>
+                    <div class="score-value" id="pairs-found">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="score-label">Tiempo</div>
+                    <div class="score-value" id="timer">00:00</div>
                 </div>
             </div>
-        </main>
+            
+            <div class="memory-grid" id="memory-grid">
+                <!-- Cards will be generated here -->
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-button" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Reiniciar
+                </button>
+            </div>
+        </div>
+        
+        <div class="results-panel" id="results-panel">
+            <h2>¡Juego Completado!</h2>
+            <div class="stars-display" id="stars-display"></div>
+            <p>Puntuación Final: <span id="final-score"></span></p>
+            <p>Tiempo: <span id="final-time"></span></p>
+            <p>Movimientos: <span id="final-moves"></span></p>
+            <div class="game-controls">
+                <button class="control-button" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                </button>
+                <button class="control-button" onclick="goHome()">
+                    <i class="fas fa-home"></i> Menú Principal
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../js/main.js"></script>
     <script>
-        $(document).ready(function() {
-            let currentRound = 1;
-            let score = 0;
-            let matches = 0;
-            let attempts = 0;
-            let flippedCards = [];
-            let matchedPairs = [];
-            let wordsLearned = new Set();
-            let isChecking = false;
+        // Game data - simplified vocabulary
+        const vocabulary = [
+            { english: 'Cat', spanish: 'Gato' },
+            { english: 'Dog', spanish: 'Perro' },
+            { english: 'House', spanish: 'Casa' },
+            { english: 'Car', spanish: 'Coche' },
+            { english: 'Book', spanish: 'Libro' },
+            { english: 'Apple', spanish: 'Manzana' },
+            { english: 'Tree', spanish: 'Árbol' },
+            { english: 'Sun', spanish: 'Sol' }
+        ];
 
-            const wordSets = [
-                // Round 1 - Basic vocabulary
-                {
-                    icon: '🌈',
-                    words: [
-                        { english: 'HOUSE', spanish: 'CASA' },
-                        { english: 'CAR', spanish: 'CARRO' },
-                        { english: 'BOOK', spanish: 'LIBRO' },
-                        { english: 'WATER', spanish: 'AGUA' },
-                        { english: 'FOOD', spanish: 'COMIDA' }
-                    ]
-                },
-                // Round 2 - Animals & Nature
-                {
-                    icon: '🐾',
-                    words: [
-                        { english: 'TREE', spanish: 'ÁRBOL' },
-                        { english: 'FLOWER', spanish: 'FLOR' },
-                        { english: 'BIRD', spanish: 'PÁJARO' },
-                        { english: 'FISH', spanish: 'PEZ' },
-                        { english: 'SUN', spanish: 'SOL' }
-                    ]
-                },
-                // Round 3 - Actions & Adjectives
-                {
-                    icon: '⚡',
-                    words: [
-                        { english: 'BIG', spanish: 'GRANDE' },
-                        { english: 'SMALL', spanish: 'PEQUEÑO' },
-                        { english: 'HAPPY', spanish: 'FELIZ' },
-                        { english: 'SAD', spanish: 'TRISTE' },
-                        { english: 'FAST', spanish: 'RÁPIDO' }
-                    ]
-                }
-            ];
+        // Game state
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let moves = 0;
+        let score = 0;
+        let startTime = 0;
+        let gameTime = 0;
+        let timerInterval = null;
+        let gameCompleted = false;
 
-            function initializeRound() {
-                const currentSet = wordSets[currentRound - 1];
-                $('#current-round').text(currentRound);
-                
-                // Update round indicator
-                updateRoundIndicator();
-                
-                // Reset stats
-                matches = 0;
-                attempts = 0;
-                flippedCards = [];
-                matchedPairs = [];
-                
-                updateStats();
-                
-                // Create cards
-                createCards(currentSet);
-                
-                $('#result-section').hide();
-            }
+        // Initialize game
+        function initGame() {
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            moves = 0;
+            score = 0;
+            startTime = Date.now();
+            gameTime = 0;
+            gameCompleted = false;
+            
+            createCards();
+            shuffleCards();
+            displayCards();
+            startTimer();
+            updateDisplay();
+        }
 
-            function updateRoundIndicator() {
-                $('.round-dot').each(function(index) {
-                    $(this).removeClass('current completed');
-                    if (index < currentRound - 1) {
-                        $(this).addClass('completed');
-                    } else if (index === currentRound - 1) {
-                        $(this).addClass('current');
-                    }
-                });
-            }
-
-            function createCards(wordSet) {
-                const grid = $('#memory-grid');
-                grid.empty();
-                
-                // Create pairs array (English and Spanish cards)
-                const cards = [];
-                
-                wordSet.words.forEach((pair, index) => {
-                    // English card
-                    cards.push({
-                        id: `en-${index}`,
-                        type: 'english',
-                        word: pair.english,
-                        translation: pair.spanish,
-                        pairId: index
-                    });
-                    
-                    // Spanish card
-                    cards.push({
-                        id: `es-${index}`,
-                        type: 'spanish',
-                        word: pair.spanish,
-                        translation: pair.english,
-                        pairId: index
-                    });
+        // Create card pairs
+        function createCards() {
+            vocabulary.forEach((item, index) => {
+                // English card
+                cards.push({
+                    id: index * 2,
+                    type: 'english',
+                    text: item.english,
+                    matched: false,
+                    flipped: false,
+                    pairId: index
                 });
                 
-                // Shuffle cards
-                shuffleArray(cards);
-                
-                // Create card elements
-                cards.forEach(card => {
-                    const cardElement = $(`
-                        <div class="memory-card" data-id="${card.id}" data-pair="${card.pairId}">
-                            <div class="card-content card-back">
-                                <span class="icon">${wordSet.icon}</span>
-                            </div>
-                            <div class="card-content card-front">
-                                <div class="word-${card.type}">
-                                    ${card.word}
-                                </div>
-                                <div class="word-${card.type === 'english' ? 'spanish' : 'english'}">
-                                    ${card.translation}
-                                </div>
-                            </div>
+                // Spanish card
+                cards.push({
+                    id: index * 2 + 1,
+                    type: 'spanish',
+                    text: item.spanish,
+                    matched: false,
+                    flipped: false,
+                    pairId: index
+                });
+            });
+        }
+
+        // Shuffle cards
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+        }
+
+        // Display cards
+        function displayCards() {
+            const grid = $('#memory-grid');
+            grid.empty();
+            
+            cards.forEach(card => {
+                const cardElement = $(`
+                    <div class="memory-card" data-id="${card.id}">
+                        <div class="card-front">
+                            <i class="fas fa-question"></i>
                         </div>
-                    `);
-                    grid.append(cardElement);
-                });
-            }
-
-            function shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-            }
-
-            function updateStats() {
-                $('#matches').text(matches);
-                $('#attempts').text(attempts);
-                
-                const accuracy = attempts > 0 ? Math.round((matches / attempts) * 100) : 100;
-                $('#accuracy').text(accuracy);
-            }
-
-            function flipCard(card) {
-                if (isChecking || card.hasClass('flipped') || card.hasClass('matched')) {
-                    return;
-                }
-                
-                card.addClass('flipped');
-                flippedCards.push(card);
-                
-                if (flippedCards.length === 2) {
-                    attempts++;
-                    checkMatch();
-                }
-            }
-
-            function checkMatch() {
-                isChecking = true;
-                const [card1, card2] = flippedCards;
-                const pair1 = card1.data('pair');
-                const pair2 = card2.data('pair');
-                
-                setTimeout(() => {
-                    if (pair1 === pair2) {
-                        // Match found
-                        card1.addClass('matched');
-                        card2.addClass('matched');
-                        matchedPairs.push(pair1);
-                        matches++;
-                        score += 20;
-                        
-                        // Add words to learned set
-                        const currentSet = wordSets[currentRound - 1];
-                        const wordPair = currentSet.words[pair1];
-                        wordsLearned.add(wordPair.english);
-                        wordsLearned.add(wordPair.spanish);
-                        
-                        $('#score').text(score);
-                        englishTrainer.showNotification('¡Pareja encontrada! +20 puntos', 'success');
-                        
-                        // Check if round is complete
-                        if (matches === 5) {
-                            completeRound();
-                        }
-                    } else {
-                        // No match
-                        card1.removeClass('flipped').addClass('unmatched');
-                        card2.removeClass('flipped').addClass('unmatched');
-                        
-                        setTimeout(() => {
-                            card1.removeClass('unmatched');
-                            card2.removeClass('unmatched');
-                        }, 500);
-                        
-                        englishTrainer.showNotification('No es pareja, intenta de nuevo', 'error');
-                    }
-                    
-                    flippedCards = [];
-                    isChecking = false;
-                    updateStats();
-                }, 1000);
-            }
-
-            function completeRound() {
-                // Bonus for completing round
-                const accuracy = Math.round((matches / attempts) * 100);
-                let bonus = 0;
-                
-                if (accuracy >= 90) {
-                    bonus = 50;
-                } else if (accuracy >= 80) {
-                    bonus = 30;
-                } else if (accuracy >= 70) {
-                    bonus = 20;
-                }
-                
-                score += bonus;
-                $('#score').text(score);
-                
-                // Show round complete message
-                $('#result-message').text(`¡Ronda ${currentRound} completada! Precisión: ${accuracy}%` + (bonus > 0 ? ` +${bonus} puntos bonus` : ''));
-                $('#result-message').css('background', 'var(--success-color)');
-                
-                if (currentRound < 3) {
-                    $('#next-round').text('Siguiente Ronda');
-                } else {
-                    $('#next-round').text('Ver Resultados');
-                }
-                
-                $('#result-section').show();
-            }
-
-            function nextRound() {
-                if (currentRound < 3) {
-                    currentRound++;
-                    initializeRound();
-                } else {
-                    showFinalResults();
-                }
-            }
-
-            function showFinalResults() {
-                const totalWords = wordsLearned.size;
-                const maxWords = 15; // 5 words per round × 3 rounds
-                const percentage = (totalWords / maxWords) * 100;
-                
-                // Update progress
-                englishTrainer.updateGameProgress(2, {
-                    wordsLearned: totalWords,
-                    score: score,
-                    pointsGained: score
-                });
-                
-                const resultsContainer = $('.game-container');
-                resultsContainer.html(`
-                    <div class="theory-container">
-                        <div class="theory-content text-center">
-                            <h2>¡Juego Completado!</h2>
-                            <div class="score-display" style="font-size: 1.5rem; margin: 1rem 0;">
-                                ${score} puntos
-                            </div>
-                            <p>Palabras aprendidas: ${totalWords}/${maxWords}</p>
-                            <p>Porcentaje: ${percentage.toFixed(1)}%</p>
-                            ${percentage >= 70 ? '<p style="color: #2ECC71; font-weight: 600;">¡Has completado el juego!</p>' : '<p>Sigue practicando para mejorar tu memoria.</p>'}
+                        <div class="card-back">
+                            ${card.text}
                         </div>
-                    </div>
-                    <div class="nav-buttons">
-                        <a href="../index.php" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"></path>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            Regresar al Dashboard
-                        </a>
-                        <button class="btn primary" onclick="location.reload()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 2v6h6"></path>
-                                <path d="M21 22v-6h-6"></path>
-                                <path d="M2 14a10 10 0 0 0 20 0"></path>
-                                <path d="M22 10a10 10 0 0 0-20 0"></path>
-                            </svg>
-                            Jugar de Nuevo
-                        </button>
                     </div>
                 `);
+                
+                cardElement.click(() => flipCard(card.id));
+                grid.append(cardElement);
+            });
+        }
+
+        // Flip card
+        function flipCard(cardId) {
+            const card = cards.find(c => c.id === cardId);
+            const cardElement = $(`.memory-card[data-id="${cardId}"]`);
+            
+            // Don't flip if already flipped, matched, or two cards are already flipped
+            if (card.flipped || card.matched || flippedCards.length >= 2) {
+                return;
             }
+            
+            // Flip the card
+            card.flipped = true;
+            cardElement.addClass('flipped');
+            flippedCards.push(card);
+            
+            // Check for match when two cards are flipped
+            if (flippedCards.length === 2) {
+                moves++;
+                setTimeout(checkMatch, 800);
+            }
+        }
 
-            // Event handlers
-            $(document).on('click', '.memory-card', function() {
-                flipCard($(this));
-            });
+        // Check if flipped cards match
+        function checkMatch() {
+            const [card1, card2] = flippedCards;
+            
+            if (card1.pairId === card2.pairId) {
+                // Match found!
+                card1.matched = true;
+                card2.matched = true;
+                matchedPairs++;
+                score += 20;
+                
+                // Add visual feedback
+                $(`.memory-card[data-id="${card1.id}"]`).addClass('matched');
+                $(`.memory-card[data-id="${card2.id}"]`).addClass('matched');
+                
+                // Check if game is complete
+                if (matchedPairs === vocabulary.length) {
+                    endGame();
+                }
+            } else {
+                // No match
+                score = Math.max(0, score - 2);
+                
+                // Add mismatch animation
+                $(`.memory-card[data-id="${card1.id}"]`).addClass('mismatched');
+                $(`.memory-card[data-id="${card2.id}"]`).addClass('mismatched');
+                
+                setTimeout(() => {
+                    // Flip cards back
+                    card1.flipped = false;
+                    card2.flipped = false;
+                    $(`.memory-card[data-id="${card1.id}"]`).removeClass('flipped mismatched');
+                    $(`.memory-card[data-id="${card2.id}"]`).removeClass('flipped mismatched');
+                }, 500);
+            }
+            
+            flippedCards = [];
+            updateDisplay();
+        }
 
-            $('#next-round').click(function() {
-                nextRound();
-            });
+        // Start timer
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                gameTime = Date.now() - startTime;
+                const minutes = Math.floor(gameTime / 60000);
+                const seconds = Math.floor((gameTime % 60000) / 1000);
+                $('#timer').text(`${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+            }, 1000);
+        }
 
-            // Initialize game
-            initializeRound();
+        // Update display
+        function updateDisplay() {
+            $('#current-score').text(score);
+            $('#moves-count').text(moves);
+            $('#pairs-found').text(matchedPairs);
+        }
+
+        // End game
+        function endGame() {
+            gameCompleted = true;
+            clearInterval(timerInterval);
+            
+            // Calculate stars based on performance
+            const timeBonus = Math.max(0, 300 - Math.floor(gameTime / 1000));
+            const moveBonus = Math.max(0, (vocabulary.length * 2 - moves) * 5);
+            score += timeBonus + moveBonus;
+            
+            let stars = 1;
+            if (score >= 180 && moves <= vocabulary.length * 1.5) stars = 2;
+            if (score >= 220 && moves <= vocabulary.length * 1.2) stars = 3;
+            
+            // Update results
+            $('#final-score').text(score);
+            $('#final-time').text($('#timer').text());
+            $('#final-moves').text(moves);
+            
+            let starsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < stars) {
+                    starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
+                }
+            }
+            $('#stars-display').html(starsHtml);
+            
+            // Show results panel
+            $('#results-panel').addClass('visible');
+            
+            // Notify parent window about completion
+            if (window.opener && window.opener.onGameComplete) {
+                window.opener.onGameComplete(2, score, stars);
+            }
+        }
+
+        // Restart game
+        function restartGame() {
+            $('#results-panel').removeClass('visible');
+            clearInterval(timerInterval);
+            initGame();
+        }
+
+        // Go to home
+        function goHome() {
+            window.location.href = '../index.php';
+        }
+
+        // Initialize game on load
+        $(document).ready(() => {
+            initGame();
         });
     </script>
 </body>

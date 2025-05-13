@@ -1,272 +1,351 @@
+// English Trainer - Main JavaScript
 $(document).ready(function() {
-    // Initialize progress from localStorage
-    initializeProgress();
-    updateDashboard();
-    
-    // Add welcome animation
-    if (!localStorage.getItem('visitedBefore')) {
-        showNotification('¡Bienvenido a English Trainer! Comienza con el primer juego de vocabulario.', 'success');
-        localStorage.setItem('visitedBefore', 'true');
+    // Game configuration and data
+    const gameConfig = {
+        1: {
+            name: 'Palabras Básicas',
+            description: 'Aprende 20 palabras esenciales del inglés. Palabra por palabra, construye tu vocabulario base.',
+            game: 'vocabulary-basic',
+            theory: 'theory/basic-words.php'
+        },
+        2: {
+            name: 'Memorama',
+            description: 'Encuentra las parejas de palabras y sus traducciones. ¡Un juego divertido para memorizar!',
+            game: 'memory-game',
+            theory: 'theory/memory-tips.php'
+        },
+        3: {
+            name: 'Ahorcado',
+            description: 'Adivina la palabra oculta letra por letra. ¡Cuidado con no ahorcar al muñeco!',
+            game: 'hangman',
+            theory: 'theory/spelling-tips.php'
+        },
+        4: {
+            name: 'Presente Simple',
+            description: 'Domina las rutinas y hechos con el presente simple. Base fundamental de la gramática.',
+            game: 'present-simple',
+            theory: 'theory/present-simple.php'
+        },
+        5: {
+            name: 'Presente Continuo',
+            description: 'Aprende a hablar de acciones que ocurren ahora mismo con el presente continuo.',
+            game: 'present-continuous',
+            theory: 'theory/present-continuous.php'
+        },
+        6: {
+            name: 'Pasado Simple',
+            description: 'Cuenta eventos del pasado con claridad usando el pasado simple.',
+            game: 'past-simple',
+            theory: 'theory/past-simple.php'
+        },
+        7: {
+            name: 'Futuro Simple',
+            description: 'Expresa planes y predicciones del futuro con confianza.',
+            game: 'future-simple',
+            theory: 'theory/future-simple.php'
+        },
+        8: {
+            name: 'Preposiciones',
+            description: 'Encuentra la posición correcta de los objetos. ¡Las preposiciones son clave!',
+            game: 'prepositions',
+            theory: 'theory/prepositions.php'
+        }
+    };
+
+    // Initialize game state
+    let gameState = {
+        unlockedLevels: [1],
+        completedLevels: [],
+        levelProgress: {},
+        totalPoints: 0,
+        totalStars: 0
+    };
+
+    // Load saved progress from localStorage
+    function loadGameState() {
+        const saved = localStorage.getItem('englishTrainerProgress');
+        if (saved) {
+            try {
+                gameState = { ...gameState, ...JSON.parse(saved) };
+            } catch (e) {
+                console.error('Error loading saved game state:', e);
+            }
+        }
+        updateUI();
     }
 
-    // Handle game card clicks directly
-    $('.game-card').click(function() {
-        const category = $(this).data('category');
-        const game = $(this).data('game');
-        const status = $(this).data('status');
-        const card = $(this);
+    // Save progress to localStorage
+    function saveGameState() {
+        localStorage.setItem('englishTrainerProgress', JSON.stringify(gameState));
+    }
+
+    // Update UI based on game state
+    function updateUI() {
+        // Update stats in header
+        $('#total-points').text(gameState.totalPoints);
+        $('#total-stars').text(gameState.totalStars);
+
+        // Update level node appearances
+        $('.level-node').each(function() {
+            const level = parseInt($(this).data('level'));
+            const $node = $(this);
+
+            $node.removeClass('completed unlocked locked');
+
+            if (gameState.completedLevels.includes(level)) {
+                $node.addClass('completed');
+            } else if (gameState.unlockedLevels.includes(level)) {
+                $node.addClass('unlocked');
+            } else {
+                $node.addClass('locked');
+            }
+        });
+
+        // Position progress ship
+        updateProgressShip();
+    }
+
+    // Update progress ship position
+    function updateProgressShip() {
+        const lastCompletedLevel = Math.max(...gameState.completedLevels, 0);
+        let nextLevel = lastCompletedLevel + 1;
         
-        // Add click animation
-        card.css('transform', 'scale(0.98)');
-        setTimeout(() => {
-            card.css('transform', '');
-        }, 150);
+        // If all levels are completed, keep ship at level 8
+        if (nextLevel > 8) nextLevel = 8;
+
+        const $targetLevel = $(`.level-${nextLevel}`);
+        if ($targetLevel.length) {
+            const targetPos = $targetLevel.position();
+            const targetLeft = targetPos.left + $targetLevel.width() / 2;
+            const targetTop = targetPos.top + $targetLevel.height() / 2;
+
+            $('#progress-ship').css({
+                left: targetLeft - 25,
+                top: targetTop - 25
+            });
+        }
+    }
+
+    // Handle level node clicks
+    $('.level-node').click(function() {
+        const level = parseInt($(this).data('level'));
         
-        if (status === 'locked') {
-            showNotification('Este juego está bloqueado. Completa el juego anterior primero.', 'warning');
+        if ($(this).hasClass('locked')) {
+            showTooltip($(this), 'Nivel bloqueado. Completa los niveles anteriores.');
             return;
         }
-        
-        // Navigate directly to game
-        setTimeout(() => {
-            navigateToGame(category, game);
-        }, 200);
+
+        showGameInfoPanel(level);
     });
-    
-    // Add hover effect for game cards
-    $('.game-card').not('.locked').hover(
+
+    // Show game information panel
+    function showGameInfoPanel(level) {
+        const config = gameConfig[level];
+        const progress = gameState.levelProgress[level] || { bestScore: 0, stars: 0 };
+
+        $('#game-info-panel .panel-title').text(config.name);
+        $('#game-info-panel .panel-description').text(config.description);
+        $('#panel-best-score').text(progress.bestScore);
+        $('#panel-stars').text(progress.stars);
+
+        // Set up button actions
+        $('#view-theory').off('click').on('click', function() {
+            window.location.href = config.theory;
+        });
+
+        $('#play-game').off('click').on('click', function() {
+            window.location.href = `games/${config.game}.php`;
+        });
+
+        $('#game-info-panel').addClass('visible');
+    }
+
+    // Close game info panel
+    $('#close-panel').click(function() {
+        $('#game-info-panel').removeClass('visible');
+    });
+
+    // Close panel when clicking outside
+    $(document).click(function(e) {
+        if (!$(e.target).closest('#game-info-panel, .level-node').length) {
+            $('#game-info-panel').removeClass('visible');
+        }
+    });
+
+    // Tooltip functionality
+    let tooltipTimeout;
+
+    $('.level-node').hover(
         function() {
-            $(this).css('transform', 'translateY(-5px)');
+            const level = parseInt($(this).data('level'));
+            const config = gameConfig[level];
+            const progress = gameState.levelProgress[level] || { bestScore: 0, stars: 0 };
+            
+            let tooltip = `<strong>${config.name}</strong><br>`;
+            
+            if ($(this).hasClass('completed')) {
+                tooltip += `⭐ ${progress.stars} estrellas<br>`;
+                tooltip += `🏆 ${progress.bestScore} puntos`;
+            } else if ($(this).hasClass('unlocked')) {
+                tooltip += 'Click para jugar';
+            } else {
+                const required = $(this).data('required');
+                if (required === 'none') {
+                    tooltip += 'Nivel inicial disponible';
+                } else {
+                    tooltip += `Completa nivel ${required} para desbloquear`;
+                }
+            }
+
+            clearTimeout(tooltipTimeout);
+            tooltipTimeout = setTimeout(() => {
+                showTooltip($(this), tooltip);
+            }, 500);
         },
         function() {
-            if (!$(this).hasClass('clicked')) {
-                $(this).css('transform', '');
-            }
+            clearTimeout(tooltipTimeout);
+            hideTooltip();
         }
     );
 
-    // No modal handlers needed in this simplified version
-});
+    function showTooltip($element, content) {
+        const pos = $element.offset();
+        const $tooltip = $('#level-tooltip');
+        
+        $tooltip.html(content);
+        $tooltip.css({
+            top: pos.top - $tooltip.outerHeight() - 10,
+            left: pos.left + ($element.width() / 2) - ($tooltip.outerWidth() / 2)
+        });
+        $tooltip.addClass('visible');
+    }
 
-function initializeProgress() {
-    // Initialize localStorage if it doesn't exist
-    if (!localStorage.getItem('englishTrainer')) {
-        const initialData = {
-            totalPoints: 0,
-            wordsLearned: 0,
-            gamesCompleted: 0,
-            gameProgress: {
-                1: { completed: false, score: 0, wordsLearned: 0 },  // Basic Vocabulary
-                2: { completed: false, score: 0, wordsLearned: 0 },  // Memory Game
-                3: { completed: false, score: 0, wordsLearned: 0 },  // Hangman
-                4: { completed: false, score: 0, progress: 0 },      // Present Simple
-                5: { completed: false, score: 0, progress: 0 },      // Present Continuous
-                6: { completed: false, score: 0, progress: 0 },      // Past Simple
-                7: { completed: false, score: 0, progress: 0 },      // Future Simple
-                8: { completed: false, score: 0, wordsLearned: 0 }   // Prepositions
+    function hideTooltip() {
+        $('#level-tooltip').removeClass('visible');
+    }
+
+    // Handle game completion (called from game pages)
+    window.onGameComplete = function(level, score, stars) {
+        // Update game state
+        if (!gameState.completedLevels.includes(level)) {
+            gameState.completedLevels.push(level);
+            
+            // Unlock next level
+            if (level < 8 && !gameState.unlockedLevels.includes(level + 1)) {
+                gameState.unlockedLevels.push(level + 1);
             }
-        };
-        localStorage.setItem('englishTrainer', JSON.stringify(initialData));
-    }
-}
+        }
 
-function getProgress() {
-    return JSON.parse(localStorage.getItem('englishTrainer'));
-}
+        // Update level progress
+        if (!gameState.levelProgress[level] || gameState.levelProgress[level].bestScore < score) {
+            gameState.levelProgress[level] = { bestScore: score, stars: stars };
+        }
 
-function saveProgress(data) {
-    localStorage.setItem('englishTrainer', JSON.stringify(data));
-}
-
-function updateDashboard() {
-    const progress = getProgress();
-    
-    // Update header stats
-    $('#total-points').text(progress.totalPoints);
-    $('#words-learned').text(progress.wordsLearned);
-    $('#completed-levels').text(progress.gamesCompleted);
-    
-    // Update game cards
-    Object.entries(progress.gameProgress).forEach(([game, data]) => {
-        const card = $(`.game-card[data-game="${game}"]`);
-        const progressFill = card.find('.progress-fill');
-        const progressText = card.find('.progress-text');
+        // Update totals
+        calculateTotals();
         
-        // Update progress based on game type
-        if ([1, 2, 3, 8].includes(parseInt(game))) {
-            // Vocabulary games - track words learned
-            const maxWords = getMaxWordsForGame(parseInt(game));
-            const progressPercent = (data.wordsLearned / maxWords) * 100;
-            progressFill.css('width', `${progressPercent}%`);
-            progressText.text(`${data.wordsLearned}/${maxWords} palabras`);
-        } else {
-            // Grammar games - track completion
-            const progressPercent = (data.progress / 10) * 100;
-            progressFill.css('width', `${progressPercent}%`);
-            progressText.text(`${data.progress || 0}/10 completado`);
+        // Save and update UI
+        saveGameState();
+        updateUI();
+        
+        // Show completion animation
+        showCompletionAnimation(level, score, stars);
+    };
+
+    // Calculate total points and stars
+    function calculateTotals() {
+        gameState.totalPoints = 0;
+        gameState.totalStars = 0;
+        
+        Object.values(gameState.levelProgress).forEach(progress => {
+            gameState.totalPoints += progress.bestScore;
+            gameState.totalStars += progress.stars;
+        });
+    }
+
+    // Show completion animation
+    function showCompletionAnimation(level, score, stars) {
+        const $level = $(`.level-${level}`);
+        
+        // Create celebration effect
+        for (let i = 0; i < 10; i++) {
+            const $star = $('<div>').css({
+                position: 'absolute',
+                left: $level.offset().left + $level.width() / 2,
+                top: $level.offset().top + $level.height() / 2,
+                color: '#ffd700',
+                fontSize: '1.5rem',
+                pointerEvents: 'none',
+                zIndex: 1000
+            }).html('⭐');
+            
+            $('body').append($star);
+            
+            // Animate star
+            $star.animate({
+                top: $star.offset().top - 50 - Math.random() * 100,
+                left: $star.offset().left + (Math.random() - 0.5) * 200,
+                opacity: 0
+            }, 1000 + Math.random() * 1000, function() {
+                $star.remove();
+            });
+        }
+    }
+
+    // Level completion from URL parameters (when returning from game)
+    function checkLevelCompletion() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const level = parseInt(urlParams.get('level'));
+        const score = parseInt(urlParams.get('score'));
+        const stars = parseInt(urlParams.get('stars'));
+        
+        if (level && score !== null && stars !== null) {
+            onGameComplete(level, score, stars);
+            
+            // Remove parameters from URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+    }
+
+    // Handle keyboard shortcuts
+    $(document).keydown(function(e) {
+        // Escape key closes panel
+        if (e.keyCode === 27) {
+            $('#game-info-panel').removeClass('visible');
         }
         
-        // Update status
-        if (data.completed) {
-            card.removeClass('locked').addClass('completed');
-            card.data('status', 'completed');
-            card.find('.game-status').html(`
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="status-icon">
-                    <path d="M9 12l2 2 4-4"></path>
-                    <circle cx="12" cy="12" r="11"></circle>
-                </svg>
-            `);
-        } else if (isGameUnlocked(parseInt(game))) {
-            card.removeClass('locked').addClass('unlocked');
-            card.data('status', 'unlocked');
+        // Number keys (1-8) select levels
+        if (e.keyCode >= 49 && e.keyCode <= 56) {
+            const level = e.keyCode - 48;
+            const $levelNode = $(`.level-${level}`);
+            if ($levelNode.length && !$levelNode.hasClass('locked')) {
+                $levelNode.click();
+            }
         }
     });
-}
 
-function getMaxWordsForGame(gameNumber) {
-    const wordsPerGame = {
-        1: 20,  // Basic Vocabulary
-        2: 15,  // Memory Game
-        3: 20,  // Hangman
-        8: 15   // Prepositions
-    };
-    return wordsPerGame[gameNumber] || 10;
-}
-
-function isGameUnlocked(gameNumber) {
-    if (gameNumber === 1) return true; // First game is always unlocked
-    
-    const progress = getProgress();
-    
-    // Define unlock requirements
-    const unlockRequirements = {
-        2: [1],           // Memory unlocks after Basic Vocabulary
-        3: [1, 2],        // Hangman unlocks after Vocabulary + Memory
-        4: [1, 2, 3],     // Present Simple unlocks after all vocabulary games
-        5: [4],           // Present Continuous unlocks after Present Simple
-        6: [4, 5],        // Past Simple unlocks after Present tenses
-        7: [4, 5, 6],     // Future Simple unlocks after all previous tenses
-        8: [1, 2, 3, 4]   // Prepositions unlocks after all vocabulary + present simple
-    };
-    
-    const requirements = unlockRequirements[gameNumber] || [];
-    return requirements.every(req => progress.gameProgress[req]?.completed);
-}
-
-// Modal functions removed - direct navigation now
-
-function navigateToGame(category, game) {
-    // Define navigation paths based on the new structure
-    const gamePaths = {
-        1: 'games/vocabulary-basic.php',
-        2: 'games/memory-game.php',
-        3: 'games/hangman.php',
-        4: 'games/present-simple.php',
-        5: 'games/present-continuous.php',
-        6: 'games/past-simple.php',
-        7: 'games/future-simple.php',
-        8: 'games/prepositions.php'
-    };
-    
-    // Check if we need to show theory first
-    const theoryRequired = [4, 5, 6, 7]; // Grammar games need theory
-    
-    if (theoryRequired.includes(parseInt(game))) {
-        // Navigate to theory first
-        const theoryPaths = {
-            4: 'theory/present-simple.php',
-            5: 'theory/present-continuous.php',
-            6: 'theory/past-simple.php',
-            7: 'theory/future-simple.php'
-        };
-        window.location.href = theoryPaths[game];
-    } else {
-        // Navigate directly to game
-        window.location.href = gamePaths[game];
-    }
-}
-
-function showNotification(message, type = 'info') {
-    const notification = $(`
-        <div class="notification ${type}">
-            <span>${message}</span>
-            <button class="notification-close">&times;</button>
-        </div>
-    `);
-    
-    $('body').append(notification);
-    
-    setTimeout(() => {
-        notification.addClass('show');
-    }, 100);
-    
-    setTimeout(() => {
-        notification.removeClass('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
-    }, 3000);
-    
-    notification.find('.notification-close').click(function() {
-        notification.removeClass('show');
-        setTimeout(() => {
-            notification.remove();
-        }, 300);
+    // Window resize handler
+    $(window).resize(function() {
+        updateProgressShip();
     });
-}
 
-function updateGameProgress(gameNumber, data) {
-    const progress = getProgress();
+    // Initialize the game
+    loadGameState();
+    checkLevelCompletion();
     
-    // Update specific game progress
-    if (data.questionsAnswered !== undefined) {
-        // Grammar games
-        progress.gameProgress[gameNumber].progress = data.questionsAnswered;
-        progress.gameProgress[gameNumber].score = Math.max(
-            progress.gameProgress[gameNumber].score || 0, 
-            data.score
-        );
-        
-        if (data.questionsAnswered >= 10 && data.score >= 70) {
-            progress.gameProgress[gameNumber].completed = true;
-            progress.gamesCompleted = Object.values(progress.gameProgress).filter(g => g.completed).length;
-            progress.totalPoints += data.score;
+    // Add some visual feedback to buttons
+    $('.game-button').hover(
+        function() {
+            $(this).css('transform', 'translateY(-3px)');
+        },
+        function() {
+            $(this).css('transform', 'translateY(0)');
         }
-    } else if (data.wordsLearned !== undefined) {
-        // Vocabulary games
-        progress.gameProgress[gameNumber].wordsLearned = Math.max(
-            progress.gameProgress[gameNumber].wordsLearned || 0,
-            data.wordsLearned
-        );
-        progress.gameProgress[gameNumber].score = Math.max(
-            progress.gameProgress[gameNumber].score || 0,
-            data.score
-        );
-        
-        const maxWords = getMaxWordsForGame(gameNumber);
-        if (data.wordsLearned >= maxWords * 0.7) { // 70% of words learned
-            progress.gameProgress[gameNumber].completed = true;
-            progress.gamesCompleted = Object.values(progress.gameProgress).filter(g => g.completed).length;
-        }
-        
-        progress.totalPoints += data.pointsGained || 0;
-        progress.wordsLearned = Math.max(progress.wordsLearned, 
-            Object.values(progress.gameProgress)
-                .filter(g => g.wordsLearned !== undefined)
-                .reduce((sum, g) => sum + (g.wordsLearned || 0), 0)
-        );
-    }
+    );
     
-    saveProgress(progress);
-}
-
-// Global functions for games
-window.englishTrainer = {
-    getProgress,
-    saveProgress,
-    updateGameProgress,
-    showNotification,
-    updateDashboard,
-    getMaxWordsForGame,
-    isGameUnlocked
-};
+    // Floating animation for the ship
+    setInterval(function() {
+        const $ship = $('#progress-ship');
+        $ship.css('transform', 'translateY(' + (Math.sin(Date.now() / 1000) * 5) + 'px)');
+    }, 50);
+});

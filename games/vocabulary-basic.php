@@ -1,202 +1,403 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vocabulario Básico - English Trainer</title>
+    <title>Palabras Básicas - English Trainer</title>
     <link rel="stylesheet" href="../css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .score-display {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .score-item {
+            background: #1a1a1a;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid #333;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .word-display {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .english-word {
+            font-size: 3rem;
+            color: #0ff;
+            margin-bottom: 1rem;
+        }
+        
+        .pronunciation {
+            font-size: 1.2rem;
+            color: #888;
+            font-style: italic;
+            margin-bottom: 1rem;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .option-button {
+            padding: 1rem;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option-button:hover {
+            border-color: #0ff;
+            background: rgba(0, 255, 255, 0.1);
+        }
+        
+        .option-button.correct {
+            background: #22c55e;
+            border-color: #16a34a;
+        }
+        
+        .option-button.incorrect {
+            background: #dc2626;
+            border-color: #991b1b;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .control-button {
+            padding: 0.8rem 1.5rem;
+            border: 2px solid #0ff;
+            background: transparent;
+            color: #0ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            background: #0ff;
+            color: #000;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+            border: 2px solid #333;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0ff, #0aa);
+            transition: width 0.3s ease;
+        }
+        
+        .results-panel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid #0ff;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+        
+        .results-panel.visible {
+            transform: translate(-50%, -50%) scale(1);
+        }
+        
+        .stars-display {
+            font-size: 3rem;
+            margin: 1rem 0;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1 class="header-title">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                </svg>
-                Vocabulario Básico
-            </h1>
+    <div class="universe">
+        <div class="stars-bg"></div>
+        
+        <div class="game-container">
+            <button class="back-button control-button" onclick="goHome()">
+                <i class="fas fa-arrow-left"></i> Volver
+            </button>
+            
+            <div class="game-header">
+                <h1>Palabras Básicas</h1>
+                <p>Aprende las 20 palabras más esenciales del inglés</p>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            
             <div class="score-display">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
-                </svg>
-                <span id="score">0</span> puntos | <span id="question-counter">1</span>/20
-            </div>
-        </header>
-
-        <main class="main">
-            <div class="game-container">
-                <div class="question-card">
-                    <h2 id="question">¿Cuál es la traducción de "Red"?</h2>
+                <div class="score-item">
+                    <div class="score-label">Puntos</div>
+                    <div class="score-value" id="current-score">0</div>
                 </div>
-                
-                <div class="options-grid" id="options-container">
-                    <!-- Options will be loaded here -->
+                <div class="score-item">
+                    <div class="score-label">Palabra</div>
+                    <div class="score-value" id="current-word">1</div>
                 </div>
-                
-                <div class="nav-buttons" style="display: none;" id="result-section">
-                    <div class="btn" id="explanation" style="background: var(--secondary-color); cursor: default;"></div>
-                    <button class="btn success" id="next-question">
-                        Siguiente
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m9 18 6-6-6-6"></path>
-                        </svg>
-                    </button>
+                <div class="score-item">
+                    <div class="score-label">Correctas</div>
+                    <div class="score-value" id="correct-answers">0</div>
                 </div>
             </div>
-        </main>
+            
+            <div class="word-display">
+                <div class="english-word" id="english-word"></div>
+                <div class="pronunciation" id="pronunciation"></div>
+            </div>
+            
+            <div class="options-grid" id="options-grid">
+                <!-- Options will be generated here -->
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-button" id="next-button" onclick="nextWord()" style="display: none;">
+                    Siguiente <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="results-panel" id="results-panel">
+            <h2>¡Juego Completado!</h2>
+            <div class="stars-display" id="stars-display"></div>
+            <p>Puntuación Final: <span id="final-score"></span></p>
+            <p>Palabras Correctas: <span id="final-correct"></span>/20</p>
+            <div class="game-controls">
+                <button class="control-button" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Jugar de Nuevo
+                </button>
+                <button class="control-button" onclick="goHome()">
+                    <i class="fas fa-home"></i> Menú Principal
+                </button>
+            </div>
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="../js/main.js"></script>
     <script>
-        $(document).ready(function() {
-            let currentQuestion = 0;
-            let score = 0;
-            let correctAnswers = 0;
-            let wordsLearned = new Set();
+        // Game data
+        const vocabulary = [
+            { english: 'Hello', spanish: 'Hola', pronunciation: '/həˈloʊ/' },
+            { english: 'Goodbye', spanish: 'Adiós', pronunciation: '/ɡʊdˈbaɪ/' },
+            { english: 'Please', spanish: 'Por favor', pronunciation: '/pliːz/' },
+            { english: 'Thank you', spanish: 'Gracias', pronunciation: '/θæŋk juː/' },
+            { english: 'Yes', spanish: 'Sí', pronunciation: '/jɛs/' },
+            { english: 'No', spanish: 'No', pronunciation: '/noʊ/' },
+            { english: 'Water', spanish: 'Agua', pronunciation: '/ˈwɔːtər/' },
+            { english: 'Food', spanish: 'Comida', pronunciation: '/fuːd/' },
+            { english: 'House', spanish: 'Casa', pronunciation: '/haʊs/' },
+            { english: 'Friend', spanish: 'Amigo', pronunciation: '/frɛnd/' },
+            { english: 'Family', spanish: 'Familia', pronunciation: '/ˈfæməli/' },
+            { english: 'Love', spanish: 'Amor', pronunciation: '/lʌv/' },
+            { english: 'Time', spanish: 'Tiempo', pronunciation: '/taɪm/' },
+            { english: 'Person', spanish: 'Persona', pronunciation: '/ˈpɜːrsən/' },
+            { english: 'New', spanish: 'Nuevo', pronunciation: '/nuː/' },
+            { english: 'Good', spanish: 'Bueno', pronunciation: '/ɡʊd/' },
+            { english: 'Big', spanish: 'Grande', pronunciation: '/bɪɡ/' },
+            { english: 'Small', spanish: 'Pequeño', pronunciation: '/smɔːl/' },
+            { english: 'Help', spanish: 'Ayuda', pronunciation: '/hɛlp/' },
+            { english: 'Work', spanish: 'Trabajo', pronunciation: '/wɜːrk/' }
+        ];
 
-            const questions = [
-                // Colors
-                { question: '¿Cuál es la traducción de "Red"?', options: ['Rojo', 'Azul', 'Verde', 'Amarillo'], correct: 0, explanation: 'Red significa "Rojo" en español', word: 'RED' },
-                { question: '¿Cuál es la traducción de "Blue"?', options: ['Negro', 'Blanco', 'Azul', 'Verde'], correct: 2, explanation: 'Blue significa "Azul" en español', word: 'BLUE' },
-                { question: '¿Cuál es la traducción de "Green"?', options: ['Verde', 'Amarillo', 'Morado', 'Rosa'], correct: 0, explanation: 'Green significa "Verde" en español', word: 'GREEN' },
-                { question: '¿Cuál es la traducción de "Yellow"?', options: ['Naranja', 'Amarillo', 'Rojo', 'Azul'], correct: 1, explanation: 'Yellow significa "Amarillo" en español', word: 'YELLOW' },
-                { question: '¿Cuál es la traducción de "Black"?', options: ['Blanco', 'Gris', 'Negro', 'Café'], correct: 2, explanation: 'Black significa "Negro" en español', word: 'BLACK' },
-                // Numbers
-                { question: '¿Cómo se dice "Uno" en inglés?', options: ['Zero', 'One', 'Two', 'Three'], correct: 1, explanation: 'One es el número uno en inglés', word: 'ONE' },
-                { question: '¿Cómo se dice "Dos" en inglés?', options: ['One', 'Two', 'Three', 'Four'], correct: 1, explanation: 'Two es el número dos en inglés', word: 'TWO' },
-                { question: '¿Cómo se dice "Tres" en inglés?', options: ['Two', 'Three', 'Four', 'Five'], correct: 1, explanation: 'Three es el número tres en inglés', word: 'THREE' },
-                { question: '¿Cómo se dice "Cuatro" en inglés?', options: ['Three', 'Four', 'Five', 'Six'], correct: 1, explanation: 'Four es el número cuatro en inglés', word: 'FOUR' },
-                { question: '¿Cómo se dice "Cinco" en inglés?', options: ['Four', 'Five', 'Six', 'Seven'], correct: 1, explanation: 'Five es el número cinco en inglés', word: 'FIVE' },
-                // Family
-                { question: '¿Cuál es la traducción de "Mother"?', options: ['Hermana', 'Madre', 'Padre', 'Tía'], correct: 1, explanation: 'Mother significa "Madre" en español', word: 'MOTHER' },
-                { question: '¿Cuál es la traducción de "Father"?', options: ['Padre', 'Hermano', 'Tío', 'Abuelo'], correct: 0, explanation: 'Father significa "Padre" en español', word: 'FATHER' },
-                { question: '¿Cuál es la traducción de "Sister"?', options: ['Madre', 'Tía', 'Hermana', 'Abuela'], correct: 2, explanation: 'Sister significa "Hermana" en español', word: 'SISTER' },
-                { question: '¿Cuál es la traducción de "Brother"?', options: ['Primo', 'Hermano', 'Tío', 'Padre'], correct: 1, explanation: 'Brother significa "Hermano" en español', word: 'BROTHER' },
-                // Animals
-                { question: '¿Cómo se dice "Gato" en inglés?', options: ['Dog', 'Cat', 'Bird', 'Fish'], correct: 1, explanation: 'Cat es la palabra en inglés para gato', word: 'CAT' },
-                { question: '¿Cómo se dice "Perro" en inglés?', options: ['Cat', 'Dog', 'Horse', 'Bird'], correct: 1, explanation: 'Dog es la palabra en inglés para perro', word: 'DOG' },
-                { question: '¿Cómo se dice "Pájaro" en inglés?', options: ['Cat', 'Dog', 'Bird', 'Fish'], correct: 2, explanation: 'Bird es la palabra en inglés para pájaro', word: 'BIRD' },
-                { question: '¿Cómo se dice "Pez" en inglés?', options: ['Cat', 'Dog', 'Bird', 'Fish'], correct: 3, explanation: 'Fish es la palabra en inglés para pez', word: 'FISH' },
-                { question: '¿Cuál es la traducción de "White"?', options: ['Blanco', 'Gris', 'Beige', 'Plateado'], correct: 0, explanation: 'White significa "Blanco" en español', word: 'WHITE' },
-                { question: '¿Cómo se dice "Caballo" en inglés?', options: ['Dog', 'Cat', 'Horse', 'Bird'], correct: 2, explanation: 'Horse es la palabra en inglés para caballo', word: 'HORSE' }
-            ];
+        // Game state
+        let currentWord = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let gameCompleted = false;
+        let currentOptions = [];
 
-            function loadQuestion() {
-                const question = questions[currentQuestion];
-                $('#question').text(question.question);
-                $('#question-counter').text(currentQuestion + 1);
-                
-                const optionsContainer = $('#options-container');
-                optionsContainer.empty();
-                
-                question.options.forEach((option, index) => {
-                    const optionElement = $(`
-                        <button class="option-button" data-index="${index}">
-                            ${option}
-                        </button>
-                    `);
-                    optionsContainer.append(optionElement);
-                });
-                
-                $('#result-section').hide();
-                $('.option-button').show();
+        // Initialize game
+        function initGame() {
+            currentWord = 0;
+            score = 0;
+            correctAnswers = 0;
+            gameCompleted = false;
+            updateDisplay();
+            showWord();
+        }
+
+        // Show current word
+        function showWord() {
+            if (currentWord >= vocabulary.length) {
+                endGame();
+                return;
             }
 
-            function handleAnswer(selectedIndex) {
-                const question = questions[currentQuestion];
-                const isCorrect = selectedIndex === question.correct;
-                
-                $('.option-button').off('click');
-                $('.option-button').each(function(index) {
-                    if (index === question.correct) {
-                        $(this).addClass('correct');
-                    } else if (index === selectedIndex && !isCorrect) {
-                        $(this).addClass('incorrect');
-                    }
-                });
-                
-                if (isCorrect) {
-                    correctAnswers++;
-                    score += 10;
-                    wordsLearned.add(question.word);
-                    $('#score').text(score);
-                    englishTrainer.showNotification('¡Correcto! +10 puntos', 'success');
-                } else {
-                    englishTrainer.showNotification('Incorrecto. La respuesta correcta era: ' + question.options[question.correct], 'error');
-                }
-                
-                $('#explanation').text(question.explanation);
-                $('#result-section').show();
-            }
+            const word = vocabulary[currentWord];
+            $('#english-word').text(word.english);
+            $('#pronunciation').text(word.pronunciation);
+            
+            generateOptions();
+            updateDisplay();
+        }
 
-            function nextQuestion() {
-                currentQuestion++;
+        // Generate answer options
+        function generateOptions() {
+            const correctAnswer = vocabulary[currentWord].spanish;
+            const allAnswers = vocabulary.map(word => word.spanish);
+            
+            // Get 3 incorrect answers
+            const incorrectAnswers = allAnswers
+                .filter(answer => answer !== correctAnswer)
+                .sort(() => Math.random() - 0.5)
+                .slice(0, 3);
+            
+            // Combine and shuffle
+            currentOptions = [...incorrectAnswers, correctAnswer].sort(() => Math.random() - 0.5);
+            
+            // Create option buttons
+            const optionsGrid = $('#options-grid');
+            optionsGrid.empty();
+            
+            currentOptions.forEach((option, index) => {
+                const button = $(`<button class="option-button" data-answer="${option}">
+                    ${option}
+                </button>`);
                 
-                if (currentQuestion >= questions.length) {
-                    showResults();
-                } else {
-                    loadQuestion();
-                }
-            }
-
-            function showResults() {
-                const percentage = (correctAnswers / questions.length) * 100;
-                
-                // Update progress
-                englishTrainer.updateGameProgress(1, {
-                    wordsLearned: wordsLearned.size,
-                    score: score,
-                    pointsGained: score
-                });
-                
-                const resultsContainer = $('.game-container');
-                resultsContainer.html(`
-                    <div class="theory-container">
-                        <div class="theory-content text-center">
-                            <h2>¡Juego Completado!</h2>
-                            <div class="score-display" style="font-size: 1.5rem; margin: 1rem 0;">
-                                ${score} puntos
-                            </div>
-                            <p>Respuestas correctas: ${correctAnswers}/${questions.length}</p>
-                            <p>Palabras aprendidas: ${wordsLearned.size}</p>
-                            <p>Porcentaje: ${percentage.toFixed(1)}%</p>
-                            ${percentage >= 70 ? '<p style="color: #2ECC71; font-weight: 600;">¡Has completado el juego!</p>' : '<p>Necesitas al menos 70% para completar el nivel.</p>'}
-                        </div>
-                    </div>
-                    <div class="nav-buttons">
-                        <a href="../index.php" class="btn">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 7v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2z"></path>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            Regresar al Dashboard
-                        </a>
-                        <button class="btn primary" onclick="location.reload()">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M3 2v6h6"></path>
-                                <path d="M21 22v-6h-6"></path>
-                                <path d="M2 14a10 10 0 0 0 20 0"></path>
-                                <path d="M22 10a10 10 0 0 0-20 0"></path>
-                            </svg>
-                            Intentar de Nuevo
-                        </button>
-                    </div>
-                `);
-            }
-
-            // Event handlers
-            $(document).on('click', '.option-button', function() {
-                handleAnswer(parseInt($(this).data('index')));
+                button.click(() => selectAnswer(option));
+                optionsGrid.append(button);
             });
+        }
 
-            $('#next-question').click(function() {
-                nextQuestion();
+        // Handle answer selection
+        function selectAnswer(selectedAnswer) {
+            const correctAnswer = vocabulary[currentWord].spanish;
+            const isCorrect = selectedAnswer === correctAnswer;
+            
+            // Disable all buttons
+            $('.option-button').prop('disabled', true);
+            
+            // Show correct/incorrect feedback
+            $('.option-button').each(function() {
+                const buttonAnswer = $(this).data('answer');
+                if (buttonAnswer === correctAnswer) {
+                    $(this).addClass('correct');
+                } else if (buttonAnswer === selectedAnswer && !isCorrect) {
+                    $(this).addClass('incorrect');
+                }
             });
+            
+            // Update score
+            if (isCorrect) {
+                correctAnswers++;
+                score += 10;
+            }
+            
+            // Show next button
+            setTimeout(() => {
+                $('#next-button').show();
+            }, 1000);
+        }
 
-            // Initialize game
-            loadQuestion();
+        // Next word
+        function nextWord() {
+            currentWord++;
+            $('#next-button').hide();
+            showWord();
+        }
+
+        // Update display
+        function updateDisplay() {
+            $('#current-score').text(score);
+            $('#current-word').text(currentWord + 1);
+            $('#correct-answers').text(correctAnswers);
+            
+            const progress = ((currentWord + 1) / vocabulary.length) * 100;
+            $('#progress-fill').css('width', progress + '%');
+        }
+
+        // End game
+        function endGame() {
+            gameCompleted = true;
+            
+            // Calculate stars
+            const percentage = (correctAnswers / vocabulary.length) * 100;
+            let stars = 1;
+            if (percentage >= 70) stars = 2;
+            if (percentage >= 90) stars = 3;
+            
+            // Update results
+            $('#final-score').text(score);
+            $('#final-correct').text(correctAnswers);
+            
+            let starsHtml = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < stars) {
+                    starsHtml += '<i class="fas fa-star" style="color: #ffd700;"></i>';
+                } else {
+                    starsHtml += '<i class="far fa-star" style="color: #333;"></i>';
+                }
+            }
+            $('#stars-display').html(starsHtml);
+            
+            // Show results panel
+            $('#results-panel').addClass('visible');
+            
+            // Notify parent window about completion
+            if (window.opener && window.opener.onGameComplete) {
+                window.opener.onGameComplete(1, score, stars);
+            }
+        }
+
+        // Restart game
+        function restartGame() {
+            $('#results-panel').removeClass('visible');
+            initGame();
+        }
+
+        // Go to home
+        function goHome() {
+            window.location.href = '../index.php';
+        }
+
+        // Initialize game on load
+        $(document).ready(() => {
+            initGame();
         });
     </script>
 </body>
