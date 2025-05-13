@@ -729,7 +729,7 @@ body {
 /* ===== COMPLETED MISSIONS DISPLAY ===== */
 .completed-missions {
     position: sticky;
-    top: 100px; /* Debajo del header */
+    bottom: 80px; /* Sobre el footer */
     right: 20px;
     float: right;
     background: rgba(26, 26, 46, 0.9);
@@ -743,7 +743,10 @@ body {
     text-align: center;
     z-index: 50;
     box-shadow: var(--shadow-soft);
-    margin-top: 20px;
+    margin-bottom: 20px;
+    /* Asegurar que se mantenga en el viewport */
+    position: fixed !important;
+    bottom: 120px !important;
 }
 
 .missions-title {
@@ -787,8 +790,8 @@ body {
 .theory-reminder {
     position: fixed;
     bottom: 60px; /* Subido para dar espacio al footer */
-    left: 50%;
-    transform: translateX(-50%);
+    left: 20px; /* Movido a la izquierda para no chocar con las misiones */
+    transform: none;
     background: var(--blue-pastel);
     color: var(--bg-space);
     padding: var(--space-sm) var(--space-md);
@@ -802,6 +805,7 @@ body {
     z-index: 50;
     box-shadow: var(--shadow-soft);
     animation: reminderPulse 3s ease-in-out infinite;
+    max-width: 300px;
 }
 
 @keyframes reminderPulse {
@@ -875,14 +879,13 @@ body {
     
     /* Responsive for completed missions */
     .completed-missions {
-        position: fixed;
-        top: auto;
-        bottom: 90px; /* Sobre el footer y recordatorio */
-        right: 10px;
-        left: 10px;
+        position: fixed !important;
+        bottom: 100px !important; /* Sobre el footer y recordatorio */
+        right: 10px !important;
+        left: auto !important;
         float: none;
-        max-width: 90%;
-        width: calc(100% - 20px);
+        max-width: 250px;
+        width: auto;
         padding: var(--space-sm);
         margin: 0;
         border-radius: var(--radius-soft);
@@ -900,9 +903,12 @@ body {
     /* Responsive for theory reminder */
     .theory-reminder {
         bottom: 50px; /* Ajustado para móvil con footer */
+        left: 10px;
+        right: auto;
         padding: var(--space-xs) var(--space-sm);
         font-size: 0.8rem;
-        max-width: 90%;
+        max-width: 280px;
+        transform: none;
     }
     
     /* Footer responsive */
@@ -942,14 +948,13 @@ body {
     
     /* Extra small screen adjustments */
     .completed-missions {
-        position: fixed;
-        top: auto;
-        bottom: 80px; /* Más cerca del footer */
-        right: 5px;
-        left: 5px;
+        position: fixed !important;
+        bottom: 80px !important; /* Más cerca del footer */
+        right: 5px !important;
+        left: auto !important;
         float: none;
-        max-width: 95%;
-        width: calc(100% - 10px);
+        max-width: 200px;
+        width: auto;
         padding: var(--space-xs);
         margin: 0;
         transform: none;
@@ -958,12 +963,12 @@ body {
     .theory-reminder {
         position: fixed;
         bottom: 40px; /* Más espacio del footer */
-        left: 0;
-        right: 0;
+        left: 5px;
+        right: auto;
         transform: none;
-        border-radius: 0;
-        border-radius: var(--radius-soft) var(--radius-soft) 0 0;
+        border-radius: var(--radius-soft);
         font-size: 0.7rem;
+        max-width: 250px;
     }
     
     .footer {
