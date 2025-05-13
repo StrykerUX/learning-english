@@ -178,7 +178,10 @@ $(document).ready(function() {
     }
 
     function navigateToGame(game) {
-        // Define navigation paths based on the original structure
+        // Debug log
+        console.log('Navigating to game:', game);
+        
+        // Define navigation paths based on the actual file structure
         const gamePaths = {
             1: 'games/vocabulary-basic.php',
             2: 'games/memory-game.php',
@@ -204,9 +207,11 @@ $(document).ready(function() {
                     6: 'theory/past-simple.php',
                     7: 'theory/future-simple.php'
                 };
+                console.log('Navigating to theory:', theoryPaths[game]);
                 window.location.href = theoryPaths[game];
             } else {
                 // Navigate directly to game
+                console.log('Navigating to game path:', gamePaths[game]);
                 window.location.href = gamePaths[game];
             }
         }, 1000);

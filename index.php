@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>English Trainer - Adventure Map</title>
-    <link rel="stylesheet" href="css/style_mario.css">
+    <link rel="stylesheet" href="css/style_mario.css?v=1.1">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&display=swap" rel="stylesheet">
 </head>
@@ -243,6 +243,6 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/main_mario.js"></script>
+    <script src="js/main_mario.js?v=1.1"></script>
 </body>
 </html>
