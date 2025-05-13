@@ -1,10 +1,10 @@
-// English Trainer - Main JavaScript
+// English Trainer - Adventure Mode JavaScript
 $(document).ready(function() {
     // Game configuration and data
     const gameConfig = {
         1: {
             name: 'Palabras Básicas',
-            description: 'Aprende 20 palabras esenciales del inglés. Palabra por palabra, construye tu vocabulario base.',
+            description: 'Aprende las 20 palabras más esenciales del inglés. Construye tu vocabulario base palabra por palabra.',
             game: 'vocabulary-basic',
             theory: 'theory/basic-words.php'
         },
@@ -52,7 +52,7 @@ $(document).ready(function() {
         }
     };
 
-    // Initialize game state
+    // Game state management
     let gameState = {
         unlockedLevels: [1],
         completedLevels: [],
@@ -72,6 +72,7 @@ $(document).ready(function() {
             }
         }
         updateUI();
+        updatePlayerPosition();
     }
 
     // Save progress to localStorage
@@ -81,47 +82,56 @@ $(document).ready(function() {
 
     // Update UI based on game state
     function updateUI() {
-        // Update stats in header
-        $('#total-points').text(gameState.totalPoints);
+        // Update header stats
         $('#total-stars').text(gameState.totalStars);
+        $('#total-points').text(gameState.totalPoints);
+        $('#total-achievements').text(gameState.completedLevels.length);
 
-        // Update level node appearances
+        // Update level nodes
         $('.level-node').each(function() {
             const level = parseInt($(this).data('level'));
             const $node = $(this);
 
+            // Remove all state classes
             $node.removeClass('completed unlocked locked');
 
+            // Apply correct state
             if (gameState.completedLevels.includes(level)) {
                 $node.addClass('completed');
+                updateLevelStars($node, level);
             } else if (gameState.unlockedLevels.includes(level)) {
                 $node.addClass('unlocked');
             } else {
                 $node.addClass('locked');
             }
         });
-
-        // Position progress ship
-        updateProgressShip();
     }
 
-    // Update progress ship position
-    function updateProgressShip() {
-        const lastCompletedLevel = Math.max(...gameState.completedLevels, 0);
-        let nextLevel = lastCompletedLevel + 1;
+    // Update stars for a completed level
+    function updateLevelStars($node, level) {
+        const progress = gameState.levelProgress[level];
+        if (progress && progress.stars > 0) {
+            const $stars = $node.find('.progress-stars i');
+            $stars.removeClass('fas far').addClass('far');
+            for (let i = 0; i < progress.stars; i++) {
+                $stars.eq(i).removeClass('far').addClass('fas');
+            }
+        }
+    }
+
+    // Position player character
+    function updatePlayerPosition() {
+        const lastCompleted = Math.max(...gameState.completedLevels, 0);
+        const currentLevel = Math.min(lastCompleted + 1, 8);
+        const $targetNode = $(`.level-${currentLevel}`);
         
-        // If all levels are completed, keep ship at level 8
-        if (nextLevel > 8) nextLevel = 8;
-
-        const $targetLevel = $(`.level-${nextLevel}`);
-        if ($targetLevel.length) {
-            const targetPos = $targetLevel.position();
-            const targetLeft = targetPos.left + $targetLevel.width() / 2;
-            const targetTop = targetPos.top + $targetLevel.height() / 2;
-
-            $('#progress-ship').css({
-                left: targetLeft - 25,
-                top: targetTop - 25
+        if ($targetNode.length) {
+            const nodePosition = $targetNode.offset();
+            const nodeSize = $targetNode.find('.node-circle').width();
+            
+            $('#player-character').css({
+                left: (nodePosition.left + nodeSize + 20) + 'px',
+                top: (nodePosition.top - 30) + 'px'
             });
         }
     }
@@ -131,97 +141,82 @@ $(document).ready(function() {
         const level = parseInt($(this).data('level'));
         
         if ($(this).hasClass('locked')) {
-            showTooltip($(this), 'Nivel bloqueado. Completa los niveles anteriores.');
+            showNotification('Este nivel está bloqueado. Completa los niveles anteriores.', 'warning');
             return;
         }
 
-        showGameInfoPanel(level);
+        showLevelPanel(level);
     });
 
-    // Show game information panel
-    function showGameInfoPanel(level) {
+    // Show level panel
+    function showLevelPanel(level) {
         const config = gameConfig[level];
         const progress = gameState.levelProgress[level] || { bestScore: 0, stars: 0 };
-
-        $('#game-info-panel .panel-title').text(config.name);
-        $('#game-info-panel .panel-description').text(config.description);
+        const levelNode = $(`.level-${level}`);
+        
+        // Update panel content
+        $('#panel-title').text(config.name);
+        $('#panel-description').text(config.description);
         $('#panel-best-score').text(progress.bestScore);
-        $('#panel-stars').text(progress.stars);
-
+        
+        // Update icon color based on level type
+        let iconColor;
+        if (level <= 3) {
+            iconColor = '#3b82f6'; // Blue for vocabulary
+        } else if (level <= 7) {
+            iconColor = '#10b981'; // Green for grammar
+        } else {
+            iconColor = '#8b5cf6'; // Purple for special
+        }
+        
+        $('#panel-icon i').attr('class', levelNode.find('.node-icon i').attr('class'))
+                          .css('color', iconColor);
+        
+        // Update stars
+        const $panelStars = $('#panel-stars i');
+        $panelStars.removeClass('fas far').addClass('far');
+        for (let i = 0; i < progress.stars; i++) {
+            $panelStars.eq(i).removeClass('far').addClass('fas');
+        }
+        
         // Set up button actions
-        $('#view-theory').off('click').on('click', function() {
+        $('#theory-btn').off('click').on('click', function(e) {
+            e.preventDefault();
             window.location.href = config.theory;
         });
 
-        $('#play-game').off('click').on('click', function() {
+        $('#play-btn').off('click').on('click', function(e) {
+            e.preventDefault();
             window.location.href = `games/${config.game}.php`;
         });
 
-        $('#game-info-panel').addClass('visible');
+        // Show panel
+        $('#level-panel').addClass('visible');
     }
 
-    // Close game info panel
-    $('#close-panel').click(function() {
-        $('#game-info-panel').removeClass('visible');
+    // Close level panel
+    $('#close-level-panel').click(function() {
+        $('#level-panel').removeClass('visible');
     });
 
     // Close panel when clicking outside
     $(document).click(function(e) {
-        if (!$(e.target).closest('#game-info-panel, .level-node').length) {
-            $('#game-info-panel').removeClass('visible');
+        if (!$(e.target).closest('#level-panel, .level-node').length) {
+            $('#level-panel').removeClass('visible');
         }
     });
 
-    // Tooltip functionality
-    let tooltipTimeout;
-
-    $('.level-node').hover(
-        function() {
-            const level = parseInt($(this).data('level'));
-            const config = gameConfig[level];
-            const progress = gameState.levelProgress[level] || { bestScore: 0, stars: 0 };
-            
-            let tooltip = `<strong>${config.name}</strong><br>`;
-            
-            if ($(this).hasClass('completed')) {
-                tooltip += `⭐ ${progress.stars} estrellas<br>`;
-                tooltip += `🏆 ${progress.bestScore} puntos`;
-            } else if ($(this).hasClass('unlocked')) {
-                tooltip += 'Click para jugar';
-            } else {
-                const required = $(this).data('required');
-                if (required === 'none') {
-                    tooltip += 'Nivel inicial disponible';
-                } else {
-                    tooltip += `Completa nivel ${required} para desbloquear`;
-                }
-            }
-
-            clearTimeout(tooltipTimeout);
-            tooltipTimeout = setTimeout(() => {
-                showTooltip($(this), tooltip);
-            }, 500);
-        },
-        function() {
-            clearTimeout(tooltipTimeout);
-            hideTooltip();
-        }
-    );
-
-    function showTooltip($element, content) {
-        const pos = $element.offset();
-        const $tooltip = $('#level-tooltip');
+    // Show notification
+    function showNotification(message, type = 'info') {
+        $('#notification-text').text(message);
+        $('#notification')
+            .removeClass('info warning success error')
+            .addClass(type)
+            .addClass('visible');
         
-        $tooltip.html(content);
-        $tooltip.css({
-            top: pos.top - $tooltip.outerHeight() - 10,
-            left: pos.left + ($element.width() / 2) - ($tooltip.outerWidth() / 2)
-        });
-        $tooltip.addClass('visible');
-    }
-
-    function hideTooltip() {
-        $('#level-tooltip').removeClass('visible');
+        setTimeout(() => {
+            $('#notification').removeClass('visible');
+        }, 3000);
     }
 
     // Handle game completion (called from game pages)
@@ -233,6 +228,7 @@ $(document).ready(function() {
             // Unlock next level
             if (level < 8 && !gameState.unlockedLevels.includes(level + 1)) {
                 gameState.unlockedLevels.push(level + 1);
+                showNotification(`¡Nivel ${level + 1} desbloqueado!`, 'success');
             }
         }
 
@@ -247,6 +243,7 @@ $(document).ready(function() {
         // Save and update UI
         saveGameState();
         updateUI();
+        updatePlayerPosition();
         
         // Show completion animation
         showCompletionAnimation(level, score, stars);
@@ -266,33 +263,40 @@ $(document).ready(function() {
     // Show completion animation
     function showCompletionAnimation(level, score, stars) {
         const $level = $(`.level-${level}`);
+        const levelPosition = $level.offset();
         
         // Create celebration effect
-        for (let i = 0; i < 10; i++) {
-            const $star = $('<div>').css({
+        for (let i = 0; i < 15; i++) {
+            const $particle = $('<div>').css({
                 position: 'absolute',
-                left: $level.offset().left + $level.width() / 2,
-                top: $level.offset().top + $level.height() / 2,
-                color: '#ffd700',
-                fontSize: '1.5rem',
+                left: levelPosition.left + Math.random() * 100,
+                top: levelPosition.top + Math.random() * 100,
+                background: ['#ffd700', '#ff6b4a', '#10b981', '#8b5cf6'][Math.floor(Math.random() * 4)],
+                width: '10px',
+                height: '10px',
+                borderRadius: '50%',
                 pointerEvents: 'none',
                 zIndex: 1000
-            }).html('⭐');
+            });
             
-            $('body').append($star);
+            $('body').append($particle);
             
-            // Animate star
-            $star.animate({
-                top: $star.offset().top - 50 - Math.random() * 100,
-                left: $star.offset().left + (Math.random() - 0.5) * 200,
-                opacity: 0
+            // Animate particle
+            $particle.animate({
+                top: $particle.offset().top - 100 - Math.random() * 100,
+                left: $particle.offset().left + (Math.random() - 0.5) * 200,
+                opacity: 0,
+                transform: 'scale(2)'
             }, 1000 + Math.random() * 1000, function() {
-                $star.remove();
+                $particle.remove();
             });
         }
+        
+        // Show score notification
+        showNotification(`¡Completaste el nivel ${level}! Puntos: ${score}, Estrellas: ${stars}`, 'success');
     }
 
-    // Level completion from URL parameters (when returning from game)
+    // Handle level completion from URL parameters
     function checkLevelCompletion() {
         const urlParams = new URLSearchParams(window.location.search);
         const level = parseInt(urlParams.get('level'));
@@ -307,11 +311,11 @@ $(document).ready(function() {
         }
     }
 
-    // Handle keyboard shortcuts
+    // Keyboard shortcuts
     $(document).keydown(function(e) {
         // Escape key closes panel
         if (e.keyCode === 27) {
-            $('#game-info-panel').removeClass('visible');
+            $('#level-panel').removeClass('visible');
         }
         
         // Number keys (1-8) select levels
@@ -326,26 +330,57 @@ $(document).ready(function() {
 
     // Window resize handler
     $(window).resize(function() {
-        updateProgressShip();
+        updatePlayerPosition();
     });
+
+    // Hover effects for level nodes
+    $('.level-node').hover(
+        function() {
+            if (!$(this).hasClass('locked')) {
+                const level = parseInt($(this).data('level'));
+                const config = gameConfig[level];
+                const $tooltip = $('<div class="level-tooltip">')
+                    .html(`<strong>${config.name}</strong><br/>${config.description}`)
+                    .appendTo('body');
+                
+                const position = $(this).offset();
+                $tooltip.css({
+                    position: 'absolute',
+                    left: position.left + 50,
+                    top: position.top - $tooltip.height() - 20,
+                    background: '#1f2937',
+                    color: 'white',
+                    padding: '10px 15px',
+                    borderRadius: '10px',
+                    maxWidth: '200px',
+                    fontSize: '0.9rem',
+                    zIndex: 2000,
+                    boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+                });
+            }
+        },
+        function() {
+            $('.level-tooltip').remove();
+        }
+    );
 
     // Initialize the game
     loadGameState();
     checkLevelCompletion();
     
-    // Add some visual feedback to buttons
-    $('.game-button').hover(
-        function() {
-            $(this).css('transform', 'translateY(-3px)');
-        },
-        function() {
-            $(this).css('transform', 'translateY(0)');
+    // Add path drawing animation
+    function animatePath() {
+        const path = document.getElementById('adventure-path');
+        if (path) {
+            const length = path.getTotalLength();
+            path.style.strokeDasharray = length + ' ' + length;
+            path.style.strokeDashoffset = length;
+            path.getBoundingClientRect();
+            path.style.transition = 'stroke-dashoffset 3s ease-in-out';
+            path.style.strokeDashoffset = '0';
         }
-    );
+    }
     
-    // Floating animation for the ship
-    setInterval(function() {
-        const $ship = $('#progress-ship');
-        $ship.css('transform', 'translateY(' + (Math.sin(Date.now() / 1000) * 5) + 'px)');
-    }, 50);
+    // Animate path on load
+    setTimeout(animatePath, 500);
 });
