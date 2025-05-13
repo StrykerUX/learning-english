@@ -44,39 +44,10 @@ session_start();
             letter-spacing: -0.5px;
         }
         
-        .pronunciation {
-            background: var(--blue-pastel);
-            border: 3px solid var(--bg-space);
-            border-radius: var(--radius-soft);
-            padding: var(--space-md);
-            max-width: 500px;
-            margin: 0 auto;
-            color: var(--bg-space);
-        }
-        
-        .pronunciation-label {
-            font-size: var(--font-size-sm);
-            font-weight: 600;
-            margin-bottom: var(--space-xs);
-        }
-        
-        .pronunciation-phonetic {
-            font-family: var(--font-mono);
-            font-size: var(--font-size-xl);
-            color: var(--purple-bright);
-            margin: var(--space-xs) 0;
-            font-weight: 500;
-        }
-        
-        .pronunciation-guide {
-            font-size: var(--font-size-base);
-            color: rgba(26, 26, 46, 0.8);
-            font-style: italic;
-        }
-        
+        /* Responsive grid for 4 columns */
         .options-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
             gap: var(--space-md);
             margin-bottom: var(--space-lg);
         }
@@ -95,6 +66,10 @@ session_start();
             box-shadow: var(--shadow-subtle);
             position: relative;
             overflow: hidden;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .option-button::before {
@@ -156,13 +131,76 @@ session_start();
             100% { transform: translateX(100%); }
         }
         
+        /* Timer styles */
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(26, 26, 46, 0.9);
+            border: 3px solid var(--purple-bright);
+            border-radius: var(--radius-soft);
+            padding: var(--space-sm) var(--space-md);
+            color: white;
+            font-weight: 700;
+            font-size: var(--font-size-lg);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .timer-icon {
+            color: var(--purple-bright);
+        }
+        
+        .timer-bar {
+            width: 100px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: var(--space-sm);
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green-bright), var(--yellow-pastel), var(--red-bright));
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+        
+        /* Fade animations */
+        .fade-out {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s ease;
+        }
+        
+        .fade-in {
+            opacity: 1;
+            transform: scale(1);
+            transition: all 0.4s ease;
+        }
+        
         @media (max-width: 768px) {
             .english-word {
                 font-size: var(--font-size-3xl);
             }
             
             .options-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .timer-container {
+                top: 10px;
+                right: 10px;
+                font-size: var(--font-size-base);
+            }
+            
+            .timer-bar {
+                width: 60px;
             }
         }
     </style>
@@ -172,6 +210,15 @@ session_start();
         <button class="back-button" onclick="goHome()">
             <i class="fas fa-arrow-left"></i> Volver
         </button>
+        
+        <!-- Timer -->
+        <div class="timer-container" id="timer-container">
+            <i class="fas fa-clock timer-icon"></i>
+            <span id="timer-display">12</span>
+            <div class="timer-bar">
+                <div class="timer-fill" id="timer-fill"></div>
+            </div>
+        </div>
         
         <div class="game-header">
             <h1>Palabras Básicas</h1>
@@ -200,14 +247,9 @@ session_start();
             </div>
         </div>
         
-        <div class="word-display">
+        <div class="word-display" id="word-display">
             <div class="word-category" id="word-category"></div>
             <div class="english-word" id="english-word"></div>
-            <div class="pronunciation">
-                <div class="pronunciation-label">Pronunciación:</div>
-                <div class="pronunciation-phonetic" id="pronunciation-phonetic"></div>
-                <div class="pronunciation-guide" id="pronunciation-guide"></div>
-            </div>
         </div>
         
         <div class="options-grid" id="options-grid">
@@ -247,57 +289,41 @@ session_start();
             { 
                 english: 'Kitchen', 
                 spanish: 'Cocina', 
-                phonetic: '/ˈkɪtʃən/', 
-                guide: 'KÍCH-en',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Bedroom', 
                 spanish: 'Dormitorio', 
-                phonetic: '/ˈbedrʊm/', 
-                guide: 'BED-rum',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Bathroom', 
                 spanish: 'Baño', 
-                phonetic: '/ˈbæθrʊm/', 
-                guide: 'BAZ-rum',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Mother', 
                 spanish: 'Madre', 
-                phonetic: '/ˈmʌðər/', 
-                guide: 'MÁ-der',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Father', 
                 spanish: 'Padre', 
-                phonetic: '/ˈfɑːðər/', 
-                guide: 'FÁ-der',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Brother', 
                 spanish: 'Hermano', 
-                phonetic: '/ˈbrʌðər/', 
-                guide: 'BRÁ-der',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Sister', 
                 spanish: 'Hermana', 
-                phonetic: '/ˈsɪstər/', 
-                guide: 'SÍS-ter',
                 category: 'Hogar y Familia'
             },
             { 
                 english: 'Window', 
                 spanish: 'Ventana', 
-                phonetic: '/ˈwɪndoʊ/', 
-                guide: 'UÍN-do',
                 category: 'Hogar y Familia'
             },
 
@@ -305,57 +331,41 @@ session_start();
             { 
                 english: 'Breakfast', 
                 spanish: 'Desayuno', 
-                phonetic: '/ˈbrekfəst/', 
-                guide: 'BREK-fast',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Dinner', 
                 spanish: 'Cena', 
-                phonetic: '/ˈdɪnər/', 
-                guide: 'DÍ-ner',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Vegetables', 
                 spanish: 'Verduras', 
-                phonetic: '/ˈvedʒtəbəlz/', 
-                guide: 'VÉY-ye-ta-bols',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Fruit', 
                 spanish: 'Fruta', 
-                phonetic: '/fruːt/', 
-                guide: 'FRUT',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Chicken', 
                 spanish: 'Pollo', 
-                phonetic: '/ˈtʃɪkən/', 
-                guide: 'CHÍK-en',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Bread', 
                 spanish: 'Pan', 
-                phonetic: '/bred/', 
-                guide: 'BRED',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Coffee', 
                 spanish: 'Café', 
-                phonetic: '/ˈkɔːfi/', 
-                guide: 'KÓ-fi',
                 category: 'Comida y Cocina'
             },
             { 
                 english: 'Milk', 
                 spanish: 'Leche', 
-                phonetic: '/mɪlk/', 
-                guide: 'MILK',
                 category: 'Comida y Cocina'
             },
 
@@ -363,57 +373,41 @@ session_start();
             { 
                 english: 'Office', 
                 spanish: 'Oficina', 
-                phonetic: '/ˈɔːfɪs/', 
-                guide: 'Ó-fis',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Computer', 
                 spanish: 'Computadora', 
-                phonetic: '/kəmˈpjuːtər/', 
-                guide: 'kom-PYU-ter',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Meeting', 
                 spanish: 'Reunión', 
-                phonetic: '/ˈmiːtɪŋ/', 
-                guide: 'MÍ-ting',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Project', 
                 spanish: 'Proyecto', 
-                phonetic: '/ˈprɑːdʒekt/', 
-                guide: 'PRÓ-yekt',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Manager', 
                 spanish: 'Gerente', 
-                phonetic: '/ˈmænɪdʒər/', 
-                guide: 'MÁ-ni-yer',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Document', 
                 spanish: 'Documento', 
-                phonetic: '/ˈdɑːkjəmənt/', 
-                guide: 'DÓK-yu-ment',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Schedule', 
                 spanish: 'Horario', 
-                phonetic: '/ˈskedʒuːl/', 
-                guide: 'SKÉ-yul',
                 category: 'Oficina y Trabajo'
             },
             { 
                 english: 'Email', 
                 spanish: 'Correo', 
-                phonetic: '/ˈiːmeɪl/', 
-                guide: 'Í-meil',
                 category: 'Oficina y Trabajo'
             },
 
@@ -421,57 +415,41 @@ session_start();
             { 
                 english: 'Teacher', 
                 spanish: 'Profesor', 
-                phonetic: '/ˈtiːtʃər/', 
-                guide: 'TÍ-cher',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Student', 
                 spanish: 'Estudiante', 
-                phonetic: '/ˈstuːdənt/', 
-                guide: 'STU-dent',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Lesson', 
                 spanish: 'Lección', 
-                phonetic: '/ˈlesən/', 
-                guide: 'LÉ-son',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Homework', 
                 spanish: 'Tarea', 
-                phonetic: '/ˈhoʊmwɜːrk/', 
-                guide: 'JOM-wörk',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Classroom', 
                 spanish: 'Aula', 
-                phonetic: '/ˈklæsrʊm/', 
-                guide: 'KLAS-rum',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Notebook', 
                 spanish: 'Cuaderno', 
-                phonetic: '/ˈnoʊtbʊk/', 
-                guide: 'NOT-buk',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Library', 
                 spanish: 'Biblioteca', 
-                phonetic: '/ˈlaɪbreri/', 
-                guide: 'LÁI-bre-ri',
                 category: 'Escuela y Educación'
             },
             { 
                 english: 'Exam', 
                 spanish: 'Examen', 
-                phonetic: '/ɪɡˈzæm/', 
-                guide: 'ig-ZAM',
                 category: 'Escuela y Educación'
             },
 
@@ -479,57 +457,41 @@ session_start();
             { 
                 english: 'Street', 
                 spanish: 'Calle', 
-                phonetic: '/striːt/', 
-                guide: 'STRIT',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Building', 
                 spanish: 'Edificio', 
-                phonetic: '/ˈbɪldɪŋ/', 
-                guide: 'BÍL-ding',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Restaurant', 
                 spanish: 'Restaurante', 
-                phonetic: '/ˈrestərɑːnt/', 
-                guide: 'RÉS-to-rant',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Hospital', 
                 spanish: 'Hospital', 
-                phonetic: '/ˈhɑːspɪtl/', 
-                guide: 'JÓS-pi-tal',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Bank', 
                 spanish: 'Banco', 
-                phonetic: '/bæŋk/', 
-                guide: 'BANK',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Store', 
                 spanish: 'Tienda', 
-                phonetic: '/stɔːr/', 
-                guide: 'STOR',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Market', 
                 spanish: 'Mercado', 
-                phonetic: '/ˈmɑːrkɪt/', 
-                guide: 'MÁR-kit',
                 category: 'Ciudad y Calle'
             },
             { 
                 english: 'Traffic', 
                 spanish: 'Tráfico', 
-                phonetic: '/ˈtræfɪk/', 
-                guide: 'TRÁ-fik',
                 category: 'Ciudad y Calle'
             }
         ];
@@ -539,6 +501,78 @@ session_start();
         let score = 0;
         let correctAnswers = 0;
         let gameCompleted = false;
+        let timeLeft = 12;
+        let gameTimer = null;
+        let isAnswering = false;
+        let isTransitioning = false;
+
+        // Timer functions
+        function startTimer() {
+            timeLeft = 12;
+            if (gameTimer) clearInterval(gameTimer);
+            
+            gameTimer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(gameTimer);
+                    if (!isAnswering && !isTransitioning) {
+                        handleTimeOut();
+                    }
+                }
+            }, 1000);
+            
+            updateTimerDisplay();
+        }
+        
+        function stopTimer() {
+            if (gameTimer) {
+                clearInterval(gameTimer);
+                gameTimer = null;
+            }
+        }
+        
+        function updateTimerDisplay() {
+            document.getElementById('timer-display').textContent = timeLeft;
+            const fill = document.getElementById('timer-fill');
+            const percentage = (timeLeft / 12) * 100;
+            fill.style.width = percentage + '%';
+            
+            // Change color based on time left
+            if (timeLeft <= 3) {
+                fill.style.background = 'var(--red-bright)';
+            } else if (timeLeft <= 6) {
+                fill.style.background = 'linear-gradient(90deg, var(--yellow-pastel), var(--red-bright))';
+            } else {
+                fill.style.background = 'linear-gradient(90deg, var(--green-bright), var(--yellow-pastel), var(--red-bright))';
+            }
+        }
+        
+        function handleTimeOut() {
+            isAnswering = true;
+            
+            // Mark all buttons as disabled and show correct answer
+            const buttons = document.querySelectorAll('.option-button');
+            const correctSpanish = vocabulary[currentWord].spanish;
+            
+            buttons.forEach(button => {
+                button.disabled = true;
+                if (button.textContent === correctSpanish) {
+                    button.classList.add('correct');
+                }
+            });
+            
+            score = Math.max(0, score - 5);
+            showNotification('¡Tiempo agotado! La respuesta era: ' + correctSpanish, 'error');
+            
+            // Auto proceed after showing result
+            setTimeout(() => {
+                nextWordAuto();
+            }, 2000);
+            
+            updateDisplay();
+        }
 
         // Initialize game
         function initGame() {
@@ -546,25 +580,56 @@ session_start();
             score = 0;
             correctAnswers = 0;
             gameCompleted = false;
+            isAnswering = false;
+            isTransitioning = false;
+            stopTimer();
             updateDisplay();
             showWord();
         }
 
-        // Show current word
+        // Show current word with animation
         function showWord() {
             if (currentWord >= vocabulary.length) {
                 endGame();
                 return;
             }
-
-            const word = vocabulary[currentWord];
-            document.getElementById('word-category').textContent = word.category;
-            document.getElementById('english-word').textContent = word.english;
-            document.getElementById('pronunciation-phonetic').textContent = word.phonetic;
-            document.getElementById('pronunciation-guide').textContent = word.guide;
             
-            generateOptions();
-            updateDisplay();
+            isTransitioning = true;
+            stopTimer();
+            
+            const word = vocabulary[currentWord];
+            const wordDisplay = document.getElementById('word-display');
+            const optionsGrid = document.getElementById('options-grid');
+            
+            // Fade out current content
+            wordDisplay.classList.add('fade-out');
+            optionsGrid.classList.add('fade-out');
+            
+            setTimeout(() => {
+                // Update content
+                document.getElementById('word-category').textContent = word.category;
+                document.getElementById('english-word').textContent = word.english;
+                
+                generateOptions();
+                
+                // Fade in new content
+                wordDisplay.classList.remove('fade-out');
+                wordDisplay.classList.add('fade-in');
+                optionsGrid.classList.remove('fade-out');
+                optionsGrid.classList.add('fade-in');
+                
+                setTimeout(() => {
+                    wordDisplay.classList.remove('fade-in');
+                    optionsGrid.classList.remove('fade-in');
+                    isTransitioning = false;
+                    isAnswering = false;
+                    
+                    // Start timer after transition
+                    startTimer();
+                }, 400);
+                
+                updateDisplay();
+            }, 400);
         }
 
         // Generate answer options
@@ -597,6 +662,11 @@ session_start();
 
         // Handle answer selection
         function selectAnswer(selectedAnswer) {
+            if (isAnswering || isTransitioning) return;
+            
+            isAnswering = true;
+            stopTimer();
+            
             const correctAnswer = vocabulary[currentWord].spanish;
             const isCorrect = selectedAnswer === correctAnswer;
             
@@ -620,21 +690,32 @@ session_start();
                 correctAnswers++;
                 score += 10;
                 showNotification('¡Correcto!', 'success');
+                
+                // Auto proceed for correct answers
+                setTimeout(() => {
+                    nextWordAuto();
+                }, 1500);
             } else {
                 showNotification('Incorrecto. La respuesta es: ' + correctAnswer, 'error');
+                
+                // Auto proceed after showing result
+                setTimeout(() => {
+                    nextWordAuto();
+                }, 2500);
             }
             
-            // Show next button
-            setTimeout(() => {
-                document.getElementById('next-button').style.display = 'inline-flex';
-            }, 1000);
+            updateDisplay();
         }
 
+        // Next word automatically (no button needed)
+        function nextWordAuto() {
+            currentWord++;
+            showWord();
+        }
+        
         // Next word
         function nextWord() {
-            currentWord++;
-            document.getElementById('next-button').style.display = 'none';
-            showWord();
+            nextWordAuto();
         }
 
         // Update display
@@ -651,6 +732,7 @@ session_start();
         // End game
         function endGame() {
             gameCompleted = true;
+            stopTimer();
             
             // Calculate stars
             const percentage = (correctAnswers / vocabulary.length) * 100;
@@ -683,6 +765,7 @@ session_start();
         // Restart game
         function restartGame() {
             document.getElementById('results-panel').classList.remove('visible');
+            stopTimer();
             initGame();
         }
 
