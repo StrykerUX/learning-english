@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Trainer - Adventure Map</title>
+    <style>
+        /* Estilos directos en HTML para asegurar que funcionen */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87CEEB 0%, #98D982 40%, #90EE90 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 15px 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-bubble {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-bubble.gold { background: linear-gradient(45deg, #ffd700, #f59e0b); color: white; }
+        .stat-bubble.blue { background: linear-gradient(45deg, #3b82f6, #1d4ed8); color: white; }
+        .stat-bubble.green { background: linear-gradient(45deg, #10b981, #059669); color: white; }
+        
+        /* Game Map */
+        .game-map {
+            margin-top: 80px;
+            padding: 20px;
+            min-height: calc(100vh - 80px);
+            position: relative;
+        }
+        
+        /* Path SVG */
+        .game-path {
+            position: absolute;
+            top: 100px;
+            left: 0;
+            width: 100%;
+            height: 500px;
+            z-index: 1;
+        }
+        
+        /* Level nodes container */
+        .levels-container {
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Individual level node */
+        .level-node {
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .level-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            border: 4px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .level-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .level-number {
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .level-name {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+        }
+        
+        .level-stars {
+            margin-top: 5px;
+            font-size: 0.8rem;
+        }
+        
+        /* Level states */
+        .level-node.unlocked .level-circle {
+            border-color: #fbbf24;
+            background: linear-gradient(135deg, #fef3c7, white);
+            animation: pulse 2s infinite;
+        }
+        
+        .level-node.unlocked .level-icon,
+        .level-node.unlocked .level-number {
+            color: #d97706;
+        }
+        
+        .level-node.completed .level-circle {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #dcfce7, white);
+        }
+        
+        .level-node.completed .level-icon,
+        .level-node.completed .level-number {
+            color: #059669;
+        }
+        
+        .level-node.completed::after {
+            content: '👑';
+            position: absolute;
+            top: -10px;
+            right: 0;
+            font-size: 1.2rem;
+        }
+        
+        .level-node.locked .level-circle {
+            border-color: #9ca3af;
+            background: #f3f4f6;
+            opacity: 0.7;
+        }
+        
+        .level-node.locked .level-icon,
+        .level-node.locked .level-number {
+            color: #6b7280;
+        }
+        
+        .level-node.locked::before {
+            content: '🔒';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -60%);
+            font-size: 1.5rem;
+            z-index: 3;
+        }
+        
+        /* Hover effects */
+        .level-node:not(.locked):hover {
+            transform: scale(1.1);
+        }
+        
+        .level-node:not(.locked):hover .level-circle {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Player character */
+        .player {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            z-index: 3000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+        
+        .modal h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .modal p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ff4444;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            cursor: pointer;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .level-circle {
+                width: 60px;
+                height: 60px;
+            }
+            .level-icon {
+                font-size: 1.2rem;
+            }
+            .level-number {
+                font-size: 0.9rem;
+            }
+            .level-name {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                English Adventure
+            </div>
+            <div class="stats">
+                <div class="stat-bubble gold">
+                    <i class="fas fa-star"></i> <span id="stars">0</span>
+                </div>
+                <div class="stat-bubble blue">
+                    <i class="fas fa-coins"></i> <span id="points">130</span>
+                </div>
+                <div class="stat-bubble green">
+                    <i class="fas fa-trophy"></i> <span id="achievements">0</span>/8
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Map -->
+    <div class="game-map">
+        <!-- SVG Path -->
+        <svg class="game-path" viewBox="0 0 1200 500">
+            <path d="M 100 400 Q 300 300 500 350 Q 700 400 900 300 Q 1000 250 1100 200" 
+                  stroke="#8B5CF6" 
+                  stroke-width="6" 
+                  fill="none" 
+                  stroke-dasharray="15,10"
+                  opacity="0.4"/>
+        </svg>
+        
+        <!-- Levels Container -->
+        <div class="levels-container">
+            <!-- Level 1 -->
+            <div class="level-node unlocked" data-level="1" style="left: 5%; top: 300px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-book-open"></i></div>
+                    <div class="level-number">1</div>
+                </div>
+                <div class="level-name">Words</div>
+                <div class="level-stars">
+                    <i class="fas fa-star" style="color: gold;"></i>
+                    <i class="fas fa-star" style="color: gold;"></i>
+                    <i class="fas fa-star" style="color: gold;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 2 -->
+            <div class="level-node locked" data-level="2" style="left: 20%; top: 250px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-puzzle-piece"></i></div>
+                    <div class="level-number">2</div>
+                </div>
+                <div class="level-name">Memory</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 3 -->
+            <div class="level-node locked" data-level="3" style="left: 35%; top: 280px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-spell-check"></i></div>
+                    <div class="level-number">3</div>
+                </div>
+                <div class="level-name">Spelling</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 4 -->
+            <div class="level-node locked" data-level="4" style="left: 55%; top: 250px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-clock"></i></div>
+                    <div class="level-number">4</div>
+                </div>
+                <div class="level-name">Present</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 5 -->
+            <div class="level-node locked" data-level="5" style="left: 65%; top: 300px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-running"></i></div>
+                    <div class="level-number">5</div>
+                </div>
+                <div class="level-name">Continuous</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 6 -->
+            <div class="level-node locked" data-level="6" style="left: 75%; top: 250px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-history"></i></div>
+                    <div class="level-number">6</div>
+                </div>
+                <div class="level-name">Past</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 7 -->
+            <div class="level-node locked" data-level="7" style="left: 88%; top: 210px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-rocket"></i></div>
+                    <div class="level-number">7</div>
+                </div>
+                <div class="level-name">Future</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Level 8 -->
+            <div class="level-node locked" data-level="8" style="left: 92%; top: 170px;">
+                <div class="level-circle">
+                    <div class="level-icon"><i class="fas fa-location-arrow"></i></div>
+                    <div class="level-number">8</div>
+                </div>
+                <div class="level-name">Positions</div>
+                <div class="level-stars">
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                    <i class="far fa-star" style="color: #ccc;"></i>
+                </div>
+            </div>
+            
+            <!-- Player Character -->
+            <div class="player" style="left: 10%; top: 295px;">
+                <i class="fas fa-user-graduate" style="color: #3b82f6;"></i>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal" id="levelModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h2 id="modalTitle">Level Name</h2>
+            <p id="modalDescription">Level description</p>
+            <div class="btn-group">
+                <a href="#" class="btn btn-secondary" id="theoryBtn">
+                    <i class="fas fa-book"></i> Theory
+                </a>
+                <a href="#" class="btn btn-primary" id="playBtn">
+                    <i class="fas fa-play"></i> Play
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Game configuration
+        const games = {
+            1: { name: 'Palabras Básicas', desc: 'Aprende vocabulario esencial', game: 'vocabulary-basic', theory: 'basic-words' },
+            2: { name: 'Memorama', desc: 'Encuentra las parejas', game: 'memory-game', theory: 'memory-tips' },
+            3: { name: 'Ahorcado', desc: 'Adivina las palabras', game: 'hangman', theory: 'spelling-tips' },
+            4: { name: 'Presente Simple', desc: 'Domina el presente', game: 'present-simple', theory: 'present-simple' },
+            5: { name: 'Presente Continuo', desc: 'Acciones ahora', game: 'present-continuous', theory: 'present-continuous' },
+            6: { name: 'Pasado Simple', desc: 'Eventos pasados', game: 'past-simple', theory: 'past-simple' },
+            7: { name: 'Futuro Simple', desc: 'Plans del futuro', game: 'future-simple', theory: 'future-simple' },
+            8: { name: 'Preposiciones', desc: 'Dónde están las cosas', game: 'prepositions', theory: 'prepositions' }
+        };
+        
+        // Handle level clicks
+        document.querySelectorAll('.level-node').forEach(node => {
+            node.addEventListener('click', function() {
+                const level = parseInt(this.dataset.level);
+                
+                if (this.classList.contains('locked')) {
+                    alert('Este nivel está bloqueado. Completa los anteriores.');
+                    return;
+                }
+                
+                showLevelModal(level);
+            });
+        });
+        
+        function showLevelModal(level) {
+            const game = games[level];
+            document.getElementById('modalTitle').textContent = game.name;
+            document.getElementById('modalDescription').textContent = game.desc;
+            document.getElementById('theoryBtn').href = `theory/${game.theory}.php`;
+            document.getElementById('playBtn').href = `games/${game.game}.php`;
+            document.getElementById('levelModal').style.display = 'block';
+        }
+        
+        function closeModal() {
+            document.getElementById('levelModal').style.display = 'none';
+        }
+        
+        // Close modal on background click
+        document.getElementById('levelModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Load saved progress (simplified)
+        function loadProgress() {
+            const saved = localStorage.getItem('englishTrainerProgress');
+            if (saved) {
+                try {
+                    const progress = JSON.parse(saved);
+                    document.getElementById('stars').textContent = progress.totalStars || 0;
+                    document.getElementById('points').textContent = progress.totalPoints || 130;
+                    document.getElementById('achievements').textContent = progress.completedLevels ? progress.completedLevels.length : 0;
+                } catch(e) {
+                    console.log('No valid save found');
+                }
+            }
+        }
+        
+        // Initialize
+        loadProgress();
+    </script>
+</body>
+</html>
