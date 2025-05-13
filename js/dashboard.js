@@ -186,6 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     createStarfield();
     createAsteroids();
     
+    // FORZAR TODOS LOS NIVELES DESBLOQUEADOS para MVP
+    localStorage.setItem('highestUnlocked', '8');
+    
     if (gameState.playerName) {
         welcomeModal.style.display = 'none';
         initializeDashboard();
@@ -249,6 +252,8 @@ function startJourney() {
     }
     
     gameState.playerName = playerName;
+    // Forzar niveles desbloqueados
+    gameState.highestUnlocked = 8;
     gameState.save();
     
     welcomeModal.style.display = 'none';
@@ -298,6 +303,14 @@ function updateUI() {
 // ===== LEVEL NODES SETUP =====
 function setupLevelNodes() {
     const levelNodes = document.querySelectorAll('.level-node');
+    
+    // Primero, forzar que todos los niveles estén desbloqueados
+    levelNodes.forEach(node => {
+        node.classList.remove('locked');
+        node.classList.add('unlocked');
+        // Remover cualquier pseudo-elemento de candado
+        node.style.setProperty('--lock-display', 'none');
+    });
     
     levelNodes.forEach((node, index) => {
         const level = index + 1;
@@ -354,7 +367,14 @@ function updateNodeState(node, level) {
             }
         });
     } else {
+        // FORZAR que todos los niveles estén desbloqueados
         node.classList.add('unlocked');
+    }
+    
+    // Remover cualquier candado que pueda estar presente
+    const lockElement = node.querySelector('.lock-overlay');
+    if (lockElement) {
+        lockElement.remove();
     }
 }
 
