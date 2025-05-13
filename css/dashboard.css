@@ -91,8 +91,14 @@ body {
 }
 
 /* Asegurar que el nivel 8 se vea exactamente como los otros */
-.level-node.special .special-platform {
+.level-node.special .special-platform,
+.level-node.special .node-platform {
     background: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
 }
 
 .level-node.special .special-circle,
@@ -101,6 +107,18 @@ body {
     border: 4px solid var(--bg-space) !important;
     border-radius: 50% !important;
     box-shadow: var(--shadow-soft) !important;
+    width: 100px !important;
+    height: 100px !important;
+}
+
+/* Eliminar cualquier contenedor especial que cause el fondo rectangular */
+.level-node.special {
+    background: transparent !important;
+}
+
+.level-node.special .node-platform {
+    background: transparent !important;
+    padding: 0 !important;
 }
 
 /* ===== STARFIELD BACKGROUND ===== */
@@ -492,9 +510,7 @@ body {
 .level-node.special .node-circle,
 .level-node.special .special-platform,
 .level-node.special .special-circle {
-    background: var(--yellow-pastel) !important; /* Igual que los otros niveles */
-    border-color: var(--bg-space) !important; /* Borde normal */
-    box-shadow: var(--shadow-soft) !important; /* Sombra normal */
+    /* Sin fondo especial - debe verse como los demás niveles */
 }
 
 .level-node.special.unlocked {
@@ -507,6 +523,15 @@ body {
     background: var(--yellow-pastel) !important;
     color: var(--bg-space) !important;
     animation: nodeGlow 2s ease-in-out infinite;
+}
+
+/* Asegurar que todos los elementos especiales se vean normales */
+.level-node.special .special-platform {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 
 /* Next Level Animation */
@@ -934,6 +959,33 @@ body {
         flex-direction: column;
         gap: 2px;
     }
+}
+
+/* ===== ACCESSIBILITY ===== */
+/* Fijar el problema del nivel 8 - eliminar completamente el fondo rectangular */
+.level-node[data-level="8"] .special-platform,
+.level-node[data-level="8"] .node-platform {
+    background: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+}
+
+.level-node[data-level="8"] {
+    background: transparent !important;
+}
+
+.level-node[data-level="8"] .node-circle,
+.level-node[data-level="8"] .special-circle {
+    background: var(--yellow-pastel) !important;
+    border: 4px solid var(--bg-space) !important;
+    border-radius: 50% !important;
+    box-shadow: var(--shadow-soft) !important;
+    width: 100px !important;
+    height: 100px !important;
 }
 
 /* ===== ACCESSIBILITY ===== */
