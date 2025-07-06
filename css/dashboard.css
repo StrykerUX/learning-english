@@ -934,12 +934,31 @@ body {
     }
     
     .node-circle {
-        width: 70px;
-        height: 70px;
+        width: 60px; /* Further reduced from 70px */
+        height: 60px; /* Further reduced from 70px */
     }
     
     .node-circle i {
-        font-size: 1.2rem;
+        font-size: 1.1rem; /* Slightly smaller */
+        margin-bottom: 0.15rem; /* Adjust spacing if needed */
+    }
+
+    .level-number {
+        font-size: 0.75rem; /* Slightly smaller */
+    }
+
+    .node-label .label-english {
+        font-size: 0.65rem; /* Slightly smaller */
+    }
+    .node-label .label-spanish {
+        font-size: 0.55rem; /* Slightly smaller */
+    }
+
+    /* Add some padding to the game map on very small screens */
+    .game-map {
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 210px; /* Increased from default 180px to accommodate taller stacked header */
     }
     
     .player-spaceship {
@@ -949,7 +968,7 @@ body {
     /* Extra small screen adjustments */
     .completed-missions {
         position: fixed !important;
-        bottom: 80px !important; /* Más cerca del footer */
+        bottom: 95px !important; /* Was 80px. Sits above the theory reminder */
         right: 5px !important;
         left: auto !important;
         float: none;
@@ -962,7 +981,7 @@ body {
     
     .theory-reminder {
         position: fixed;
-        bottom: 40px; /* Más espacio del footer */
+        bottom: 45px; /* Was 40px. Gives a bit more clearance from a ~35px footer */
         left: 5px;
         right: auto;
         transform: none;
